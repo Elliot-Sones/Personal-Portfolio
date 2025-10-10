@@ -1,7 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { useRef, type RefObject } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import type { MotionProps, Transition } from "framer-motion";
 
 const projects = [
@@ -51,7 +53,7 @@ const highlights = [
 const socials = [
   { label: "GitHub", href: "https://github.com/Elliot-Sones" },
   { label: "LinkedIn", href: "https://www.linkedin.com/in/elliot-sones/" },
-  { label: "Resume", href: "https://x.com/elliotcodes" },
+  { label: "Resume", href: "/resume.pdf" },
 ];
 
 const fadeTransition: Transition = { duration: 0.6, ease: "easeOut" };
@@ -63,10 +65,58 @@ const fadeConfig: MotionProps = {
   transition: fadeTransition,
 };
 
-export default function Home() {
+type PitchProgressProps = {
+  targetRef: RefObject<HTMLDivElement>;
+};
+
+const PitchProgress = ({ targetRef }: PitchProgressProps) => {
+  const { scrollYProgress } = useScroll({
+    target: targetRef,
+    offset: ["start start", "end end"],
+  });
+
+  const translateY = useTransform(scrollYProgress, (value) => {
+    const clamped = Math.max(0, Math.min(1, value ?? 0));
+    const percent = (clamped * 100).toFixed(4);
+    return `calc(${percent}% - 88px)`;
+  });
+  const goalOpacity = useTransform(scrollYProgress, [0.82, 1], [0, 1]);
+  const ballScale = useTransform(scrollYProgress, [0, 0.1, 0.9, 1], [1, 1.05, 1.05, 0.92]);
+
   return (
-    // header
+    <div className="pointer-events-none fixed left-2 top-28 bottom-16 z-30 hidden w-24 md:flex lg:left-8">
+      <div className="relative h-full w-full">
+        <div className="absolute left-1/2 top-0 bottom-24 -translate-x-1/2 border-l-2 border-dashed border-accent/60" />
+        <motion.div
+          style={{ translateY, scale: ballScale }}
+          className="absolute left-1/2 top-0 -translate-x-1/2"
+        >
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/95 shadow-[0_16px_30px_rgba(4,18,10,0.45)]">
+            <Image src="/soccer-ball.svg" alt="Soccer ball" width={52} height={52} priority />
+          </div>
+        </motion.div>
+        <motion.div
+          style={{ opacity: goalOpacity }}
+          className="absolute bottom-0 left-1/2 w-24 -translate-x-1/2 pb-2"
+          aria-hidden
+        >
+          <div className="relative h-16 w-20 rounded-b-[10px] border-2 border-accent/60 bg-background/20 backdrop-blur-sm">
+            <span className="absolute inset-x-2 bottom-2 h-1 rounded-full bg-accent/40" />
+            <span className="absolute inset-y-4 left-2 w-1 rounded-full bg-accent/35" />
+            <span className="absolute inset-y-4 right-2 w-1 rounded-full bg-accent/35" />
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
+export default function Home() {
+  const mainRef = useRef<HTMLDivElement>(null);
+
+  return (
     <div className="relative isolate">
+      <PitchProgress targetRef={mainRef} />
       <header className="mx-auto w-full max-w-5xl px-6 pt-4 sm:pt-6">
         <nav className="flex items-center justify-between rounded-full border border-border bg-card/80 px-6 py-4 backdrop-blur">
           <span className="font-display text-lg tracking-[0.4em] uppercase">
@@ -76,8 +126,8 @@ export default function Home() {
             <a className="hover:text-accent transition-colors" href="#about">
               About
             </a>
-            <a className="hover:text-accent transition-colors" href="#work">
-              Work
+            <a className="hover:text-accent transition-colors" href="#projects">
+              Projects
             </a>
             <a className="hover:text-accent transition-colors" href="#contact">
               Contact
@@ -91,37 +141,51 @@ export default function Home() {
           </Link>
         </nav>
       </header>
-      <main className="mx-auto flex w-full max-w-5xl flex-col gap-24 px-6 py-16 sm:gap-32 sm:py-24">
+      <main
+        ref={mainRef}
+        className="mx-auto flex w-full max-w-5xl flex-col gap-24 px-6 py-16 sm:gap-32 sm:py-24"
+      >
         <motion.section
           id="hero"
-          className="rounded-3xl border border-border bg-card/80 p-8 shadow-xl shadow-black/10 backdrop-blur"
+          className="rounded-3xl bg-card/80 p-8 shadow-xl shadow-black/10 backdrop-blur"
           {...fadeConfig}
         >
-          <p className="font-mono text-xs uppercase tracking-[0.4em] text-muted">
-            Full-stack developer &amp; football analytics enthusiast
-          </p>
-          <h1 className="mt-6 max-w-3xl font-display text-4xl uppercase tracking-[0.08em] text-foreground sm:text-6xl">
-            Building soccer-inspired digital experiences that feel match-day
-            smooth.
-          </h1>
-          <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
-            I craft responsive apps that connect athletes, coaches, and fans
-            through data-driven storytelling. From live match analysis to
-            training tools, I blend clear UX with performant engineering.
-          </p>
-          <div className="mt-10 flex flex-wrap gap-4">
-            <Link
-              href="#work"
-              className="rounded-full bg-accent px-6 py-3 text-sm font-semibold uppercase tracking-[0.3em] text-background transition hover:brightness-105"
-            >
-              View recent work
-            </Link>
-            <a
-              href="mailto:hello@elliot.dev"
-              className="rounded-full border border-border px-6 py-3 text-sm font-semibold uppercase tracking-[0.3em] text-muted transition hover:border-accent hover:text-accent"
-            >
-              Chat about a project
-            </a>
+          <div className="grid gap-10 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] md:items-center">
+            <div className="space-y-6 text-left">
+              <p className="font-display text-5xl uppercase tracking-[0.06em] text-foreground sm:text-6xl md:text-7xl">
+                Hey there!
+              </p>
+              <p className="text-base uppercase tracking-[0.32em] text-muted sm:text-lg">
+                I&apos;m Elliot and welcome to my personal website.
+              </p>
+              <p className="max-w-xl text-base leading-relaxed text-muted sm:text-lg">
+                I craft responsive apps that connect athletes, coaches, and fans
+                through data-driven storytelling. From live match analysis to
+                training tools, I blend clear UX with performant engineering.
+              </p>
+              <div className="flex flex-wrap gap-4 pt-2">
+                <Link
+                  href="#projects"
+                  className="rounded-full bg-accent px-6 py-3 text-sm font-semibold uppercase tracking-[0.3em] text-background transition hover:brightness-105"
+                >
+                  View recent work
+                </Link>
+                <a
+                  href="mailto:hello@elliot.dev"
+                  className="rounded-full border border-border px-6 py-3 text-sm font-semibold uppercase tracking-[0.3em] text-muted transition hover:border-accent hover:text-accent"
+                >
+                  Chat about a project
+                </a>
+              </div>
+            </div>
+            <div className="relative hidden h-72 w-full overflow-hidden rounded-3xl bg-gradient-to-br from-foreground/10 via-accent/15 to-transparent shadow-lg shadow-black/20 md:block">
+              <span className="absolute inset-4 rounded-[28px] border border-border/60 bg-background/20 backdrop-blur-sm" />
+              <span className="absolute inset-x-10 bottom-10 h-24 rounded-[48px] border border-accent/40 bg-accent/10 blur-xl" />
+              <span className="absolute inset-x-14 top-10 h-20 rounded-[48px] border border-border/40 bg-background/30" />
+              <p className="absolute bottom-6 left-8 font-mono text-xs uppercase tracking-[0.35em] text-muted">
+                Image placeholder
+              </p>
+            </div>
           </div>
           <div className="mt-12 grid gap-6 sm:grid-cols-2">
             {highlights.map((item) => (
@@ -141,7 +205,6 @@ export default function Home() {
             ))}
           </div>
         </motion.section>
-        // about section
         <motion.section
           id="about"
           className="grid gap-10 rounded-3xl border border-border bg-card/75 p-8 backdrop-blur md:grid-cols-[1.2fr_0.8fr]"
@@ -191,16 +254,15 @@ export default function Home() {
             </article>
           </div>
         </motion.section>
-        // work section
         <motion.section
-          id="work"
+          id="projects"
           className="rounded-3xl border border-border bg-card/80 p-8 backdrop-blur"
           {...fadeConfig}
         >
           <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="font-mono text-xs uppercase tracking-[0.4em] text-muted">
-                Selected work
+                My projects
               </p>
               <h2 className="mt-4 font-display text-3xl uppercase tracking-[0.1em] sm:text-4xl">
                 Projects shaped by the beautiful game.
@@ -270,7 +332,6 @@ export default function Home() {
             ))}
           </div>
         </motion.section>
-        // contact section
         <motion.section
           id="contact"
           className="rounded-3xl border border-border bg-card/85 p-8 backdrop-blur"
@@ -351,7 +412,6 @@ export default function Home() {
           </div>
         </motion.section>
       </main>
-      // footer
       <footer className="mx-auto w-full max-w-5xl px-6 pb-16 text-xs uppercase tracking-[0.35em] text-muted">
         © {new Date().getFullYear()} Elliot. Crafted with Next.js, Tailwind,
         and a love for the beautiful game.
