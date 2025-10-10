@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+:root {
+  --background: #05160b;
+  --foreground: #f3f7f3;
+  --muted: rgba(255, 255, 255, 0.6);
+  --accent: #6ce676;
+  --card-bg: rgba(4, 18, 10, 0.78);
+  --border-soft: rgba(255, 255, 255, 0.08);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-card: var(--card-bg);
+  --color-border: var(--border-soft);
+  --font-sans: var(--font-geist-sans);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  overflow-x: hidden;
+}
+
+body.bg-field {
+  position: relative;
+}
+
+body.bg-field::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+      linear-gradient(
+        rgba(255, 255, 255, 0.08) 0,
+        rgba(255, 255, 255, 0.08) 2px,
+        transparent 2px,
+        transparent 25%
+      ),
+      linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.08) 0,
+        rgba(255, 255, 255, 0.08) 2px,
+        transparent 2px,
+        transparent 25%
+      ),
+      radial-gradient(circle at 50% 10%, rgba(108, 230, 118, 0.18), transparent),
+      radial-gradient(circle at 50% 80%, rgba(22, 71, 37, 0.4), transparent 60%);
+  background-size: 240px 240px, 240px 240px, 100% 100%, 100% 100%;
+  mix-blend-mode: screen;
+  opacity: 0.32;
+  pointer-events: none;
+  z-index: -2;
+}
+
+body.bg-field::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+      circle at 50% 20%,
+      rgba(98, 210, 111, 0.2),
+      transparent 55%
+    ),
+    linear-gradient(120deg, rgba(12, 50, 24, 0.85), rgba(3, 18, 9, 0.95));
+  pointer-events: none;
+  z-index: -1;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--accent);
+}
