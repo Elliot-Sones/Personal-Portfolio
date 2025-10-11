@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, type RefObject } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import type { MotionProps, Transition } from "framer-motion";
 
@@ -45,12 +45,28 @@ const focuses = [
   },
 ];
 
-// Quick-hit metrics in the hero stats grid
-const highlights = [
-  { label: "Experience", value: "4+ years shipping products" },
-  { label: "Stack", value: "TypeScript • Next.js • Node • React Native" },
-  { label: "Based in", value: "Toronto, Canada" },
-  { label: "Current club", value: "Full-stack dev @ Night Owl Collective" },
+// Technical skill groups to highlight core competencies
+const skillGroups = [
+  {
+    title: "Frontend Craft",
+    summary: "Composing immersive, performant interfaces with an eye for accessibility.",
+    items: ["TypeScript", "React & Next.js", "Tailwind CSS", "Framer Motion", "Radix UI"],
+  },
+  {
+    title: "Backend & Data",
+    summary: "Designing resilient APIs and data pipelines that keep insights flowing.",
+    items: ["Node.js", "Supabase & PostgreSQL", "Prisma", "REST & GraphQL", "tRPC"],
+  },
+  {
+    title: "Applied Intelligence",
+    summary: "Transforming match data and training logs into actionable models.",
+    items: ["Python", "scikit-learn", "TensorFlow Lite", "Pandas", "Jupyter"],
+  },
+  {
+    title: "Dev Experience",
+    summary: "Shipping confidently with modern tooling and collaboration practices.",
+    items: ["Git & GitHub", "CI/CD (GitHub Actions)", "Expo", "Storybook", "Testing Library"],
+  },
 ];
 
 // Footer + contact links (kept short for scanning)
@@ -62,64 +78,131 @@ const socials = [
   { label: "Email", href: "mailto:soneselliot@gmail.com"}
 ];
 
-// Shared motion preset for section fade/slide reveal
+// Shared motion preset for section fade/slide reveal with scale effect
+// Subtle scale effect for focus without overwhelming the layout
 const fadeTransition: Transition = { duration: 0.6, ease: "easeOut" };
 const fadeConfig: MotionProps = {
-  initial: { opacity: 0, y: 24 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, amount: 0.2 },
+  initial: { opacity: 0, y: 24, scale: 0.96 },
+  whileInView: { opacity: 1, y: 0, scale: 1.02 },
+  viewport: { once: false, amount: 0.3 },
   transition: fadeTransition,
 };
 
-type PitchProgressProps = {
-  targetRef: RefObject<HTMLDivElement>;
+// Left-rail progress indicator: soccer ball travels down a dashed line as content scrolls
+const END_SHIFT = 28;
+
+type ProgressLayout = {
+  ballTravel: number;
+  goalBottom: number;
+  ballHeight: number;
 };
 
-// Left-rail progress indicator: soccer ball travels down a dashed line as content scrolls
-const PitchProgress = ({ targetRef }: PitchProgressProps) => {
-  const { scrollYProgress } = useScroll({
-    target: targetRef,
-    offset: ["start start", "end end"],
+const PitchProgress = () => {
+  const { scrollYProgress } = useScroll();
+  const columnRef = useRef<HTMLDivElement>(null);
+  const goalRef = useRef<HTMLDivElement>(null);
+  const ballRef = useRef<HTMLDivElement>(null);
+  const [layout, setLayout] = useState<ProgressLayout>({
+    ballTravel: 0,
+    goalBottom: 0,
+    ballHeight: 0,
   });
 
-  const translateY = useTransform(scrollYProgress, [0, 1], ["0%", "calc(100% - 96px)"]);
-  const goalOpacity = useTransform(scrollYProgress, [0.85, 1], [0, 1]);
+  useEffect(() => {
+    const measure = () => {
+      const column = columnRef.current;
+      const goal = goalRef.current;
+      const ball = ballRef.current;
+      if (!column || !goal || !ball) {
+        return;
+      }
+
+      const columnHeight = column.clientHeight;
+      if (columnHeight === 0) {
+        return;
+      }
+
+      const goalHeight = goal.clientHeight;
+      const ballHeight = ball.clientHeight;
+
+      const goalBottom = Math.max(-END_SHIFT, -goalHeight * 0.6);
+      const goalTop = columnHeight - goalBottom - goalHeight;
+
+      const maxBallTop = Math.max(columnHeight - ballHeight, 0);
+      const ballTop = Math.min(Math.max(goalTop - ballHeight, 0), maxBallTop);
+
+      const nextLayout: ProgressLayout = {
+        goalBottom,
+        ballTravel: ballTop,
+        ballHeight,
+      };
+
+      setLayout((prev) =>
+        Math.abs(prev.ballTravel - nextLayout.ballTravel) > 0.5 ||
+        Math.abs(prev.goalBottom - nextLayout.goalBottom) > 0.5 ||
+        Math.abs(prev.ballHeight - nextLayout.ballHeight) > 0.5
+          ? nextLayout
+          : prev,
+      );
+    };
+
+    measure();
+    window.addEventListener("resize", measure);
+    return () => {
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
+
+  const translateY = useTransform(scrollYProgress, (value) => `${value * layout.ballTravel}px`);
+  const trailHeight = useTransform(scrollYProgress, (value) => {
+    const travel = value * layout.ballTravel;
+    if (travel <= 0) {
+      return "0px";
+    }
+
+    const totalPath = layout.ballTravel + layout.ballHeight;
+    const height = Math.min(travel + layout.ballHeight * 0.25, totalPath);
+    return `${Math.max(height, 0)}px`;
+  });
+  const goalOpacity = useTransform(scrollYProgress, [0.6, 0.95], [0, 1]);
   const ballScale = useTransform(scrollYProgress, [0, 0.1, 0.9, 1], [1, 1.05, 1.05, 0.9]);
 
   return (
     <div className="pointer-events-none fixed left-2 top-28 z-30 hidden h-[70vh] w-24 flex-col items-center md:flex lg:left-8">
-      <div className="relative flex-1">
-        <div className="absolute left-1/2 top-0 bottom-24 -translate-x-1/2 border-l-2 border-dashed border-accent/60" />
+      <div ref={columnRef} className="relative flex-1">
+        <motion.div
+          className="absolute left-1/2 top-0 -translate-x-1/2 border-l-2 border-dashed border-accent/60"
+          style={{ height: trailHeight }}
+        />
         <motion.div
           style={{ translateY, scale: ballScale }}
           className="absolute left-1/2 top-0 -translate-x-1/2"
         >
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/95 shadow-[0_10px_25px_rgba(4,18,10,0.45)]">
+          <div ref={ballRef} className="flex h-16 w-16 items-center justify-center">
             <Image src="/soccer-ball.svg" alt="Soccer ball" width={52} height={52} priority />
           </div>
         </motion.div>
+        <motion.div
+          ref={goalRef}
+          style={{ opacity: goalOpacity, bottom: layout.goalBottom }}
+          className="absolute bottom-0 left-1/2 flex h-20 w-24 -translate-x-1/2 items-end justify-center"
+          aria-hidden
+        >
+          <div className="relative h-16 w-20 rounded-b-[8px] border-2 border-accent/60 bg-background/20 backdrop-blur-sm">
+            <span className="absolute inset-x-2 bottom-2 h-1 rounded-full bg-accent/40" />
+            <span className="absolute inset-y-4 left-2 w-1 rounded-full bg-accent/35" />
+            <span className="absolute inset-y-4 right-2 w-1 rounded-full bg-accent/35" />
+          </div>
+        </motion.div>
       </div>
-      <motion.div
-        style={{ opacity: goalOpacity }}
-        className="relative mt-6 flex h-20 w-24 items-end justify-center"
-        aria-hidden
-      >
-        <div className="relative h-16 w-20 rounded-b-[8px] border-2 border-accent/60 bg-background/20 backdrop-blur-sm">
-          <span className="absolute inset-x-2 bottom-2 h-1 rounded-full bg-accent/40" />
-          <span className="absolute inset-y-4 left-2 w-1 rounded-full bg-accent/35" />
-          <span className="absolute inset-y-4 right-2 w-1 rounded-full bg-accent/35" />
-        </div>
-      </motion.div>
     </div>
   );
 };
 
 export default function Home() {
-  const mainRef = useRef<HTMLDivElement>(null);
-
   return (
     <div className="relative isolate">
-      <PitchProgress targetRef={mainRef} />
+      <PitchProgress />
       <header className="mx-auto w-full max-w-5xl px-6 pt-4 sm:pt-6">
         <nav className="flex items-center justify-between rounded-full border border-border bg-card/80 px-6 py-4 backdrop-blur">
           <span className="font-display text-lg tracking-[0.4em] uppercase">
@@ -132,8 +215,8 @@ export default function Home() {
             <a className="hover:text-accent transition-colors" href="#projects">
               Projects
             </a>
-            <a className="hover:text-accent transition-colors" href="#contact">
-              Contact
+            <a className="hover:text-accent transition-colors" href="#skills">
+              Skills
             </a>
           </div>
           <Link
@@ -146,7 +229,6 @@ export default function Home() {
       </header>
       <main
         // Anchor for scroll-based animations (hero → footer)
-        ref={mainRef}
         className="mx-auto flex w-full max-w-5xl flex-col gap-24 px-6 py-16 sm:gap-32 sm:py-24"
       >
         {/* Hero intro */}
@@ -160,26 +242,24 @@ export default function Home() {
               <p className="font-display text-5xl uppercase tracking-[0.06em] text-foreground sm:text-6xl md:text-7xl">
                 Hey there!
               </p>
-              <p className="text-base uppercase tracking-[0.32em] text-muted sm:text-lg">
-                I&apos;m Elliot and welcome to my personal website.
+              <p className="text-base tracking-[0.32em] text-muted sm:text-lg">
+                I&apos;m Elliot and welcome to my personal website!
               </p>
               <p className="max-w-xl text-base leading-relaxed text-muted sm:text-lg">
-                I craft responsive apps that connect athletes, coaches, and fans
-                through data-driven storytelling. From live match analysis to
-                training tools, I blend clear UX with performant engineering.
+                I am a Computer Scince Student at Toronto Metropolitan University. I love to build cool things with coding especially when dealing with large data sets and Machine Learning.
               </p>
               <div className="flex flex-wrap gap-4 pt-2">
                 <Link
                   href="#projects"
-                  className="rounded-full bg-accent px-6 py-3 text-sm font-semibold uppercase tracking-[0.3em] text-background transition hover:brightness-105"
-                >
-                  View recent work
-                </Link>
-                <a
-                  href="mailto:hello@elliot.dev"
                   className="rounded-full border border-border px-6 py-3 text-sm font-semibold uppercase tracking-[0.3em] text-muted transition hover:border-accent hover:text-accent"
                 >
-                  Chat about a project
+                  View my recent projects
+                </Link>
+                <a
+                  href="#contact"
+                  className="rounded-full bg-accent/80 px-6 py-3 text-sm font-semibold uppercase tracking-[0.3em] text-background transition hover:bg-black/70"
+                >
+                  Connect with me
                 </a>
               </div>
             </div>
@@ -191,23 +271,6 @@ export default function Home() {
                 Image placeholder
               </p>
             </div>
-          </div>
-          <div className="mt-12 grid gap-6 sm:grid-cols-2">
-            {highlights.map((item) => (
-              <motion.div
-                key={item.label}
-                className="rounded-2xl border border-border/60 bg-background/40 p-6 shadow-inner shadow-black/20"
-                whileHover={{ y: -6, opacity: 0.95 }}
-                transition={{ duration: 0.3 }}
-              >
-                <p className="text-xs uppercase tracking-[0.35em] text-muted">
-                  {item.label}
-                </p>
-                <p className="mt-3 font-display text-xl uppercase tracking-[0.1em]">
-                  {item.value}
-                </p>
-              </motion.div>
-            ))}
           </div>
         </motion.section>
         {/* About / profile narrative */}
@@ -276,7 +339,7 @@ export default function Home() {
               </h2>
             </div>
             <Link
-              href="https://github.com/elliot18"
+              href="https://github.com/Elliot-Sones"
               className="self-start rounded-full border border-border px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-muted transition hover:border-accent hover:text-accent"
             >
               Explore GitHub
@@ -339,6 +402,54 @@ export default function Home() {
             ))}
           </div>
         </motion.section>
+        {/* Technical skills */}
+        <motion.section
+          id="skills"
+          className="rounded-3xl border border-border bg-card/80 p-8 backdrop-blur"
+          {...fadeConfig}
+        >
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="font-mono text-xs uppercase tracking-[0.4em] text-muted">
+                Technical skills
+              </p>
+              <h2 className="mt-4 font-display text-3xl uppercase tracking-[0.1em] sm:text-4xl">
+                A toolkit tuned for data-rich, immersive experiences.
+              </h2>
+            </div>
+            <p className="max-w-sm self-start text-xs uppercase tracking-[0.25em] text-muted">
+              Bridging product, engineering, and analytics so every build is match ready.
+            </p>
+          </div>
+          <div className="mt-10 grid gap-6 md:grid-cols-2">
+            {skillGroups.map((group, index) => (
+              <motion.article
+                key={group.title}
+                className="rounded-3xl border border-border/60 bg-background/40 p-6 shadow-inner shadow-black/10"
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ delay: index * 0.08, duration: 0.45 }}
+                whileHover={{ y: -6 }}
+              >
+                <h3 className="font-display text-xl uppercase tracking-[0.12em]">
+                  {group.title}
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-muted">{group.summary}</p>
+                <ul className="mt-5 flex flex-wrap gap-2">
+                  {group.items.map((item) => (
+                    <li
+                      key={item}
+                      className="rounded-full border border-border/60 px-3 py-1 text-[11px] uppercase tracking-[0.28em] text-muted"
+                    >
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </motion.article>
+            ))}
+          </div>
+        </motion.section>
         {/* Contact / form */}
         <motion.section
           id="contact"
@@ -397,7 +508,7 @@ export default function Home() {
                   />
                 </label>
                 <label className="text-xs uppercase tracking-[0.3em] text-muted">
-                  Project details
+                  Any details?
                   <textarea
                     className="mt-2 h-28 w-full resize-none rounded-xl border border-border bg-black/20 px-4 py-3 text-sm text-foreground outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/60"
                     name="message"

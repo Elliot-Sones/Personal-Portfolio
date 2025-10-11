@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type ChangeEvent } from "react";
 
 const SOURCE = "/audio/soccernoise.mp3";
 
-const DEFAULT_VOLUME = 0.6;
+const DEFAULT_VOLUME = 0.4;
 
 export function AudioPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
