@@ -34,7 +34,7 @@ const projects = [
 // Spotlight items for the “Currently exploring” cards
 const focuses = [
   {
-    title: "AI-Assisted Match Notes",
+    title: "Machine Learning and data science ",
     detail:
       "Building a workflow that converts match footage into tagged clips and tactical summaries in minutes.",
   },
