@@ -31,6 +31,10 @@ Typeface settings and the soccer field background live in:
 - `src/app/layout.tsx` — metadata, font imports (`Geist`, `Bebas Neue`).
 - `src/app/globals.css` — colour tokens, pitch pattern, and utilities.
 
+### Custom cursor
+
+Removed. The site now uses the default system cursor. The previous Rive-based implementation and assets were deleted.
+
 ### Contact form
 
 The contact form points to Formspree by default. Create a free Formspree form and replace the placeholder action URL in `src/app/page.tsx`:

@@ -6,6 +6,7 @@ import { useRef, type RefObject } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import type { MotionProps, Transition } from "framer-motion";
 
+// Portfolio projects showcased in the “Work” grid
 const projects = [
   {
     title: "Match Insights Dashboard",
@@ -30,6 +31,7 @@ const projects = [
   },
 ];
 
+// Spotlight items for the “Currently exploring” cards
 const focuses = [
   {
     title: "AI-Assisted Match Notes",
@@ -43,6 +45,7 @@ const focuses = [
   },
 ];
 
+// Quick-hit metrics in the hero stats grid
 const highlights = [
   { label: "Experience", value: "4+ years shipping products" },
   { label: "Stack", value: "TypeScript • Next.js • Node • React Native" },
@@ -50,14 +53,17 @@ const highlights = [
   { label: "Current club", value: "Full-stack dev @ Night Owl Collective" },
 ];
 
+// Footer + contact links (kept short for scanning)
 const socials = [
   { label: "GitHub", href: "https://github.com/Elliot-Sones" },
   { label: "LinkedIn", href: "https://www.linkedin.com/in/elliot-sones/" },
   { label: "Resume", href: "/resume.pdf" },
+  { label: "Instagram", href: "https://www.instagram.com/_elliot.sones_/"},
+  { label: "Email", href: "mailto:soneselliot@gmail.com"}
 ];
 
+// Shared motion preset for section fade/slide reveal
 const fadeTransition: Transition = { duration: 0.6, ease: "easeOut" };
-
 const fadeConfig: MotionProps = {
   initial: { opacity: 0, y: 24 },
   whileInView: { opacity: 1, y: 0 },
@@ -69,44 +75,41 @@ type PitchProgressProps = {
   targetRef: RefObject<HTMLDivElement>;
 };
 
+// Left-rail progress indicator: soccer ball travels down a dashed line as content scrolls
 const PitchProgress = ({ targetRef }: PitchProgressProps) => {
   const { scrollYProgress } = useScroll({
     target: targetRef,
     offset: ["start start", "end end"],
   });
 
-  const translateY = useTransform(scrollYProgress, (value) => {
-    const clamped = Math.max(0, Math.min(1, value ?? 0));
-    const percent = (clamped * 100).toFixed(4);
-    return `calc(${percent}% - 88px)`;
-  });
-  const goalOpacity = useTransform(scrollYProgress, [0.82, 1], [0, 1]);
-  const ballScale = useTransform(scrollYProgress, [0, 0.1, 0.9, 1], [1, 1.05, 1.05, 0.92]);
+  const translateY = useTransform(scrollYProgress, [0, 1], ["0%", "calc(100% - 96px)"]);
+  const goalOpacity = useTransform(scrollYProgress, [0.85, 1], [0, 1]);
+  const ballScale = useTransform(scrollYProgress, [0, 0.1, 0.9, 1], [1, 1.05, 1.05, 0.9]);
 
   return (
-    <div className="pointer-events-none fixed left-2 top-28 bottom-16 z-30 hidden w-24 md:flex lg:left-8">
-      <div className="relative h-full w-full">
+    <div className="pointer-events-none fixed left-2 top-28 z-30 hidden h-[70vh] w-24 flex-col items-center md:flex lg:left-8">
+      <div className="relative flex-1">
         <div className="absolute left-1/2 top-0 bottom-24 -translate-x-1/2 border-l-2 border-dashed border-accent/60" />
         <motion.div
           style={{ translateY, scale: ballScale }}
           className="absolute left-1/2 top-0 -translate-x-1/2"
         >
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/95 shadow-[0_16px_30px_rgba(4,18,10,0.45)]">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/95 shadow-[0_10px_25px_rgba(4,18,10,0.45)]">
             <Image src="/soccer-ball.svg" alt="Soccer ball" width={52} height={52} priority />
           </div>
         </motion.div>
-        <motion.div
-          style={{ opacity: goalOpacity }}
-          className="absolute bottom-0 left-1/2 w-24 -translate-x-1/2 pb-2"
-          aria-hidden
-        >
-          <div className="relative h-16 w-20 rounded-b-[10px] border-2 border-accent/60 bg-background/20 backdrop-blur-sm">
-            <span className="absolute inset-x-2 bottom-2 h-1 rounded-full bg-accent/40" />
-            <span className="absolute inset-y-4 left-2 w-1 rounded-full bg-accent/35" />
-            <span className="absolute inset-y-4 right-2 w-1 rounded-full bg-accent/35" />
-          </div>
-        </motion.div>
       </div>
+      <motion.div
+        style={{ opacity: goalOpacity }}
+        className="relative mt-6 flex h-20 w-24 items-end justify-center"
+        aria-hidden
+      >
+        <div className="relative h-16 w-20 rounded-b-[8px] border-2 border-accent/60 bg-background/20 backdrop-blur-sm">
+          <span className="absolute inset-x-2 bottom-2 h-1 rounded-full bg-accent/40" />
+          <span className="absolute inset-y-4 left-2 w-1 rounded-full bg-accent/35" />
+          <span className="absolute inset-y-4 right-2 w-1 rounded-full bg-accent/35" />
+        </div>
+      </motion.div>
     </div>
   );
 };
@@ -142,9 +145,11 @@ export default function Home() {
         </nav>
       </header>
       <main
+        // Anchor for scroll-based animations (hero → footer)
         ref={mainRef}
         className="mx-auto flex w-full max-w-5xl flex-col gap-24 px-6 py-16 sm:gap-32 sm:py-24"
       >
+        {/* Hero intro */}
         <motion.section
           id="hero"
           className="rounded-3xl bg-card/80 p-8 shadow-xl shadow-black/10 backdrop-blur"
@@ -205,6 +210,7 @@ export default function Home() {
             ))}
           </div>
         </motion.section>
+        {/* About / profile narrative */}
         <motion.section
           id="about"
           className="grid gap-10 rounded-3xl border border-border bg-card/75 p-8 backdrop-blur md:grid-cols-[1.2fr_0.8fr]"
@@ -254,6 +260,7 @@ export default function Home() {
             </article>
           </div>
         </motion.section>
+        {/* Work highlights + focus cards */}
         <motion.section
           id="projects"
           className="rounded-3xl border border-border bg-card/80 p-8 backdrop-blur"
@@ -332,6 +339,7 @@ export default function Home() {
             ))}
           </div>
         </motion.section>
+        {/* Contact / form */}
         <motion.section
           id="contact"
           className="rounded-3xl border border-border bg-card/85 p-8 backdrop-blur"

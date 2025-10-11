@@ -31,49 +31,11 @@ body {
   overflow-x: hidden;
 }
 
+/* Ensure system cursor is always visible */
+
 body.bg-field {
   position: relative;
-}
-
-body.bg-field::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background:
-      linear-gradient(
-        rgba(255, 255, 255, 0.08) 0,
-        rgba(255, 255, 255, 0.08) 2px,
-        transparent 2px,
-        transparent 25%
-      ),
-      linear-gradient(
-        90deg,
-        rgba(255, 255, 255, 0.08) 0,
-        rgba(255, 255, 255, 0.08) 2px,
-        transparent 2px,
-        transparent 25%
-      ),
-      radial-gradient(circle at 50% 10%, rgba(108, 230, 118, 0.18), transparent),
-      radial-gradient(circle at 50% 80%, rgba(22, 71, 37, 0.4), transparent 60%);
-  background-size: 240px 240px, 240px 240px, 100% 100%, 100% 100%;
-  mix-blend-mode: screen;
-  opacity: 0.32;
-  pointer-events: none;
-  z-index: -2;
-}
-
-body.bg-field::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(
-      circle at 50% 20%,
-      rgba(98, 210, 111, 0.2),
-      transparent 55%
-    ),
-    linear-gradient(120deg, rgba(12, 50, 24, 0.85), rgba(3, 18, 9, 0.95));
-  pointer-events: none;
-  z-index: -1;
+  background: linear-gradient(180deg, #062714 0%, #031208 50%, #010905 100%);
 }
 
 a {
@@ -83,4 +45,226 @@ a {
 
 a:hover {
   color: var(--accent);
+}
+
+.pitch-surface {
+  position: fixed;
+  inset: 0;
+  z-index: -4;
+  pointer-events: none;
+  background: linear-gradient(180deg, #093820 0%, #052314 40%, #021308 100%);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow: hidden;
+  background-size: cover;
+}
+
+.pitch-surface::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.08) 0,
+      rgba(255, 255, 255, 0.08) 8%,
+      transparent 8%,
+      transparent 16%
+    ),
+    radial-gradient(circle at 50% 20%, rgba(144, 255, 168, 0.12), transparent 55%);
+  mix-blend-mode: screen;
+  opacity: 0.18;
+}
+
+.pitch-surface::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.55) 90%),
+    radial-gradient(circle at 50% 100%, rgba(108, 230, 118, 0.12), transparent 55%);
+  opacity: 0.9;
+}
+
+.pitch-canvas {
+  position: relative;
+  width: clamp(680px, 94vw, 1700px);
+  height: clamp(1200px, 180vh, 2000px);
+  pointer-events: none;
+  will-change: transform;
+  padding: clamp(48px, 6vw, 96px) clamp(32px, 8vw, 140px);
+  box-sizing: border-box;
+}
+
+.pitch-lines {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border: 3px solid rgba(240, 252, 244, 0.62);
+  border-radius: clamp(32px, 5vw, 90px);
+  pointer-events: none;
+  z-index: 0;
+  --line-color: rgba(240, 252, 244, 0.65);
+  --penalty-width: min(62%, 680px);
+  --penalty-depth: clamp(200px, 24vw, 340px);
+  --six-width: min(34%, 400px);
+  --six-depth: clamp(90px, 13vw, 150px);
+  --arc-diameter: clamp(150px, 20vw, 280px);
+}
+
+.pitch-half-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  background: var(--line-color);
+}
+
+.pitch-center-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--arc-diameter);
+  height: var(--arc-diameter);
+  border: 2px solid var(--line-color);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(240, 252, 244, 0.22) 0, transparent 65%);
+}
+
+.pitch-center-spot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: var(--line-color);
+  box-shadow: 0 0 10px rgba(240, 252, 244, 0.6);
+}
+
+.pitch-penalty-area {
+  position: absolute;
+  left: 50%;
+  width: var(--penalty-width);
+  border: 2px solid var(--line-color);
+  transform: translateX(-50%);
+  border-radius: 0;
+  background: linear-gradient(180deg, rgba(12, 48, 24, 0.28), transparent);
+}
+
+.pitch-penalty-top {
+  top: -2px;
+  height: var(--penalty-depth);
+  border-top: 0;
+  border-bottom-left-radius: clamp(18px, 3vw, 42px);
+  border-bottom-right-radius: clamp(18px, 3vw, 42px);
+}
+
+.pitch-penalty-bottom {
+  bottom: -2px;
+  height: var(--penalty-depth);
+  border-bottom: 0;
+  border-top-left-radius: clamp(18px, 3vw, 42px);
+  border-top-right-radius: clamp(18px, 3vw, 42px);
+  background: linear-gradient(0deg, rgba(12, 48, 24, 0.28), transparent);
+}
+
+.pitch-six-yard {
+  position: absolute;
+  left: 50%;
+  width: var(--six-width);
+  border: 2px solid var(--line-color);
+  transform: translateX(-50%);
+  background: transparent;
+}
+
+.pitch-six-yard-top {
+  top: -2px;
+  height: var(--six-depth);
+  border-top: 0;
+}
+
+.pitch-six-yard-bottom {
+  bottom: -2px;
+  height: var(--six-depth);
+  border-bottom: 0;
+}
+
+.pitch-penalty-spot {
+  position: absolute;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  border-radius: 50%;
+  background: var(--line-color);
+  box-shadow: 0 0 12px rgba(240, 252, 244, 0.55);
+}
+
+.pitch-penalty-spot-top {
+  top: calc(var(--penalty-depth) * 0.55);
+  transform: translateY(-50%);
+}
+
+.pitch-penalty-spot-bottom {
+  bottom: calc(var(--penalty-depth) * 0.55);
+  transform: translateY(50%);
+}
+
+.pitch-arc {
+  position: absolute;
+  left: 50%;
+  width: var(--arc-diameter);
+  height: var(--arc-diameter);
+  border: 2px solid var(--line-color);
+  border-radius: 50%;
+  background: transparent;
+}
+
+.pitch-arc-top {
+  top: calc(var(--penalty-depth) - 2px);
+  transform: translate(-50%, -50%);
+  clip-path: inset(50% 0 0 0);
+}
+
+.pitch-arc-bottom {
+  bottom: calc(var(--penalty-depth) - 2px);
+  transform: translate(-50%, 50%);
+  clip-path: inset(0 0 50% 0);
+}
+
+.pitch-corner {
+  position: absolute;
+  width: clamp(32px, 5vw, 72px);
+  height: clamp(32px, 5vw, 72px);
+  border: 2px solid var(--line-color);
+  border-radius: 50%;
+  background: transparent;
+}
+
+.pitch-corner-top-left {
+  top: calc(-2px);
+  left: calc(-2px);
+  clip-path: inset(0 50% 50% 0);
+}
+
+.pitch-corner-top-right {
+  top: calc(-2px);
+  right: calc(-2px);
+  clip-path: inset(0 0 50% 50%);
+}
+
+.pitch-corner-bottom-left {
+  bottom: calc(-2px);
+  left: calc(-2px);
+  clip-path: inset(50% 50% 0 0);
+}
+
+.pitch-corner-bottom-right {
+  bottom: calc(-2px);
+  right: calc(-2px);
+  clip-path: inset(50% 0 0 50%);
 }
