@@ -9,24 +9,24 @@ import type { MotionProps, Transition } from "framer-motion";
 // Portfolio projects showcased in the “Work” grid
 const projects = [
   {
-    title: "Match Insights Dashboard",
+    title: "Digit Classifier Neural Network from Scratch",
     description:
-      "Real-time analytics exploring team momentum, expected goals, and tactical trends across the major European leagues.",
-    tech: ["Next.js", "TypeScript", "Supabase", "Tailwind CSS"],
-    link: "https://github.com/elliot18/match-insights",
+      "Built a neural network from scratch (only numpy) to classify digits from 0 to 9 and put it into production for people to use.",
+    tech: ["Python","Numpy"],
+    link: "https://github.com/Elliot-Sones/Digit-Classifier-from-scratch",
   },
   {
-    title: "Player Radar Generator",
+    title: "Crypto learning platform",
     description:
-      "Upload performance data to generate scouted radar charts, benchmarking athletes against positional archetypes.",
-    tech: ["D3.js", "Vercel Edge", "Framer Motion"],
-    link: "https://github.com/elliot18/player-radar",
+      "Built a crypto learning platform to help people learn about crypto and blockchain. ",
+    tech: ["React", "TypeScript"],
+    link: "https://github.com/Elliot-Sones/Nodelet_web",
   },
   {
-    title: "Training Microcycles App",
+    title: "Work helper AI",
     description:
-      "Mobile-first planner that coordinates conditioning blocks, session loads, and wellness check-ins for youth academies.",
-    tech: ["React Native", "Expo", "Zustand"],
+      "On going project building an AI assistant helping you to work as smart as possible. Let's you know when you should take a break or when you efficiency is lowering",
+    tech: ["machine learning", "Python", "Neural Networks"],
     link: "https://github.com/elliot18/training-cycles",
   },
 ];
@@ -277,6 +277,7 @@ export default function Home() {
         <motion.section
           id="about"
           className="grid gap-10 rounded-3xl border border-border bg-card/75 p-8 backdrop-blur md:grid-cols-[1.2fr_0.8fr]"
+          style={{ scrollMarginTop: "20vh" }}
           {...fadeConfig}
         >
           <div>
@@ -284,49 +285,49 @@ export default function Home() {
               About me
             </p>
             <h2 className="mt-4 font-display text-3xl uppercase tracking-[0.1em] sm:text-4xl">
-              Shipping features with the discipline of a midfield engine.
+              My Story and experience
             </h2>
             <p className="mt-6 text-base leading-relaxed text-muted">
-              I specialise in full-stack TypeScript, pairing design intuition
-              with reliable delivery. My workflow centres on rapid prototyping,
-              clear documentation, and steady iteration—much like preparing for
-              match day. I love bridging analytics with storytelling so clubs,
-              brands, and startups can make confident, data-backed moves.
+            I started my journey as a professional soccer player, where I learned discipline, focus, and resilience. 
+            <br />After stepping off the field, I pursued business at university to understand strategy and value creation. 
+            <br />That path eventually led me to computer science, where I now focus on building, problem-solving, and leveraging technology to create real-world impact. <br />
             </p>
             <p className="mt-4 text-base leading-relaxed text-muted">
-              When I&apos;m not coding, you can find me breaking down Premier
-              League tactics, coaching youth sessions, or recording notes for
-              the next build.
+            I now use my skills from sports, business, and computer science towards my next challenge.
             </p>
           </div>
           <div className="flex flex-col gap-4">
-            <article className="rounded-2xl border border-border/60 bg-background/40 p-6">
+            <a
+              href="https://www.playmakerstats.com/player/elliot-sones/1259756"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-2xl border border-border/60 bg-background/40 p-6 transition hover:border-accent hover:bg-background/60"
+            >
               <h3 className="font-display text-xl uppercase tracking-[0.12em]">
-                Toolset
+                Soccer
               </h3>
-              <ul className="mt-4 space-y-2 text-sm text-muted">
-                <li>• TypeScript, Next.js, Node.js</li>
-                <li>• Tailwind CSS, Framer Motion, Radix UI</li>
-                <li>• PostgreSQL, Supabase, Prisma</li>
-                <li>• Expo, React Native, Zustand</li>
-              </ul>
-            </article>
-            <article className="rounded-2xl border border-border/60 bg-background/40 p-6">
+              <img src="/elliot-lank.jpg" alt="Soccer" className="w-50 h-50 rounded-lg object-cover mx-auto" />
+            </a>
+            <a
+              href="https://github.com/Elliot-Sones"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-2xl border border-border/60 bg-background/40 p-6 transition hover:border-accent hover:bg-background/60"
+            >
               <h3 className="font-display text-xl uppercase tracking-[0.12em]">
-                Values
+                Coding
               </h3>
-              <ul className="mt-4 space-y-2 text-sm text-muted">
-                <li>• Accessibility and clarity over pixel tricks</li>
-                <li>• Pairing rapid delivery with thoughtful QA</li>
-                <li>• Building transparent feedback loops with teams</li>
-              </ul>
-            </article>
+              <p className="mt-4 text-sm text-muted">
+                Machine learning, data analysis, and software development.
+              </p>
+            </a>
           </div>
         </motion.section>
         {/* Work highlights + focus cards */}
         <motion.section
           id="projects"
           className="rounded-3xl border border-border bg-card/80 p-8 backdrop-blur"
+          style={{ scrollMarginTop: "20vh" }}
           {...fadeConfig}
         >
           <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
@@ -335,7 +336,7 @@ export default function Home() {
                 My projects
               </p>
               <h2 className="mt-4 font-display text-3xl uppercase tracking-[0.1em] sm:text-4xl">
-                Projects shaped by the beautiful game.
+                Solving problems 
               </h2>
             </div>
             <Link
@@ -347,9 +348,12 @@ export default function Home() {
           </div>
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {projects.map((project, index) => (
-              <motion.article
+              <motion.a
                 key={project.title}
-                className="group flex h-full flex-col justify-between rounded-3xl border border-border/60 bg-background/40 p-6 shadow-md shadow-black/10 transition"
+                href={project.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex h-full flex-col justify-between rounded-3xl border border-border/60 bg-background/40 p-6 shadow-md shadow-black/10 transition hover:border-accent hover:bg-background/60"
                 initial={{ opacity: 0, y: 32 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
@@ -374,14 +378,11 @@ export default function Home() {
                     </span>
                   ))}
                 </div>
-                <Link
-                  href={project.link}
-                  className="mt-8 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-accent transition group-hover:gap-3"
-                >
+                <div className="mt-8 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-accent transition group-hover:gap-3">
                   View project
                   <span aria-hidden>→</span>
-                </Link>
-              </motion.article>
+                </div>
+              </motion.a>
             ))}
           </div>
           <div className="mt-16 grid gap-6 md:grid-cols-2">
@@ -406,6 +407,7 @@ export default function Home() {
         <motion.section
           id="skills"
           className="rounded-3xl border border-border bg-card/80 p-8 backdrop-blur"
+          style={{ scrollMarginTop: "20vh" }}
           {...fadeConfig}
         >
           <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
@@ -454,6 +456,7 @@ export default function Home() {
         <motion.section
           id="contact"
           className="rounded-3xl border border-border bg-card/85 p-8 backdrop-blur"
+          style={{ scrollMarginTop: "20vh" }}
           {...fadeConfig}
         >
           <div className="grid gap-8 md:grid-cols-[1.1fr_0.9fr] md:items-center">

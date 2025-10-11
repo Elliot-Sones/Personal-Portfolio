@@ -1,10 +1,19 @@
 "use client";
 
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
+import { useMotionValueEvent, useScroll } from "framer-motion";
 
 const SOURCE = "/audio/soccernoise.mp3";
 
-const DEFAULT_VOLUME = 0.4;
+const CROWD_MAX_VOLUME = 0.6;
+const DEFAULT_VOLUME = 0.24;
+const KICK_COOLDOWN_MS = 140;
+const KICK_STOP_DELAY_MS = 120;
+const KICK_MIN_DELTA = 0.007;
+const KICK_SEGMENT_SECONDS = 0.35;
+const KICK_VOLUME = 0.35;
+const FORWARD_RATE = 1.05;
+const BACKWARD_RATE = 0.94;
 
 export function AudioPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -16,8 +25,8 @@ export function AudioPlayer() {
     const audio = audioRef.current;
     if (!audio) return;
 
-    audio.volume = volume;
-  }, [volume]);
+      audio.volume = volume;
+    }, [volume]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -62,11 +71,12 @@ export function AudioPlayer() {
 
   const handleVolumeChange = (event: ChangeEvent<HTMLInputElement>) => {
     const nextVolume = Number(event.target.value);
-    setVolume(nextVolume);
+    setVolume(Math.min(Math.max(nextVolume, 0), CROWD_MAX_VOLUME));
   };
 
   return (
     <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
+      <KickSoundController />
       <div
         className={`group relative flex flex-col items-center justify-center overflow-hidden rounded-full border border-border bg-muted/20 shadow-lg backdrop-blur-sm transition-all duration-200 ${
           isExpanded
@@ -102,13 +112,13 @@ export function AudioPlayer() {
               id="audio-volume"
               type="range"
               min={0}
-              max={1}
+              max={CROWD_MAX_VOLUME}
               step={0.01}
               value={volume}
               onChange={handleVolumeChange}
               className="w-full accent-accent"
               aria-valuemin={0}
-              aria-valuemax={1}
+              aria-valuemax={CROWD_MAX_VOLUME}
               aria-valuenow={Number(volume.toFixed(2))}
             />
           </div>
@@ -124,6 +134,113 @@ const PlayIcon = () => (
     <path d="M8 5.14v13.72c0 .59.65.96 1.15.63l10.23-6.86a.75.75 0 0 0 0-1.26L9.15 4.51A.75.75 0 0 0 8 5.14Z" />
   </svg>
 );
+
+const KickSoundController = () => {
+  const { scrollYProgress } = useScroll();
+  const baseKickRef = useRef<HTMLAudioElement | null>(null);
+  const kickDurationRef = useRef(0);
+  const lastProgressRef = useRef(scrollYProgress.get());
+  const lastKickTimeRef = useRef(0);
+  const activeKicksRef = useRef(new Map<HTMLAudioElement, () => void>());
+  const scrollStopTimeoutRef = useRef<number | null>(null);
+
+  const stopAllKicks = useCallback(() => {
+    const entries = Array.from(activeKicksRef.current.entries());
+    entries.forEach(([kick, cleanup]) => {
+      kick.pause();
+      kick.currentTime = 0;
+      cleanup();
+    });
+  }, []);
+
+  const playKick = useCallback(
+    (direction: number) => {
+      const baseKick = baseKickRef.current;
+      if (!baseKick) {
+        return;
+      }
+
+      const kick = baseKick.cloneNode(true) as HTMLAudioElement;
+      kick.volume = KICK_VOLUME;
+      kick.playbackRate = direction >= 0 ? FORWARD_RATE : BACKWARD_RATE;
+
+      const duration = kickDurationRef.current || baseKick.duration;
+      if (Number.isFinite(duration) && duration > KICK_SEGMENT_SECONDS) {
+        const maxStart = Math.max(duration - KICK_SEGMENT_SECONDS, 0);
+        kick.currentTime = Math.random() * maxStart;
+      }
+
+      const cleanup = () => {
+        kick.removeEventListener("ended", cleanup);
+        kick.removeEventListener("error", cleanup);
+        activeKicksRef.current.delete(kick);
+      };
+
+      activeKicksRef.current.set(kick, cleanup);
+      kick.addEventListener("ended", cleanup);
+      kick.addEventListener("error", cleanup);
+
+      void kick.play().catch(() => {
+        cleanup();
+      });
+    },
+    [],
+  );
+
+  useEffect(() => {
+    const audio = new Audio("/audio/soccerkick.mp3");
+    audio.preload = "auto";
+
+    const handleLoadedMetadata = () => {
+      kickDurationRef.current = audio.duration || 0;
+    };
+
+    audio.addEventListener("loadedmetadata", handleLoadedMetadata);
+    baseKickRef.current = audio;
+
+    return () => {
+      audio.pause();
+      audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
+      baseKickRef.current = null;
+      stopAllKicks();
+    };
+  }, [stopAllKicks]);
+
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    const previous = lastProgressRef.current;
+    const delta = Math.abs(latest - previous);
+    const now = performance.now();
+    const direction = latest - previous;
+
+    if (delta > KICK_MIN_DELTA && now - lastKickTimeRef.current > KICK_COOLDOWN_MS) {
+      playKick(direction);
+      lastKickTimeRef.current = now;
+    }
+
+    if (scrollStopTimeoutRef.current !== null) {
+      window.clearTimeout(scrollStopTimeoutRef.current);
+    }
+
+    scrollStopTimeoutRef.current = window.setTimeout(() => {
+      stopAllKicks();
+      scrollStopTimeoutRef.current = null;
+    }, KICK_STOP_DELAY_MS);
+
+    lastProgressRef.current = latest;
+  });
+
+  useEffect(() => {
+    return () => {
+      if (scrollStopTimeoutRef.current !== null) {
+        window.clearTimeout(scrollStopTimeoutRef.current);
+        scrollStopTimeoutRef.current = null;
+      }
+      stopAllKicks();
+    };
+  }, [stopAllKicks]);
+
+  return null;
+};
 
 const PauseIcon = () => (
   <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current" aria-hidden="true">
