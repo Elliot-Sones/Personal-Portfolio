@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValueEvent, useScroll, useSpring, useTransform } from "framer-motion";
 import { Alignment, Fit, Layout, useRive } from "@rive-app/react-canvas";
 import type { MotionProps, Transition } from "framer-motion";
+import { CursorBall } from "@/components/CursorBall";
 
 // Portfolio projects showcased in the “Work” grid
 const projects = [
@@ -163,12 +164,12 @@ const PitchProgress = () => {
     (value) => `${Math.max(value * travelRef.current + ballHeightRef.current, 0)}px`,
   );
   const goalOpacity = useSpring(
-    useTransform(scrollYProgress, [0.85, 1], [0, 1]),
+    useTransform(scrollYProgress, [0.65, 1], [0, 1]),
     { stiffness: 120, damping: 18 },
   );
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    setGoalVisible(latest >= 0.85);
+    setGoalVisible(latest >= 0.65);
 
     const previous = lastScrollRef.current;
     lastScrollRef.current = latest;
@@ -246,6 +247,7 @@ const HeroCodingAnimation = ({ className = "" }: { className?: string }) => {
 export default function Home() {
   return (
     <div className="relative isolate">
+      <CursorBall />
       <PitchProgress />
       <header className="mx-auto w-full max-w-5xl px-6 pt-4 sm:pt-6">
         <nav className="flex items-center justify-between rounded-full border border-border bg-card/80 px-6 py-4 backdrop-blur">
@@ -346,7 +348,13 @@ export default function Home() {
               <h3 className="font-display text-xl uppercase tracking-[0.12em]">
                 Soccer
               </h3>
-              <img src="/elliot-lank.jpg" alt="Soccer" className="w-50 h-50 rounded-lg object-cover mx-auto" />
+              <Image
+                src="/elliot-lank.jpg"
+                alt="Soccer"
+                width={320}
+                height={320}
+                className="w-50 h-50 rounded-lg object-cover mx-auto"
+              />
             </a>
             <a
               href="https://github.com/Elliot-Sones"

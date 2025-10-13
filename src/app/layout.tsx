@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Bebas_Neue } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { AudioPlayer } from "@/components/AudioPlayer";
 import { PitchBackground } from "@/components/PitchBackground";
@@ -39,6 +40,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${bebas.variable} antialiased bg-field text-foreground`}
       >
+        <Script src="https://unpkg.com/@rive-app/webgl@2" strategy="afterInteractive" />
         <PitchBackground />
         {children}
         <AudioPlayer />
