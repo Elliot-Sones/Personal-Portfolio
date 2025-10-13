@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useMotionValueEvent, useScroll, useSpring, useTransform } from "framer-motion";
+import { Alignment, Fit, Layout, useRive } from "@rive-app/react-canvas";
 import type { MotionProps, Transition } from "framer-motion";
 
 // Portfolio projects showcased in the “Work” grid
@@ -42,6 +43,30 @@ const focuses = [
     title: "Motion-First Interactions",
     detail:
       "Experimenting with progressive disclosure and gesture-friendly animations for scouting dashboards.",
+  },
+];
+
+// Hackathon experience highlights
+const hackathons = [
+  {
+    name: "MUES Hackathon 2025",
+    project: "Magic Studio Paint",
+    date: "October 2025",
+    outcome: "Won 1st place",
+    git: "https://github.com/Elliot-Sones/MUESHACK",
+    description:
+      "Built a website that allows you to draw on a canvas and choose your caracter and interact with the drawing",
+    link: "https://magicspace.vercel.app/",
+  },
+  {
+    name: "Pond Hackathon 2025",
+    project: "Nodelet",
+    date: "July 2025",
+    outcome: "over 20 000 votes",
+    git: "https://github.com/Elliot-Sones/Pond-Hackathon",
+    description:
+      "Built a educational interactive learning platform for crypto literacy",
+    link: "https://nodelet-web.vercel.app/",
   },
 ];
 
@@ -89,26 +114,24 @@ const fadeConfig: MotionProps = {
 };
 
 // Left-rail progress indicator: soccer ball travels down a dashed line as content scrolls
-const END_SHIFT = 28;
-
-type ProgressLayout = {
-  ballTravel: number;
-  goalBottom: number;
-  ballHeight: number;
-};
+const BALL_FORWARD_OFFSET = 12;
 
 const PitchProgress = () => {
   const { scrollYProgress } = useScroll();
   const columnRef = useRef<HTMLDivElement>(null);
   const goalRef = useRef<HTMLDivElement>(null);
   const ballRef = useRef<HTMLDivElement>(null);
-  const [layout, setLayout] = useState<ProgressLayout>({
-    ballTravel: 0,
-    goalBottom: 0,
-    ballHeight: 0,
-  });
+  const travelRef = useRef(0);
+  const ballHeightRef = useRef(0);
+  const [goalVisible, setGoalVisible] = useState(false);
+  const [, setRerender] = useState(0); // force update when measurements change
+  const kickSoundRef = useRef<HTMLAudioElement | null>(null);
+  const lastScrollRef = useRef(scrollYProgress.get());
 
   useEffect(() => {
+    kickSoundRef.current = new Audio("/audio/soccerkick.mp3");
+    kickSoundRef.current.volume = 0.5;
+
     const measure = () => {
       const column = columnRef.current;
       const goal = goalRef.current;
@@ -122,28 +145,9 @@ const PitchProgress = () => {
         return;
       }
 
-      const goalHeight = goal.clientHeight;
-      const ballHeight = ball.clientHeight;
-
-      const goalBottom = Math.max(-END_SHIFT, -goalHeight * 0.6);
-      const goalTop = columnHeight - goalBottom - goalHeight;
-
-      const maxBallTop = Math.max(columnHeight - ballHeight, 0);
-      const ballTop = Math.min(Math.max(goalTop - ballHeight, 0), maxBallTop);
-
-      const nextLayout: ProgressLayout = {
-        goalBottom,
-        ballTravel: ballTop,
-        ballHeight,
-      };
-
-      setLayout((prev) =>
-        Math.abs(prev.ballTravel - nextLayout.ballTravel) > 0.5 ||
-        Math.abs(prev.goalBottom - nextLayout.goalBottom) > 0.5 ||
-        Math.abs(prev.ballHeight - nextLayout.ballHeight) > 0.5
-          ? nextLayout
-          : prev,
-      );
+      travelRef.current = Math.max(columnHeight - goal.clientHeight - ball.clientHeight - BALL_FORWARD_OFFSET, 0);
+      ballHeightRef.current = ball.clientHeight;
+      setRerender((count) => count + 1);
     };
 
     measure();
@@ -153,19 +157,36 @@ const PitchProgress = () => {
     };
   }, []);
 
-  const translateY = useTransform(scrollYProgress, (value) => `${value * layout.ballTravel}px`);
-  const trailHeight = useTransform(scrollYProgress, (value) => {
-    const travel = value * layout.ballTravel;
-    if (travel <= 0) {
-      return "0px";
+  const translateY = useTransform(scrollYProgress, (value) => `${BALL_FORWARD_OFFSET + value * travelRef.current}px`);
+  const trailHeight = useTransform(
+    scrollYProgress,
+    (value) => `${Math.max(value * travelRef.current + ballHeightRef.current, 0)}px`,
+  );
+  const goalOpacity = useSpring(
+    useTransform(scrollYProgress, [0.85, 1], [0, 1]),
+    { stiffness: 120, damping: 18 },
+  );
+
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    setGoalVisible(latest >= 0.85);
+
+    const previous = lastScrollRef.current;
+    lastScrollRef.current = latest;
+    if (Math.abs(latest - previous) < 0.01) {
+      return;
     }
 
-    const totalPath = layout.ballTravel + layout.ballHeight;
-    const height = Math.min(travel + layout.ballHeight * 0.25, totalPath);
-    return `${Math.max(height, 0)}px`;
+    const audio = kickSoundRef.current;
+    if (!audio) {
+      return;
+    }
+    try {
+      audio.currentTime = 0;
+      void audio.play();
+    } catch {
+      // ignore playback errors (e.g. auto-play restrictions)
+    }
   });
-  const goalOpacity = useTransform(scrollYProgress, [0.6, 0.95], [0, 1]);
-  const ballScale = useTransform(scrollYProgress, [0, 0.1, 0.9, 1], [1, 1.05, 1.05, 0.9]);
 
   return (
     <div className="pointer-events-none fixed left-2 top-28 z-30 hidden h-[70vh] w-24 flex-col items-center md:flex lg:left-8">
@@ -175,7 +196,7 @@ const PitchProgress = () => {
           style={{ height: trailHeight }}
         />
         <motion.div
-          style={{ translateY, scale: ballScale }}
+          style={{ translateY }}
           className="absolute left-1/2 top-0 -translate-x-1/2"
         >
           <div ref={ballRef} className="flex h-16 w-16 items-center justify-center">
@@ -184,8 +205,8 @@ const PitchProgress = () => {
         </motion.div>
         <motion.div
           ref={goalRef}
-          style={{ opacity: goalOpacity, bottom: layout.goalBottom }}
-          className="absolute bottom-0 left-1/2 flex h-20 w-24 -translate-x-1/2 items-end justify-center"
+          style={{ opacity: goalVisible ? goalOpacity : 0 }}
+          className="absolute bottom-0 left-1/2 flex h-20 w-24 -translate-x-1/2 items-end justify-center transition-opacity duration-500"
           aria-hidden
         >
           <div className="relative h-16 w-20 rounded-b-[8px] border-2 border-accent/60 bg-background/20 backdrop-blur-sm">
@@ -195,6 +216,29 @@ const PitchProgress = () => {
           </div>
         </motion.div>
       </div>
+    </div>
+  );
+};
+
+const HeroCodingAnimation = ({ className = "" }: { className?: string }) => {
+  const { RiveComponent } = useRive({
+    src: "/rive/coding.riv",
+    autoplay: true,
+    layout: new Layout({
+      fit: Fit.Contain,
+      alignment: Alignment.Center,
+    }),
+  });
+
+  return (
+    <div
+      className={`relative h-72 w-full overflow-hidden rounded-3xl bg-gradient-to-br from-foreground/10 via-accent/15 to-transparent shadow-lg shadow-black/20 ${className}`}
+    >
+      {RiveComponent ? (
+        <RiveComponent className="h-full w-full" />
+      ) : (
+        <div className="absolute inset-0 animate-pulse bg-foreground/10" />
+      )}
     </div>
   );
 };
@@ -214,6 +258,9 @@ export default function Home() {
             </a>
             <a className="hover:text-accent transition-colors" href="#projects">
               Projects
+            </a>
+            <a className="hover:text-accent transition-colors" href="#experience">
+              Experience
             </a>
             <a className="hover:text-accent transition-colors" href="#skills">
               Skills
@@ -263,14 +310,7 @@ export default function Home() {
                 </a>
               </div>
             </div>
-            <div className="relative hidden h-72 w-full overflow-hidden rounded-3xl bg-gradient-to-br from-foreground/10 via-accent/15 to-transparent shadow-lg shadow-black/20 md:block">
-              <span className="absolute inset-4 rounded-[28px] border border-border/60 bg-background/20 backdrop-blur-sm" />
-              <span className="absolute inset-x-10 bottom-10 h-24 rounded-[48px] border border-accent/40 bg-accent/10 blur-xl" />
-              <span className="absolute inset-x-14 top-10 h-20 rounded-[48px] border border-border/40 bg-background/30" />
-              <p className="absolute bottom-6 left-8 font-mono text-xs uppercase tracking-[0.35em] text-muted">
-                Image placeholder
-              </p>
-            </div>
+            <HeroCodingAnimation className="hidden md:block" />
           </div>
         </motion.section>
         {/* About / profile narrative */}
@@ -399,6 +439,76 @@ export default function Home() {
                 <p className="mt-3 text-sm leading-relaxed text-muted">
                   {focus.detail}
                 </p>
+              </motion.article>
+            ))}
+          </div>
+        </motion.section>
+        {/* Hackathon experience */}
+        <motion.section
+          id="experience"
+          className="rounded-3xl border border-border bg-card/80 p-8 backdrop-blur"
+          style={{ scrollMarginTop: "20vh" }}
+          {...fadeConfig}
+        >
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="font-mono text-xs uppercase tracking-[0.4em] text-muted">
+                Experience
+              </p>
+              <h2 className="mt-4 font-display text-3xl uppercase tracking-[0.1em] sm:text-4xl">
+                Experiences and hackathons
+              </h2>
+            </div>
+            <p className="max-w-sm self-start text-xs uppercase tracking-[0.25em] text-muted">
+              Two intense weekends, two shipped products, and plenty of coffee.
+            </p>
+          </div>
+          <div className="mt-10 space-y-6">
+            {hackathons.map((hackathon, index) => (
+              <motion.article
+                key={hackathon.name}
+                className="rounded-3xl border border-border/60 bg-background/40 p-6 shadow-inner shadow-black/10"
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{ delay: index * 0.08, duration: 0.45 }}
+              >
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+                      <h3 className="font-display text-2xl uppercase tracking-[0.1em] text-foreground">
+                        {hackathon.name}
+                      </h3>
+                      <Link
+                        href={hackathon.git}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.28em] text-accent transition hover:text-accent/80"
+                      >
+                        GitHub
+                        <span aria-hidden>↗</span>
+                      </Link>
+                    </div>
+                    <p className="text-xs uppercase tracking-[0.25em] text-muted">
+                      {hackathon.project}
+                    </p>
+                  </div>
+                  <p className="text-xs uppercase tracking-[0.25em] text-muted">
+                    {hackathon.date}
+                  </p>
+                </div>
+                <p className="mt-2 text-xs uppercase tracking-[0.25em] text-accent/80">
+                  {hackathon.outcome}
+                </p>
+                <p className="mt-4 text-sm leading-relaxed text-muted">
+                  {hackathon.description}
+                </p>
+                <div className="mt-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-accent transition hover:gap-3">
+                  <Link href={hackathon.link} target="_blank" rel="noopener noreferrer">
+                    View the project
+                  </Link>
+                  <span aria-hidden>→</span>
+                </div>
               </motion.article>
             ))}
           </div>
