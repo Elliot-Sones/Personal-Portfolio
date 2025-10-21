@@ -222,24 +222,18 @@ const PitchProgress = () => {
 };
 
 const HeroCodingAnimation = ({ className = "" }: { className?: string }) => {
-  const { RiveComponent } = useRive({
-    src: "/rive/coding.riv",
-    autoplay: true,
-    layout: new Layout({
-      fit: Fit.Contain,
-      alignment: Alignment.Center,
-    }),
-  });
-
   return (
     <div
       className={`relative h-72 w-full overflow-hidden rounded-3xl bg-gradient-to-br from-foreground/10 via-accent/15 to-transparent shadow-lg shadow-black/20 ${className}`}
     >
-      {RiveComponent ? (
-        <RiveComponent className="h-full w-full" />
-      ) : (
-        <div className="absolute inset-0 animate-pulse bg-foreground/10" />
-      )}
+      <Image
+        src="/elliot.png"
+        alt="Elliot Sones"
+        width={400}
+        height={400}
+        className="h-full w-full object-top object-cover"
+        priority
+      />
     </div>
   );
 };

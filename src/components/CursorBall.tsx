@@ -1,18 +1,32 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { motion, useMotionValue, useTransform } from "framer-motion";
+import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 
 const BALL_RADIUS = 22; // pixels; tweak to change both size and physics
-const BALL_DIAMETER = BALL_RADIUS * 2;
+const BALL_DIAMETER = BALL_RADIUS * 2.3; // visual diameter (can be > 2 * radius for stylized size)
 const SPRING_STIFFNESS = 4;
 const FRICTION = 0.35;
 const MAX_SHADOW_STRETCH = 12;
 const MAX_TILT_DEG = 10;
 const MAX_SPEED = 120;
+// Use the actual visual diameter so one background wrap equals one full spin visually
+const CIRCUMFERENCE = Math.round(Math.PI * BALL_DIAMETER);
+// Movement-to-texture scroll multiplier (px of texture shift per px of travel)
+const TEXTURE_SCROLL_SCALE = 0.8;
+const ROTATION_SPEED_MULTIPLIER = 0.6;
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 const toDegrees = (radians: number) => radians * (180 / Math.PI);
+const toRadians = (degrees: number) => degrees * (Math.PI / 180);
+const compensateTiltScale = (degrees: number) => {
+  const cosine = Math.cos(toRadians(degrees));
+  if (Math.abs(cosine) < 0.001) {
+    return 1;
+  }
+  // Clamp to avoid runaway scaling when tilt briefly spikes.
+  return clamp(1 / cosine, 1, 1.05);
+};
 
 /**
  * Cursor-following ball with simple spring physics and motion-driven styling.
@@ -23,16 +37,29 @@ export function CursorBall() {
   const baseY = useMotionValue(-999);
   const rotation = useMotionValue(0);
   const tilt = useMotionValue(0);
+  const tiltY = useMotionValue(0);
   const stretch = useMotionValue(0);
   const scale = useMotionValue(1);
   const pressed = useMotionValue(0);
   const speedValue = useMotionValue(0);
+  // Multiplicative scale used for bird's‑eye bounce (grow/shrink)
+  const bounceScale = useMotionValue(1);
+  // Accumulated background scroll based on per-frame travel distance (signed X and Y)
+  const textureU = useMotionValue(0);
+  const textureV = useMotionValue(0);
+  const textureBgPosX = useTransform(textureU, (u) => `${(u as number).toFixed(1)}px`);
+  const textureBgPosY = useTransform(textureV, (v) => `${(v as number).toFixed(1)}px`);
 
   const shadowScaleX = useTransform(stretch, (value) => 1 + value / BALL_RADIUS);
   const shadowOpacity = useTransform(speedValue, (value) => (value > 30 ? Math.min(1, value / MAX_SPEED) : 0));
   const dropShadow = useTransform(speedValue, (value) =>
     value > 30 ? "0 24px 40px rgba(14, 20, 45, 0.28)" : "0 0 0 rgba(0,0,0,0)",
   );
+  const tiltCompensationScaleX = useTransform(tiltY, (value) => compensateTiltScale(value));
+  const tiltCompensationScaleY = useTransform(tilt, (value) => compensateTiltScale(value));
+
+  // Combine base scale with bounce scale so physics scale remains intact and bounce is additive
+  const composedScale = useTransform([scale, bounceScale], ([s, b]) => (s as number) * (b as number));
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const offsetRef = useRef({ x: BALL_RADIUS, y: BALL_RADIUS });
@@ -41,6 +68,8 @@ export function CursorBall() {
   const velocityRef = useRef({ x: 0, y: 0 });
   const frameRef = useRef<number | null>(null);
   const lastTimeRef = useRef<number | null>(null);
+  // Keep a handle on the current bounce animation so we can interrupt it
+  const bounceControlsRef = useRef<ReturnType<typeof animate> | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -122,6 +151,47 @@ export function CursorBall() {
     };
   }, [pressed]);
 
+  // Trigger a short bird's‑eye bounce sequence (grow/shrink) on click anywhere on the page.
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const handleClick = (event: MouseEvent) => {
+      if (!event.isTrusted) {
+        return;
+      }
+
+      // Interrupt any in-flight bounce and reset to baseline
+      const active = bounceControlsRef.current;
+      if (active) {
+        active.stop();
+        bounceControlsRef.current = null;
+      }
+      bounceScale.set(1);
+
+      // Two diminishing scale bounces: larger, base, smaller, base
+      const keyframes = [1, 1.16, 1, 1.07, 1];
+      const times = [0, 0.28, 0.56, 0.78, 1];
+
+      bounceControlsRef.current = animate(bounceScale, keyframes, {
+        duration: 0.6,
+        ease: [0.22, 1, 0.36, 1],
+        times,
+      });
+    };
+
+    window.addEventListener("click", handleClick, { passive: true });
+    return () => {
+      window.removeEventListener("click", handleClick);
+      const active = bounceControlsRef.current;
+      if (active) {
+        active.stop();
+        bounceControlsRef.current = null;
+      }
+    };
+  }, [bounceScale]);
+
   useEffect(() => {
     const step = (time: number) => {
       const last = lastTimeRef.current ?? time;
@@ -162,6 +232,8 @@ export function CursorBall() {
 
       const tiltAmount = clamp(velocity.x * 0.12, -MAX_TILT_DEG, MAX_TILT_DEG);
       tilt.set(tiltAmount);
+      const tiltYAmount = clamp(-velocity.y * 0.12, -MAX_TILT_DEG, MAX_TILT_DEG);
+      tiltY.set(tiltYAmount);
 
       const stretchAmount = Math.min(MAX_SHADOW_STRETCH, speed * 0.35);
       stretch.set(stretchAmount);
@@ -172,8 +244,12 @@ export function CursorBall() {
       scale.set(currentScale + (desiredScale - currentScale) * lerpFactor);
 
       const direction = Math.sign(velocity.x || dx);
-      const angularDistance = direction * (Math.abs(speed) / BALL_RADIUS) * delta;
+      const angularDistance = direction * (Math.abs(speed) / BALL_RADIUS) * delta * ROTATION_SPEED_MULTIPLIER;
       rotation.set(rotation.get() + toDegrees(angularDistance));
+
+      // Accumulate texture scroll based on signed per-frame velocity (all directions)
+      textureU.set(textureU.get() + velocity.x * TEXTURE_SCROLL_SCALE);
+      textureV.set(textureV.get() + velocity.y * TEXTURE_SCROLL_SCALE);
 
       frameRef.current = requestAnimationFrame(step);
     };
@@ -184,46 +260,59 @@ export function CursorBall() {
         cancelAnimationFrame(frameRef.current);
       }
     };
-  }, [baseX, baseY, pressed, rotation, scale, speedValue, stretch, tilt]);
+  }, [baseX, baseY, pressed, rotation, scale, speedValue, stretch, tilt, tiltY]);
 
   return (
     <motion.div
       ref={containerRef}
       aria-hidden
-      className="pointer-events-none fixed left-0 top-0 z-[9999]"
+      className="pointer-events-none fixed left-0 top-0 z-[2147483647]"
       style={{ translateX: baseX, translateY: baseY, width: BALL_DIAMETER, height: BALL_DIAMETER }}
     >
       <motion.div
         className="relative h-full w-full rounded-full"
         style={{
-          rotate: rotation,
-          scale,
+          scale: composedScale,
           transformStyle: "preserve-3d",
+          perspective: 600,
           boxShadow: dropShadow,
+          // Opaque base fill so underlying text never shows through the ball
           background:
-            "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(210,225,255,0.55) 45%, rgba(90,130,255,0.4) 70%, rgba(35,55,115,0.65))",
+            "radial-gradient(circle at 30% 30%, #ffffff, #d2e1ff 45%, #5a82ff 70%, #233773)",
         }}
       >
-        <motion.div
-          className="absolute inset-0 rounded-full opacity-80"
-          style={{
-            rotate: rotation,
-            rotateX: tilt,
-            background:
-              "repeating-conic-gradient(from 0deg, transparent 0deg 30deg, rgba(38,53,100,0.35) 30deg 34deg)",
-            maskImage:
-              "radial-gradient(circle at 50% 50%, rgba(255,255,255,1) 55%, rgba(255,255,255,0) 73%)",
-            WebkitMaskImage:
-              "radial-gradient(circle at 50% 50%, rgba(255,255,255,1) 55%, rgba(255,255,255,0) 73%)",
-          }}
-        />
-        <motion.div
-          className="absolute left-1/2 top-1/2 h-2/3 w-2/3 -translate-x-1/2 -translate-y-1/2 rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgba(255,255,255,0.8), rgba(255,255,255,0) 70%)",
-            rotateX: tilt,
-          }}
-        />
+        <div className="absolute inset-0 rounded-full pointer-events-none overflow-hidden">
+          <motion.div
+            className="absolute inset-[-12%] rounded-full"
+            style={{
+              rotateX: tilt,
+              rotateY: tiltY,
+              transformStyle: "preserve-3d",
+              transformOrigin: "50% 50% 0",
+              translateZ: 0,
+              backgroundImage: "url(/ball.jpg)",
+              backgroundRepeat: "repeat",
+              backgroundSize: `${CIRCUMFERENCE}px 100%`,
+              backgroundPositionX: textureBgPosX,
+              backgroundPositionY: textureBgPosY,
+              scaleX: tiltCompensationScaleX,
+              scaleY: tiltCompensationScaleY,
+              backfaceVisibility: "visible",
+              willChange: "transform, background-position",
+            }}
+          />
+          <motion.div
+            className="absolute left-1/2 top-1/2 h-2/3 w-2/3 -translate-x-1/2 -translate-y-1/2 rounded-full"
+            style={{
+              // Subtle highlight that blends over an opaque base
+              background: "radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,255,255,0.2) 70%)",
+              rotateX: tilt,
+              rotateY: tiltY,
+              scaleX: tiltCompensationScaleX,
+              scaleY: tiltCompensationScaleY,
+            }}
+          />
+        </div>
         <motion.div
           className="absolute bottom-[-45%] left-1/2 h-1/2 w-3/4 -translate-x-1/2 rounded-full bg-gradient-to-t from-slate-900/40 to-transparent"
           style={{ scaleX: shadowScaleX, opacity: shadowOpacity }}
