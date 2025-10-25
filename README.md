@@ -1,5 +1,5 @@
 ## Elliot — Personal Portfolio
-Welcome to my personal portfolio. 
+Welcome to my personal portfolio. In this project, I built a Next.js Tailwind CSS website to demonstrate all my projects in one place. Hope you enjoy!
 
 Soccer-inspired personal site built with Next.js, Tailwind CSS v4, and Framer Motion. The design keeps a subtle pitch backdrop, smooth animations, and highlights recent work, focus areas, and ways to connect.
 
