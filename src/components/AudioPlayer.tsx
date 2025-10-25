@@ -20,12 +20,19 @@ export function AudioPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(DEFAULT_VOLUME);
   const [isExpanded, setIsExpanded] = useState(false);
+  // Tracks whether we already attached a one-time user gesture handler
+  // to unlock audio (needed because many browsers block autoplay with sound).
+  const gestureHandlerAttachedRef = useRef(false);
+  // Tracks whether the user has previously unlocked audio on this site.
+  // If true, we can try unmuted autoplay first on subsequent visits.
+  const hasUnlockedRef = useRef(false);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
-      audio.volume = volume;
+    // Keep DOM element volume in sync with state
+    audio.volume = volume;
     }, [volume]);
 
   useEffect(() => {
@@ -40,11 +47,88 @@ export function AudioPlayer() {
     audio.addEventListener("ended", handlePause);
     audio.loop = true;
 
+    // Read persisted unlock flag (set after first user gesture unmute)
+    try {
+      hasUnlockedRef.current = window.localStorage.getItem("portfolio:audio:unlocked") === "1";
+    } catch {
+      hasUnlockedRef.current = false;
+    }
+
+    // One-time user gesture handler to unmute and play when policies block sound
+    const attachOneTimeGestureHandler = () => {
+      if (gestureHandlerAttachedRef.current) return;
+      gestureHandlerAttachedRef.current = true;
+
+      const onFirstGesture = () => {
+        try {
+          // Persist unlock for subsequent visits
+          window.localStorage.setItem("portfolio:audio:unlocked", "1");
+        } catch {}
+
+        // Ensure audio is audible and playing after a real user gesture
+        audio.muted = false;
+        audio.volume = volume;
+        void audio.play().catch(() => {});
+
+        removeGestureHandlers();
+      };
+
+      const removeGestureHandlers = () => {
+        window.removeEventListener("pointerdown", onFirstGesture);
+        window.removeEventListener("touchstart", onFirstGesture, { capture: true } as any);
+        window.removeEventListener("keydown", onFirstGesture);
+        window.removeEventListener("scroll", onFirstGesture, { passive: true } as any);
+      };
+
+      window.addEventListener("pointerdown", onFirstGesture, { once: true });
+      window.addEventListener("touchstart", onFirstGesture, { once: true, capture: true });
+      window.addEventListener("keydown", onFirstGesture, { once: true });
+      window.addEventListener("scroll", onFirstGesture, { once: true, passive: true });
+
+      // Also try when tab becomes visible (helps when landing on a background tab)
+      const onVisibility = () => {
+        if (document.visibilityState === "visible") {
+          void audio.play().catch(() => {});
+        }
+      };
+      document.addEventListener("visibilitychange", onVisibility, { once: true });
+
+      // Cleanup for gesture/visibility handlers when component unmounts
+      cleanupFns.push(() => {
+        removeGestureHandlers();
+        document.removeEventListener("visibilitychange", onVisibility);
+      });
+    };
+
+    // Keep cleanup callbacks we add dynamically here
+    const cleanupFns: Array<() => void> = [];
+
     const tryAutoPlay = async () => {
       try {
+        // If user previously unlocked, attempt unmuted autoplay first
+        if (hasUnlockedRef.current) {
+          audio.muted = false;
+          audio.volume = volume;
+          await audio.play();
+          return;
+        }
+
+        // Normal attempt: play with current settings
+        audio.muted = false;
+        audio.volume = volume;
         await audio.play();
       } catch {
-        setIsPlaying(false);
+        // If blocked, fall back to muted autoplay (allowed on most browsers)
+        try {
+          audio.muted = true;
+          await audio.play();
+          // Attach a one-time gesture handler to unmute as soon as the user interacts
+          attachOneTimeGestureHandler();
+        } catch {
+          // If even muted autoplay fails, rely on the first user gesture to start playback
+          attachOneTimeGestureHandler();
+          setIsPlaying(false);
+        }
       }
     };
 
@@ -54,6 +138,12 @@ export function AudioPlayer() {
       audio.removeEventListener("play", handlePlay);
       audio.removeEventListener("pause", handlePause);
       audio.removeEventListener("ended", handlePause);
+      // Run any deferred cleanups we registered (gesture/visibility handlers)
+      cleanupFns.forEach((fn) => {
+        try {
+          fn();
+        } catch {}
+      });
     };
   }, []);
 
@@ -66,6 +156,9 @@ export function AudioPlayer() {
       return;
     }
 
+    // If user explicitly toggles play, ensure we are unmuted and audible
+    audio.muted = false;
+    audio.volume = volume;
     void audio.play();
   };
 
@@ -124,7 +217,12 @@ export function AudioPlayer() {
           </div>
         </div>
       </div>
-      <audio ref={audioRef} src={SOURCE} preload="auto" autoPlay loop />
+      {/*
+        We do not set the muted attribute by default; we attempt audible autoplay first
+        and only fall back to muted autoplay in code when policies block sound.
+        playsInline improves autoplay behavior on iOS Safari.
+      */}
+      <audio ref={audioRef} src={SOURCE} preload="auto" autoPlay loop playsInline />
     </div>
   );
 }
