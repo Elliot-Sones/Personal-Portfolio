@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Bebas_Neue } from "next/font/google";
+import { Geist, Geist_Mono, VT323 } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { AudioPlayer } from "@/components/AudioPlayer";
-import { PitchBackground } from "@/components/PitchBackground";
+import { PixelSoccerField } from "@/components/PixelSoccerField";
+import { FilmOverlay } from "@/components/FilmOverlay";
+import { RainOverlay } from "@/components/RainOverlay";
+import { PixelDecorations } from "@/components/PixelDecorations";
+import { ThemeProvider } from "@/components/ThemeContext";
+import { PixelSun } from "@/components/PixelSun";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,7 +20,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const bebas = Bebas_Neue({
+const vt323 = VT323({
   weight: "400",
   variable: "--font-display",
   subsets: ["latin"],
@@ -25,9 +30,9 @@ export const metadata: Metadata = {
   title: "Elliot's Portfolio",
   description:
     "Personal website for Elliot showcasing skills, work, projects, and ways to get in touch.",
-    icons: {
-      icon: "/icon.png",
-    },
+  icons: {
+    icon: "/icon.png",
+  },
 };
 
 export default function RootLayout({
@@ -38,12 +43,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${bebas.variable} antialiased bg-field text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} ${vt323.variable} antialiased bg-field text-foreground`}
       >
-        <Script src="https://unpkg.com/@rive-app/webgl@2" strategy="afterInteractive" />
-        <PitchBackground />
-        {children}
-        <AudioPlayer />
+        <ThemeProvider>
+          <Script src="https://unpkg.com/@rive-app/webgl@2" strategy="afterInteractive" />
+          <PixelSoccerField />
+          <FilmOverlay />
+          <RainOverlay />
+          <PixelDecorations />
+          <PixelSun />
+          {children}
+          <AudioPlayer />
+        </ThemeProvider>
       </body>
     </html>
   );
