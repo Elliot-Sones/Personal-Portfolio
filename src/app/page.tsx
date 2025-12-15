@@ -1002,7 +1002,7 @@ export default function Home() {
                 Soccer
               </h3>
               <Image
-                src="/elliot-lank.jpg"
+                src="/elliot-lank.JPG"
                 alt="Soccer"
                 width={320}
                 height={320}
