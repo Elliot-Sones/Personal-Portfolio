@@ -1,22 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
-import { useMotionValueEvent, useScroll } from "framer-motion";
 import { useTheme } from "./ThemeContext";
 
 const CROWD_SOURCE = "/audio/soccernoise.mp3";
 const RAIN_SOURCE = "/audio/rain.mp3";
 
-const CROWD_MAX_VOLUME = 0.4;
-const RAIN_VOLUME_RATIO = 0.8; // Rain volume relative to main volume
-const DEFAULT_VOLUME = 0.20; // Start quieter
-const KICK_COOLDOWN_MS = 140;
-const KICK_STOP_DELAY_MS = 120;
-const KICK_MIN_DELTA = 0.007;
-const KICK_SEGMENT_SECONDS = 0.35;
+const CROWD_MAX_VOLUME = 0.10;
+const RAIN_VOLUME = 0.35; // Fixed rain volume for clarity
+const DEFAULT_VOLUME = 0.05; // Quieter initial volume
 const KICK_VOLUME = 0.35;
-const FORWARD_RATE = 1.05;
-const BACKWARD_RATE = 0.94;
+const FADE_IN_DURATION_MS = 3000; // 3 second fade-in
 
 export function AudioPlayer() {
   const { theme, toggleTheme } = useTheme();
@@ -25,12 +19,34 @@ export function AudioPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(DEFAULT_VOLUME);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [fadeMultiplier, setFadeMultiplier] = useState(0); // 0 to 1 for fade-in
   // Tracks whether we already attached a one-time user gesture handler
   // to unlock audio (needed because many browsers block autoplay with sound).
   const gestureHandlerAttachedRef = useRef(false);
   // Tracks whether the user has previously unlocked audio on this site.
   // If true, we can try unmuted autoplay first on subsequent visits.
   const hasUnlockedRef = useRef(false);
+
+  // Fade-in effect on mount
+  useEffect(() => {
+    const startTime = performance.now();
+    let animationId: number;
+
+    const animate = () => {
+      const elapsed = performance.now() - startTime;
+      const progress = Math.min(elapsed / FADE_IN_DURATION_MS, 1);
+      // Use easeOutQuad for smooth fade
+      const eased = 1 - (1 - progress) * (1 - progress);
+      setFadeMultiplier(eased);
+
+      if (progress < 1) {
+        animationId = requestAnimationFrame(animate);
+      }
+    };
+
+    animationId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationId);
+  }, []);
 
   // Handle rain audio based on theme
   useEffect(() => {
@@ -40,24 +56,27 @@ export function AudioPlayer() {
     if (theme === "light") {
       // Pause rain audio in light mode
       rainAudio.pause();
-    } else if (isPlaying) {
-      // Resume rain audio in dark mode if main audio is playing
-      rainAudio.volume = volume * RAIN_VOLUME_RATIO;
-      void rainAudio.play().catch(() => { });
+    } else {
+      // Resume rain audio in dark mode at fixed volume
+      rainAudio.volume = RAIN_VOLUME;
+      if (isPlaying) {
+        void rainAudio.play().catch(() => { });
+      }
     }
   }, [theme, isPlaying, volume]);
 
+  // Apply fade multiplier to audio volumes
   useEffect(() => {
     const audio = audioRef.current;
     const rainAudio = rainAudioRef.current;
     if (!audio) return;
 
-    // Keep DOM element volume in sync with state
-    audio.volume = volume;
+    // Apply fade multiplier to crowd volume
+    audio.volume = volume * fadeMultiplier;
     if (rainAudio) {
-      rainAudio.volume = volume * RAIN_VOLUME_RATIO;
+      rainAudio.volume = RAIN_VOLUME * fadeMultiplier;
     }
-  }, [volume]);
+  }, [volume, fadeMultiplier]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -103,7 +122,7 @@ export function AudioPlayer() {
         // Also play rain audio
         if (rainAudio) {
           rainAudio.muted = false;
-          rainAudio.volume = volume * RAIN_VOLUME_RATIO;
+          rainAudio.volume = RAIN_VOLUME;
           void rainAudio.play().catch(() => { });
         }
 
@@ -151,7 +170,7 @@ export function AudioPlayer() {
           // Also play rain
           if (rainAudio) {
             rainAudio.muted = false;
-            rainAudio.volume = volume * RAIN_VOLUME_RATIO;
+            rainAudio.volume = RAIN_VOLUME;
             void rainAudio.play().catch(() => { });
           }
           return;
@@ -164,7 +183,7 @@ export function AudioPlayer() {
         // Also play rain
         if (rainAudio) {
           rainAudio.muted = false;
-          rainAudio.volume = volume * RAIN_VOLUME_RATIO;
+          rainAudio.volume = RAIN_VOLUME;
           void rainAudio.play().catch(() => { });
         }
       } catch {
@@ -227,7 +246,7 @@ export function AudioPlayer() {
     // Also play rain audio only in dark mode
     if (rainAudio && theme === "dark") {
       rainAudio.muted = false;
-      rainAudio.volume = volume * RAIN_VOLUME_RATIO;
+      rainAudio.volume = RAIN_VOLUME;
       void rainAudio.play().catch(() => { });
     }
   };
@@ -243,11 +262,11 @@ export function AudioPlayer() {
       <div
         className={`group relative flex flex-col items-center justify-center pixel-card transition-all duration-300 ease-in-out ${isExpanded
           ? "min-h-[10rem] w-56 gap-3 px-6 pt-4 pb-5 scale-100"
-          : "h-16 w-16 gap-0 px-0 py-0 sm:h-20 sm:w-20 hover:scale-105"
+          : "h-12 w-28 gap-0 px-2 py-0 sm:h-14 sm:w-32 hover:scale-105"
           }`}
         style={{
           transformOrigin: 'bottom right',
-          background: '#f4ead5'
+          background: '#5a4a3a'
         }}
         onMouseEnter={() => setIsExpanded(true)}
         onMouseLeave={() => setIsExpanded(false)}
@@ -257,19 +276,19 @@ export function AudioPlayer() {
           <button
             type="button"
             onClick={togglePlayback}
-            className="grid h-12 w-12 place-items-center pixel-btn bg-accent/30 text-background transition-all duration-300 ease-out hover:bg-accent hover:text-background"
+            className="grid h-10 w-10 sm:h-11 sm:w-11 place-items-center pixel-btn bg-[#8b7355]/60 text-[#f0e6d2] transition-all duration-300 ease-out hover:bg-[#a08060] hover:text-white"
             aria-label={isPlaying ? "Pause stadium atmosphere" : "Play stadium atmosphere"}
           >
             {isPlaying ? <PauseIcon /> : <PlayIcon />}
           </button>
-          {/* Theme toggle - only visible when expanded */}
+          {/* Theme toggle - always visible, positioned side-by-side */}
           <button
             type="button"
             onClick={toggleTheme}
-            className={`grid h-12 w-12 place-items-center pixel-btn text-background transition-all duration-300 ease-out hover:text-background ${theme === "light"
-                ? "bg-[#ffd93d]/60 hover:bg-[#ffd93d]"
-                : "bg-[#6b8cae]/40 hover:bg-[#6b8cae]"
-              } ${isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-0 absolute"}`}
+            className={`grid h-10 w-10 sm:h-11 sm:w-11 place-items-center pixel-btn text-[#f0e6d2] transition-all duration-300 ease-out hover:text-white ${theme === "light"
+              ? "bg-[#d4a84b]/70 hover:bg-[#e8bc5a]"
+              : "bg-[#7a9fc4]/50 hover:bg-[#8fb3d6]"
+              }`}
             aria-label={theme === "light" ? "Switch to dark mode (rainy)" : "Switch to light mode (sunny)"}
           >
             {theme === "light" ? <SunIcon /> : <MoonIcon />}
@@ -283,7 +302,7 @@ export function AudioPlayer() {
           aria-hidden={!isExpanded}
         >
           <div className="flex flex-col items-center gap-1.5">
-            <label className="text-center text-[10px] uppercase tracking-[0.25em] text-background/70" htmlFor="audio-volume">
+            <label className="text-center text-[10px] uppercase tracking-[0.25em] text-[#f0e6d2]/80" htmlFor="audio-volume">
               Volume
             </label>
             <input
@@ -294,14 +313,14 @@ export function AudioPlayer() {
               step={0.01}
               value={volume}
               onChange={handleVolumeChange}
-              className="w-full accent-accent"
+              className="w-full accent-[#d4a84b]"
               aria-valuemin={0}
               aria-valuemax={CROWD_MAX_VOLUME}
               aria-valuenow={Number(volume.toFixed(2))}
             />
           </div>
           {/* Theme label */}
-          <div className="mt-2 text-center text-[9px] uppercase tracking-[0.2em] text-background/50">
+          <div className="mt-2 text-center text-[9px] uppercase tracking-[0.2em] text-[#f0e6d2]/60">
             {theme === "light" ? "Sunny Day" : "Rainy Night"}
           </div>
         </div>
@@ -370,13 +389,8 @@ const MoonIcon = () => (
 );
 
 const KickSoundController = () => {
-  const { scrollYProgress } = useScroll();
   const baseKickRef = useRef<HTMLAudioElement | null>(null);
-  const kickDurationRef = useRef(0);
-  const lastProgressRef = useRef(scrollYProgress.get());
-  const lastKickTimeRef = useRef(0);
   const activeKicksRef = useRef(new Map<HTMLAudioElement, () => void>());
-  const scrollStopTimeoutRef = useRef<number | null>(null);
 
   const stopAllKicks = useCallback(() => {
     const entries = Array.from(activeKicksRef.current.entries());
@@ -388,7 +402,7 @@ const KickSoundController = () => {
   }, []);
 
   const playKick = useCallback(
-    (direction: number) => {
+    () => {
       const baseKick = baseKickRef.current;
       if (!baseKick) {
         return;
@@ -396,13 +410,7 @@ const KickSoundController = () => {
 
       const kick = baseKick.cloneNode(true) as HTMLAudioElement;
       kick.volume = KICK_VOLUME;
-      kick.playbackRate = direction >= 0 ? FORWARD_RATE : BACKWARD_RATE;
-
-      const duration = kickDurationRef.current || baseKick.duration;
-      if (Number.isFinite(duration) && duration > KICK_SEGMENT_SECONDS) {
-        const maxStart = Math.max(duration - KICK_SEGMENT_SECONDS, 0);
-        kick.currentTime = Math.random() * maxStart;
-      }
+      kick.currentTime = 0; // Always start from beginning (audio is now trimmed)
 
       const cleanup = () => {
         kick.removeEventListener("ended", cleanup);
@@ -424,54 +432,21 @@ const KickSoundController = () => {
   useEffect(() => {
     const audio = new Audio("/audio/soccerkick.mp3");
     audio.preload = "auto";
-
-    const handleLoadedMetadata = () => {
-      kickDurationRef.current = audio.duration || 0;
-    };
-
-    audio.addEventListener("loadedmetadata", handleLoadedMetadata);
     baseKickRef.current = audio;
+
+    // Add global click handler to play kick sound
+    const handleClick = () => {
+      playKick(); // Play kick on click
+    };
+    window.addEventListener("click", handleClick);
 
     return () => {
       audio.pause();
-      audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
+      window.removeEventListener("click", handleClick);
       baseKickRef.current = null;
       stopAllKicks();
     };
-  }, [stopAllKicks]);
-
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    const previous = lastProgressRef.current;
-    const delta = Math.abs(latest - previous);
-    const now = performance.now();
-    const direction = latest - previous;
-
-    if (delta > KICK_MIN_DELTA && now - lastKickTimeRef.current > KICK_COOLDOWN_MS) {
-      playKick(direction);
-      lastKickTimeRef.current = now;
-    }
-
-    if (scrollStopTimeoutRef.current !== null) {
-      window.clearTimeout(scrollStopTimeoutRef.current);
-    }
-
-    scrollStopTimeoutRef.current = window.setTimeout(() => {
-      stopAllKicks();
-      scrollStopTimeoutRef.current = null;
-    }, KICK_STOP_DELAY_MS);
-
-    lastProgressRef.current = latest;
-  });
-
-  useEffect(() => {
-    return () => {
-      if (scrollStopTimeoutRef.current !== null) {
-        window.clearTimeout(scrollStopTimeoutRef.current);
-        scrollStopTimeoutRef.current = null;
-      }
-      stopAllKicks();
-    };
-  }, [stopAllKicks]);
+  }, [stopAllKicks, playKick]);
 
   return null;
 };

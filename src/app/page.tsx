@@ -3,36 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { motion, useMotionValueEvent, useScroll, useSpring, useTransform } from "framer-motion";
 import { Alignment, Fit, Layout, useRive } from "@rive-app/react-canvas";
 import type { MotionProps, Transition } from "framer-motion";
 import { CursorBall } from "@/components/CursorBall";
-import { MNISTCanvas } from "@/components/MNISTCanvas";
-
-// Portfolio projects showcased in the “Work” grid
-const projects = [
-  {
-    title: "Neural Network Fundamental",
-    description:
-      "This projects builds the fundamental neural network architectures including, multilayer perceptron, Convolutional Neural Networks and Recurrent Neural Network.",
-    tech: ["Python", "Numpy", "TensorFlow"],
-    link: "https://github.com/Elliot-Sones/Neural_Networks_Fundamentals",
-  },
-  {
-    title: "Machine Translator",
-    description:
-      "In this project, I replicated the 'Transformer' model from the research paper 'Attention is all you need' to build a machine translator from English to French.",
-    tech: ["Transformer", "Self Attention", "TensorFlow", "Python"],
-    link: "https://github.com/Elliot-Sones/Transformers",
-  },
-  {
-    title: "RL AI 2D Fighting agent",
-    description:
-      "In this project I trained a RL PPO model to play against a 2d fighting game",
-    tech: ["machine learning", "Python", "Neural Networks"],
-    link: "https://github.com/Elliot-Sones/AI_2",
-  },
-];
+import { ReadmeModal } from "@/components/ReadmeModal";
 
 // Spotlight items for the “Currently exploring” cards
 const focuses = [
@@ -146,6 +122,235 @@ const socials = [
   { label: "Email", href: "mailto:soneselliot@gmail.com" }
 ];
 
+// Certificates data
+const certificates = [
+  {
+    title: "Machine Learning Specialization",
+    image: "/certificates/ml-certificate.png",
+    issuer: "Stanford Online & DeepLearning.AI",
+    date: "2024",
+    link: "https://coursera.org/share/c11e6b7d48feb1562c4f00e27cc5a918",
+    skills: ["NumPy", "scikit-learn", "TensorFlow"],
+    description: "Supervised learning, Advanced learning algorithms, Unsupervised learning, Recommenders, Reinforcement learning",
+  },
+  {
+    title: "Python for Everybody",
+    image: "/certificates/python-certificate.png",
+    issuer: "University of Michigan",
+    date: "2024",
+    link: "https://coursera.org/share/01bb7c66747ac3c22eb8dee7bf0ee71f",
+    skills: ["Web Scraping", "SQL", "Data Processing"],
+    description: "Python data structures, Web scraping, SQL, Data retrieval, processing, and visualization",
+  },
+  {
+    title: "JavaScript Certificate",
+    image: "/certificates/js-certificate.png",
+    issuer: "University of Michigan",
+    date: "2024",
+    link: "https://coursera.org/share/bbff1834c39f1aecfd3a04b534eee3d1",
+    skills: ["JavaScript"],
+    description: "Front-end dynamic websites development",
+  },
+  {
+    title: "HTML5 Certificate",
+    image: "/certificates/html-certificate.png",
+    issuer: "University of Michigan",
+    date: "2024",
+    link: "https://coursera.org/share/5acc063d1324a5f2105e65e168f8f70b",
+    skills: ["HTML5"],
+    description: "Front-end web development fundamentals",
+  },
+  {
+    title: "CSS3 Certificate",
+    image: "/certificates/css-certificate.png",
+    issuer: "University of Michigan",
+    date: "2024",
+    link: "https://coursera.org/share/b34968314e48535fe5bb123884f16711",
+    skills: ["CSS3"],
+    description: "Styling and layout for modern web pages",
+  },
+];
+
+// Certificates Gallery Component with sliding bar and fullscreen view
+const CertificatesGallery = () => {
+  const [selectedCert, setSelectedCert] = useState<typeof certificates[0] | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: "left" | "right") => {
+    if (scrollRef.current) {
+      const scrollAmount = 320;
+      scrollRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  // Close modal on escape key
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelectedCert(null);
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
+
+  return (
+    <>
+      {/* Scrollable slider */}
+      <div className="relative mt-10">
+        {/* Scrollable container */}
+        <div
+          ref={scrollRef}
+          className="flex gap-6 overflow-x-auto scroll-smooth px-2 py-4 scrollbar-hide"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          {certificates.map((cert, index) => (
+            <motion.button
+              key={`${cert.title}-${index}`}
+              onClick={() => setSelectedCert(cert)}
+              className="pixel-card bg-background/40 p-4 min-w-[280px] max-w-[280px] flex-shrink-0 cursor-pointer transition hover:bg-background/60 hover:scale-105 text-left"
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1, duration: 0.4 }}
+              whileHover={{ y: -8 }}
+            >
+              <div className="relative w-full h-40 bg-background/30 overflow-hidden">
+                <Image
+                  src={cert.image}
+                  alt={cert.title}
+                  fill
+                  sizes="280px"
+                  className="object-cover object-top"
+                />
+              </div>
+              <h3 className="mt-4 font-display text-lg uppercase tracking-[0.1em] text-foreground line-clamp-2">
+                {cert.title}
+              </h3>
+              <p className="mt-1 text-xs uppercase tracking-[0.25em] text-muted">
+                {cert.issuer}
+              </p>
+              {/* Skills tags */}
+              <div className="mt-3 flex flex-wrap gap-1">
+                {cert.skills.slice(0, 3).map((skill) => (
+                  <span
+                    key={skill}
+                    className="pixel-tag px-2 py-0.5 text-[10px] uppercase tracking-[0.15em] text-muted"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+              <div className="mt-3 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-accent">
+                View details
+                <span aria-hidden>↗</span>
+              </div>
+            </motion.button>
+          ))}
+        </div>
+
+        {/* Navigation arrows - centered at bottom */}
+        <div className="flex justify-center gap-4 mt-6">
+          <button
+            onClick={() => scroll("left")}
+            className="pixel-btn bg-background/60 px-4 py-3 text-accent hover:bg-background/80 transition text-2xl"
+            aria-label="Scroll left"
+          >
+            ←
+          </button>
+          <button
+            onClick={() => scroll("right")}
+            className="pixel-btn bg-background/60 px-4 py-3 text-accent hover:bg-background/80 transition text-2xl"
+            aria-label="Scroll right"
+          >
+            →
+          </button>
+        </div>
+      </div>
+
+      {/* Fullscreen Modal - rendered at body level via Portal */}
+      {selectedCert && typeof document !== 'undefined' && createPortal(
+        <motion.div
+          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center p-8 bg-black/90"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => setSelectedCert(null)}
+        >
+          {/* Close button at top */}
+          <div className="absolute top-6 right-8">
+            <button
+              onClick={() => setSelectedCert(null)}
+              className="text-white/80 text-sm uppercase tracking-[0.3em] hover:text-white transition"
+            >
+              Close ✕
+            </button>
+          </div>
+
+          {/* Certificate Image - takes up most of screen */}
+          <motion.div
+            className="w-full max-w-[90vw] max-h-[75vh] flex items-center justify-center"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Image
+              src={selectedCert.image}
+              alt={selectedCert.title}
+              width={1400}
+              height={1000}
+              className="max-w-full max-h-[75vh] w-auto h-auto object-contain"
+            />
+          </motion.div>
+
+          {/* Certificate Info below image */}
+          <motion.div
+            className="mt-6 text-center"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="font-display text-2xl uppercase tracking-[0.1em] text-white">
+              {selectedCert.title}
+            </h3>
+            <p className="mt-2 text-sm uppercase tracking-[0.25em] text-white/60">
+              {selectedCert.issuer} • {selectedCert.date}
+            </p>
+
+            {/* Skills */}
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              {selectedCert.skills.map((skill) => (
+                <span
+                  key={skill}
+                  className="px-3 py-1 text-xs uppercase tracking-[0.2em] text-accent border border-accent/40"
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+
+            {/* View on Coursera button */}
+            <div className="mt-6">
+              <a
+                href={selectedCert.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block px-6 py-3 text-sm font-semibold uppercase tracking-[0.3em] text-accent border border-accent/40 hover:bg-accent/10 transition"
+              >
+                Verify on Coursera ↗
+              </a>
+            </div>
+          </motion.div>
+        </motion.div>,
+        document.body
+      )}
+    </>
+  );
+};
+
 // Shared motion preset for section fade/slide reveal with scale effect
 // Subtle scale effect for focus without overwhelming the layout
 const fadeTransition: Transition = { duration: 0.6, ease: "easeOut" };
@@ -168,13 +373,8 @@ const PitchProgress = () => {
   const ballHeightRef = useRef(0);
   const [goalVisible, setGoalVisible] = useState(false);
   const [, setRerender] = useState(0); // force update when measurements change
-  const kickSoundRef = useRef<HTMLAudioElement | null>(null);
-  const lastScrollRef = useRef(scrollYProgress.get());
 
   useEffect(() => {
-    kickSoundRef.current = new Audio("/audio/soccerkick.mp3");
-    kickSoundRef.current.volume = 0.5;
-
     const measure = () => {
       const column = columnRef.current;
       const goal = goalRef.current;
@@ -212,23 +412,6 @@ const PitchProgress = () => {
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     setGoalVisible(latest >= 0.65);
-
-    const previous = lastScrollRef.current;
-    lastScrollRef.current = latest;
-    if (Math.abs(latest - previous) < 0.01) {
-      return;
-    }
-
-    const audio = kickSoundRef.current;
-    if (!audio) {
-      return;
-    }
-    try {
-      audio.currentTime = 0;
-      void audio.play();
-    } catch {
-      // ignore playback errors (e.g. auto-play restrictions)
-    }
   });
 
   return (
@@ -407,175 +590,202 @@ const HackathonList = () => {
   );
 };
 
-// MNIST Demo section component
-const MNISTDemo = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [prediction, setPrediction] = useState<string | null>(null);
-  const [confidences, setConfidences] = useState<Array<{ label: string; confidence: number }>>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [isSleeping, setIsSleeping] = useState(false);
+// Project type for dynamic fetching
+interface Project {
+  title: string;
+  description: string;
+  tech: string[];
+  link: string;
+  repo: string;
+  image?: string;
+}
 
-  const handlePredict = async (imageData: string) => {
-    setIsLoading(true);
-    setError(null);
-    setPrediction(null);
-    setConfidences([]);
-    setIsSleeping(false);
+// Fallback projects in case API fails
+const fallbackProjects: Project[] = [
+  {
+    title: "Neural Network Fundamental",
+    description:
+      "This projects builds the fundamental neural network architectures including, multilayer perceptron, Convolutional Neural Networks and Recurrent Neural Network.",
+    tech: ["Python", "Numpy", "TensorFlow"],
+    link: "https://github.com/Elliot-Sones/Neural_Networks_Fundamentals",
+    repo: "Elliot-Sones/Neural_Networks_Fundamentals",
+  },
+  {
+    title: "Machine Translator",
+    description:
+      "In this project, I replicated the 'Transformer' model from the research paper 'Attention is all you need' to build a machine translator from English to French.",
+    tech: ["Transformer", "Self Attention", "TensorFlow", "Python"],
+    link: "https://github.com/Elliot-Sones/Transformers",
+    repo: "Elliot-Sones/Transformers",
+  },
+  {
+    title: "RL AI 2D Fighting agent",
+    description:
+      "In this project I trained a RL PPO model to play against a 2d fighting game",
+    tech: ["machine learning", "Python", "Neural Networks"],
+    link: "https://github.com/Elliot-Sones/AI_2",
+    repo: "Elliot-Sones/AI_2",
+  },
+];
 
-    try {
-      const response = await fetch("/api/predict", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: imageData }),
+// Projects section component with README modal - fetches pinned repos from GitHub
+const ProjectsSection = () => {
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [projects, setProjects] = useState<Project[]>(fallbackProjects);
+  const [loading, setLoading] = useState(true);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Scroll function for navigation
+  const scroll = (direction: "left" | "right") => {
+    if (scrollRef.current) {
+      const scrollAmount = 400;
+      scrollRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
       });
-
-      const data = await response.json();
-
-      if (data.sleeping) {
-        setIsSleeping(true);
-        setError("Model is waking up... Please wait 30-60 seconds and try again.");
-      } else if (data.error) {
-        setError(data.message || data.error);
-      } else if (data.success) {
-        setPrediction(data.prediction);
-        setConfidences(data.confidences || []);
-      }
-    } catch {
-      setError("Failed to connect to the prediction service.");
-    } finally {
-      setIsLoading(false);
     }
   };
 
+  // Fetch pinned repos on mount
+  useEffect(() => {
+    const fetchPinnedRepos = async () => {
+      try {
+        const response = await fetch("/api/pinned-repos");
+        const data = await response.json();
+
+        if (data.projects && data.projects.length > 0) {
+          setProjects(data.projects);
+        }
+      } catch (error) {
+        console.error("Failed to fetch pinned repos:", error);
+        // Keep fallback projects on error
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPinnedRepos();
+  }, []);
+
   return (
-    <motion.section
-      id="mnist-demo"
-      className="pixel-border bg-card/80 p-4 sm:p-6 lg:p-10 backdrop-blur"
-      style={{ scrollMarginTop: "20vh" }}
-      {...fadeConfig}
-    >
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="font-mono text-xs uppercase tracking-[0.4em] text-muted">
-            Interactive Demo
-          </p>
-          <h2 className="mt-4 font-display text-3xl uppercase tracking-[0.1em] sm:text-4xl">
-            Try My Neural Network
-          </h2>
-        </div>
-        <a
-          href="https://github.com/Elliot-Sones/Digit-Classifier-from-scratch"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="pixel-btn self-start px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-muted transition hover:text-accent"
+    <>
+      {/* Sliding carousel container */}
+      <div className="relative mt-12">
+        {/* Scrollable container */}
+        <div
+          ref={scrollRef}
+          className="flex gap-6 overflow-x-auto scroll-smooth px-2 py-4 scrollbar-hide"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          View on GitHub
-        </a>
-      </div>
-
-      <div className="mt-10 grid gap-8 md:grid-cols-[auto_1fr] md:items-start">
-        {/* Canvas */}
-        <MNISTCanvas onPredict={handlePredict} isLoading={isLoading} />
-
-        {/* Results */}
-        <div className="flex flex-col gap-6">
-          <div className="pixel-card bg-background/40 p-6">
-            <h3 className="font-display text-xl uppercase tracking-[0.12em]">
-              Prediction Result
-            </h3>
-
-            {error && (
-              <div className="mt-4 p-4 bg-red-900/20 border border-red-500/30">
-                <p className="text-sm text-red-300">{error}</p>
-                {isSleeping && (
-                  <p className="mt-2 text-xs text-muted">
-                    The HuggingFace Space is sleeping to save resources. It will wake up on the first request.
-                  </p>
-                )}
-              </div>
-            )}
-
-            {prediction !== null && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="mt-6 text-center"
+          {loading ? (
+            // Loading skeleton
+            Array.from({ length: 3 }).map((_, index) => (
+              <div
+                key={index}
+                className="pixel-card flex flex-col bg-background/40 p-4 min-w-[340px] max-w-[340px] flex-shrink-0 animate-pulse"
               >
-                <span className="font-display text-7xl text-accent">
-                  {prediction}
-                </span>
-                <p className="mt-2 text-xs uppercase tracking-[0.3em] text-muted">
-                  Predicted Digit
-                </p>
-              </motion.div>
-            )}
-
-            {!prediction && !error && (
-              <p className="mt-4 text-sm text-muted">
-                Draw a digit on the canvas and click &quot;Predict&quot; to see the neural network in action.
-              </p>
-            )}
-          </div>
-
-          {/* Confidence bars */}
-          {confidences.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="pixel-card bg-background/40 p-6"
-            >
-              <h4 className="font-display text-lg uppercase tracking-[0.12em] mb-4">
-                Confidence Scores
-              </h4>
-              <div className="space-y-3">
-                {confidences
-                  .sort((a, b) => b.confidence - a.confidence)
-                  .slice(0, 5)
-                  .map((item, index) => (
-                    <div key={item.label} className="flex items-center gap-3">
-                      <span className="w-6 text-right font-mono text-sm text-muted">
-                        {item.label}
-                      </span>
-                      <div className="confidence-bar flex-1">
-                        <div
-                          className={`confidence-bar-fill ${index === 0 ? "top-prediction" : ""}`}
-                          style={{ width: `${item.confidence * 100}%` }}
-                        />
-                      </div>
-                      <span className="w-12 text-right font-mono text-xs text-muted">
-                        {(item.confidence * 100).toFixed(1)}%
-                      </span>
-                    </div>
-                  ))}
+                <div className="h-48 bg-muted/20 rounded mb-4" />
+                <div className="h-6 bg-muted/20 rounded w-3/4 mb-3" />
+                <div className="h-4 bg-muted/20 rounded w-full mb-2" />
+                <div className="h-4 bg-muted/20 rounded w-5/6" />
+                <div className="mt-4 flex gap-2">
+                  <div className="h-6 bg-muted/20 rounded w-16" />
+                  <div className="h-6 bg-muted/20 rounded w-20" />
+                </div>
               </div>
-            </motion.div>
-          )}
+            ))
+          ) : (
+            projects.map((project, index) => (
+              <motion.button
+                key={project.title}
+                onClick={() => setSelectedProject(project)}
+                className="pixel-card group flex flex-col bg-background/40 p-4 min-w-[340px] max-w-[340px] flex-shrink-0 cursor-pointer transition hover:bg-background/60 text-left"
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1, duration: 0.4 }}
+                whileHover={{ y: -8 }}
+              >
+                {/* Project Image */}
+                <div className="relative w-full h-48 bg-background/30 overflow-hidden rounded mb-4">
+                  {project.image ? (
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      fill
+                      sizes="340px"
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-muted/40">
+                      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                        <circle cx="8.5" cy="8.5" r="1.5" />
+                        <polyline points="21,15 16,10 5,21" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
 
-          {/* About the project */}
-          <div className="pixel-card bg-background/40 p-6">
-            <h4 className="font-display text-lg uppercase tracking-[0.12em]">
-              About This Project
-            </h4>
-            <p className="mt-3 text-sm leading-relaxed text-muted">
-              Built a neural network from scratch using only NumPy to classify handwritten digits.
-              No TensorFlow, no PyTorch—just pure math and backpropagation.
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {["Python", "NumPy", "MLP"].map((tech) => (
-                <span
-                  key={tech}
-                  className="pixel-tag px-3 py-1 text-xs uppercase tracking-[0.25em] text-muted"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
-          </div>
+                {/* Project Info */}
+                <h3 className="font-display text-xl uppercase tracking-[0.1em] text-foreground line-clamp-2">
+                  {project.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted line-clamp-3">
+                  {project.description}
+                </p>
+
+                {/* Tech Tags */}
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {project.tech.slice(0, 3).map((tech) => (
+                    <span
+                      key={tech}
+                      className="pixel-tag px-2 py-1 text-xs uppercase tracking-[0.2em] text-muted"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                  {project.tech.length > 3 && (
+                    <span className="px-2 py-1 text-xs text-muted/60">
+                      +{project.tech.length - 3}
+                    </span>
+                  )}
+                </div>
+
+                {/* View README link */}
+                <div className="mt-auto pt-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-accent transition group-hover:gap-3">
+                  View README
+                  <span aria-hidden>→</span>
+                </div>
+              </motion.button>
+            ))
+          )}
+        </div>
+
+        {/* Navigation arrows */}
+        <div className="flex justify-center gap-4 mt-6">
+          <button
+            onClick={() => scroll("left")}
+            className="pixel-btn bg-background/60 px-4 py-3 text-accent hover:bg-background/80 transition text-2xl"
+            aria-label="Scroll left"
+          >
+            ←
+          </button>
+          <button
+            onClick={() => scroll("right")}
+            className="pixel-btn bg-background/60 px-4 py-3 text-accent hover:bg-background/80 transition text-2xl"
+            aria-label="Scroll right"
+          >
+            →
+          </button>
         </div>
       </div>
-    </motion.section>
+
+      <ReadmeModal project={selectedProject} onClose={() => setSelectedProject(null)} />
+    </>
   );
 };
+
 
 export default function Home() {
   return (
@@ -597,16 +807,13 @@ export default function Home() {
             <a className="hover:text-accent transition-colors" href="#projects">
               Projects
             </a>
-            <a className="hover:text-accent transition-colors" href="#skills">
-              Skills
-            </a>
-            <a className="hover:text-accent transition-colors" href="#mnist-demo">
-              Project Demo
+            <a className="hover:text-accent transition-colors" href="#certificates">
+              Certificates
             </a>
           </div>
           <Link
             href="#contact"
-            className="pixel-btn bg-foreground/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-muted transition hover:text-accent"
+            className="pixel-btn bg-foreground/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-muted transition hover:text-accent whitespace-nowrap"
           >
             Let&apos;s talk
           </Link>
@@ -708,6 +915,21 @@ export default function Home() {
               </div>
             </div>
             <HeroCodingAnimation className="hidden md:block" />
+          </div>
+
+          {/* Rotating Skills Ticker */}
+          <div className="relative overflow-hidden mt-8 py-4 border-t border-accent/20">
+            <div className="animate-scroll-x flex gap-8 whitespace-nowrap">
+              {[...skillGroups.flatMap(g => g.items), ...skillGroups.flatMap(g => g.items)].map((skill, i) => (
+                <span
+                  key={`${skill}-${i}`}
+                  className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-accent/80"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-accent/60" />
+                  {skill}
+                </span>
+              ))}
+            </div>
           </div>
         </motion.section>
         {/* About / profile narrative */}
@@ -847,45 +1069,7 @@ export default function Home() {
               Explore GitHub
             </Link>
           </div>
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {projects.map((project, index) => (
-              <motion.a
-                key={project.title}
-                href={project.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="pixel-card group flex h-full flex-col justify-between bg-background/40 p-6 shadow-md shadow-black/10 transition hover:bg-background/60"
-                initial={{ opacity: 0, y: 32 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                whileHover={{ y: -10 }}
-              >
-                <div>
-                  <h3 className="font-display text-2xl uppercase tracking-[0.1em]">
-                    {project.title}
-                  </h3>
-                  <p className="mt-3 text-sm leading-relaxed text-muted">
-                    {project.description}
-                  </p>
-                </div>
-                <div className="mt-6 flex flex-wrap gap-2">
-                  {project.tech.map((tech) => (
-                    <span
-                      key={tech}
-                      className="pixel-tag px-3 py-1 text-xs uppercase tracking-[0.25em] text-muted"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-                <div className="mt-8 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-accent transition group-hover:gap-3">
-                  View project
-                  <span aria-hidden>→</span>
-                </div>
-              </motion.a>
-            ))}
-          </div>
+          <ProjectsSection />
           <div className="mt-16 grid gap-6 md:grid-cols-2">
             {focuses.map((focus) => (
               <motion.article
@@ -904,9 +1088,9 @@ export default function Home() {
             ))}
           </div>
         </motion.section>
-        {/* Technical skills */}
+        {/* Certificates section */}
         <motion.section
-          id="skills"
+          id="certificates"
           className="pixel-border bg-card/80 p-4 sm:p-6 lg:p-10 backdrop-blur"
           style={{ scrollMarginTop: "20vh" }}
           {...fadeConfig}
@@ -914,47 +1098,18 @@ export default function Home() {
           <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="font-mono text-xs uppercase tracking-[0.4em] text-muted">
-                Technical skills
+                Certifications
               </p>
               <h2 className="mt-4 font-display text-3xl uppercase tracking-[0.1em] sm:text-4xl">
-                A toolkit tuned for data-rich, immersive experiences.
+                Certificates & Credentials
               </h2>
             </div>
             <p className="max-w-sm self-start text-xs uppercase tracking-[0.25em] text-muted">
-              Bridging product, engineering, and analytics so every build is match ready.
+              Click on any certificate to view it in full screen.
             </p>
           </div>
-          <div className="mt-10 grid gap-6 md:grid-cols-2">
-            {skillGroups.map((group, index) => (
-              <motion.article
-                key={group.title}
-                className="pixel-card bg-background/40 p-6 shadow-inner shadow-black/10"
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ delay: index * 0.08, duration: 0.45 }}
-                whileHover={{ y: -6 }}
-              >
-                <h3 className="font-display text-xl uppercase tracking-[0.12em]">
-                  {group.title}
-                </h3>
-                <p className="mt-3 text-sm leading-relaxed text-muted">{group.summary}</p>
-                <ul className="mt-5 flex flex-wrap gap-2">
-                  {group.items.map((item) => (
-                    <li
-                      key={item}
-                      className="pixel-tag px-3 py-1 text-[11px] uppercase tracking-[0.28em] text-muted"
-                    >
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </motion.article>
-            ))}
-          </div>
+          <CertificatesGallery />
         </motion.section>
-        {/* MNIST Digit Classifier Demo */}
-        <MNISTDemo />
         {/* Contact / form */}
         <motion.section
           id="contact"

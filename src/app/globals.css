@@ -809,3 +809,26 @@ input[type="range"]::-moz-range-thumb:active {
   transform: scale(0.95);
   box-shadow: 1px 1px 0 0 var(--pixel-shadow);
 }
+
+/* ============================================
+   SKILLS TICKER ANIMATION
+   ============================================ */
+
+/* Infinite horizontal scroll animation */
+@keyframes scroll-x {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll-x {
+  animation: scroll-x 30s linear infinite;
+}
+
+/* Pause on hover for readability */
+.animate-scroll-x:hover {
+  animation-play-state: paused;
+}
