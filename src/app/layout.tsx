@@ -8,7 +8,6 @@ import { FilmOverlay } from "@/components/FilmOverlay";
 import { RainOverlay } from "@/components/RainOverlay";
 import { PixelDecorations } from "@/components/PixelDecorations";
 import { ThemeProvider } from "@/components/ThemeContext";
-import { PixelSun } from "@/components/PixelSun";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -51,7 +50,6 @@ export default function RootLayout({
           <FilmOverlay />
           <RainOverlay />
           <PixelDecorations />
-          <PixelSun />
           {children}
           <AudioPlayer />
         </ThemeProvider>

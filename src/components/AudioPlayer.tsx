@@ -59,11 +59,10 @@ export function AudioPlayer() {
     } else {
       // Resume rain audio in dark mode at fixed volume
       rainAudio.volume = RAIN_VOLUME;
-      if (isPlaying) {
-        void rainAudio.play().catch(() => { });
-      }
+      // Play regardless of isPlaying state (crowd noise state)
+      void rainAudio.play().catch(() => { });
     }
-  }, [theme, isPlaying, volume]);
+  }, [theme]); // Removed isPlaying and volume from dependency to decouple
 
   // Apply fade multiplier to audio volumes
   useEffect(() => {
@@ -119,8 +118,8 @@ export function AudioPlayer() {
         audio.volume = volume;
         void audio.play().catch(() => { });
 
-        // Also play rain audio
-        if (rainAudio) {
+        // Also play rain audio if needed (theme is dark)
+        if (rainAudio && theme === "dark") {
           rainAudio.muted = false;
           rainAudio.volume = RAIN_VOLUME;
           void rainAudio.play().catch(() => { });
@@ -145,7 +144,7 @@ export function AudioPlayer() {
       const onVisibility = () => {
         if (document.visibilityState === "visible") {
           void audio.play().catch(() => { });
-          if (rainAudio) void rainAudio.play().catch(() => { });
+          if (rainAudio && theme === "dark") void rainAudio.play().catch(() => { });
         }
       };
       document.addEventListener("visibilitychange", onVisibility, { once: true });
@@ -167,8 +166,8 @@ export function AudioPlayer() {
           audio.muted = false;
           audio.volume = volume;
           await audio.play();
-          // Also play rain
-          if (rainAudio) {
+          // Also play rain if dark mode
+          if (rainAudio && theme === "dark") {
             rainAudio.muted = false;
             rainAudio.volume = RAIN_VOLUME;
             void rainAudio.play().catch(() => { });
@@ -180,8 +179,8 @@ export function AudioPlayer() {
         audio.muted = false;
         audio.volume = volume;
         await audio.play();
-        // Also play rain
-        if (rainAudio) {
+        // Also play rain if dark mode
+        if (rainAudio && theme === "dark") {
           rainAudio.muted = false;
           rainAudio.volume = RAIN_VOLUME;
           void rainAudio.play().catch(() => { });
@@ -191,7 +190,7 @@ export function AudioPlayer() {
         try {
           audio.muted = true;
           await audio.play();
-          if (rainAudio) {
+          if (rainAudio && theme === "dark") {
             rainAudio.muted = true;
             void rainAudio.play().catch(() => { });
           }
@@ -227,7 +226,7 @@ export function AudioPlayer() {
 
     if (isPlaying) {
       audio.pause();
-      if (rainAudio) rainAudio.pause();
+      // Do NOT pause rainAudio here - let it continue if theme is dark
       setIsPlaying(false);
       return;
     }

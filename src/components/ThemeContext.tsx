@@ -11,10 +11,10 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-const STORAGE_KEY = "portfolio:theme";
+const STORAGE_KEY = "portfolio:theme:v2";
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const [theme, setTheme] = useState<Theme>("light");
   const [mounted, setMounted] = useState(false);
 
   // Load theme from localStorage on mount
@@ -49,7 +49,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // Prevent flash of wrong theme
   if (!mounted) {
     return (
-      <ThemeContext.Provider value={{ theme: "dark", toggleTheme }}>
+      <ThemeContext.Provider value={{ theme: "light", toggleTheme }}>
         {children}
       </ThemeContext.Provider>
     );
