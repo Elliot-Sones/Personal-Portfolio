@@ -166,7 +166,7 @@ export const ReadmeModal = ({ project, onClose }: ReadmeModalProps) => {
 
                 {/* Content */}
                 <div className="px-4 py-6">
-                    <div className="readme-content prose prose-lg max-w-none prose-headings:text-[#2a4538] prose-p:text-[#2a4538] prose-li:text-[#2a4538] prose-a:text-accent prose-strong:text-[#2a4538]">
+                    <div className="readme-content prose prose-lg max-w-none prose-headings:text-[#2a4538] prose-p:text-[#3d5a4a] prose-li:text-[#3d5a4a] prose-a:text-[#1a6b4a] prose-strong:text-[#2a4538]">
                         {loading && (
                             <div className="flex items-center justify-center py-16">
                                 <div className="text-muted text-sm uppercase tracking-[0.3em]">
@@ -185,7 +185,7 @@ export const ReadmeModal = ({ project, onClose }: ReadmeModalProps) => {
                         )}
 
                         {content && (
-                            <div className="readme-content prose prose-invert max-w-none">
+                            <div className="readme-content prose max-w-none">
                                 <ReactMarkdown
                                     remarkPlugins={[remarkGfm]}
                                     rehypePlugins={[rehypeRaw]}
@@ -210,7 +210,7 @@ export const ReadmeModal = ({ project, onClose }: ReadmeModalProps) => {
                                                 href={href}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-accent hover:text-accent/80 underline"
+                                                className="text-[#1a6b4a] hover:text-[#14523a] underline"
                                                 {...props}
                                             >
                                                 {children}
@@ -219,7 +219,7 @@ export const ReadmeModal = ({ project, onClose }: ReadmeModalProps) => {
                                         // Style code blocks
                                         pre: ({ children, ...props }) => (
                                             <pre
-                                                className="bg-background/60 p-4 rounded overflow-x-auto text-sm"
+                                                className="bg-[#2a4538] text-[#e8dcc8] p-4 rounded overflow-x-auto text-sm"
                                                 {...props}
                                             >
                                                 {children}
@@ -229,7 +229,7 @@ export const ReadmeModal = ({ project, onClose }: ReadmeModalProps) => {
                                             const isInline = !className;
                                             return isInline ? (
                                                 <code
-                                                    className="bg-background/60 px-1.5 py-0.5 rounded text-accent text-sm"
+                                                    className="bg-[#2a4538]/10 px-1.5 py-0.5 rounded text-[#1a6b4a] text-sm"
                                                     {...props}
                                                 >
                                                     {children}
@@ -243,7 +243,7 @@ export const ReadmeModal = ({ project, onClose }: ReadmeModalProps) => {
                                         // Style headings
                                         h1: ({ children, ...props }) => (
                                             <h1
-                                                className="font-display text-3xl tracking-[0.02em] text-foreground mt-8 mb-4 first:mt-0"
+                                                className="font-display text-3xl tracking-[0.02em] text-[#2a4538] mt-8 mb-4 first:mt-0"
                                                 {...props}
                                             >
                                                 {children}
@@ -251,7 +251,7 @@ export const ReadmeModal = ({ project, onClose }: ReadmeModalProps) => {
                                         ),
                                         h2: ({ children, ...props }) => (
                                             <h2
-                                                className="font-display text-2xl tracking-[0.02em] text-foreground mt-8 mb-3 border-b border-muted/20 pb-2"
+                                                className="font-display text-2xl tracking-[0.02em] text-[#2a4538] mt-8 mb-3 border-b border-[#2a4538]/20 pb-2"
                                                 {...props}
                                             >
                                                 {children}
@@ -259,7 +259,7 @@ export const ReadmeModal = ({ project, onClose }: ReadmeModalProps) => {
                                         ),
                                         h3: ({ children, ...props }) => (
                                             <h3
-                                                className="font-display text-xl tracking-[0.02em] text-foreground mt-6 mb-2"
+                                                className="font-display text-xl tracking-[0.02em] text-[#2a4538] mt-6 mb-2"
                                                 {...props}
                                             >
                                                 {children}
@@ -267,18 +267,18 @@ export const ReadmeModal = ({ project, onClose }: ReadmeModalProps) => {
                                         ),
                                         // Style paragraphs
                                         p: ({ children, ...props }) => (
-                                            <p className="text-muted leading-relaxed mb-4" {...props}>
+                                            <p className="text-[#3d5a4a] leading-relaxed mb-4" {...props}>
                                                 {children}
                                             </p>
                                         ),
                                         // Style lists
                                         ul: ({ children, ...props }) => (
-                                            <ul className="list-disc list-inside text-muted mb-4 space-y-1" {...props}>
+                                            <ul className="list-disc list-inside text-[#3d5a4a] mb-4 space-y-1" {...props}>
                                                 {children}
                                             </ul>
                                         ),
                                         ol: ({ children, ...props }) => (
-                                            <ol className="list-decimal list-inside text-muted mb-4 space-y-1" {...props}>
+                                            <ol className="list-decimal list-inside text-[#3d5a4a] mb-4 space-y-1" {...props}>
                                                 {children}
                                             </ol>
                                         ),
@@ -292,21 +292,21 @@ export const ReadmeModal = ({ project, onClose }: ReadmeModalProps) => {
                                         ),
                                         th: ({ children, ...props }) => (
                                             <th
-                                                className="border border-muted/30 bg-background/40 px-4 py-2 text-left text-sm font-semibold uppercase tracking-[0.1em]"
+                                                className="border border-[#2a4538]/20 bg-[#2a4538]/10 px-4 py-2 text-left text-sm font-semibold uppercase tracking-[0.1em] text-[#2a4538]"
                                                 {...props}
                                             >
                                                 {children}
                                             </th>
                                         ),
                                         td: ({ children, ...props }) => (
-                                            <td className="border border-muted/30 px-4 py-2 text-sm text-muted" {...props}>
+                                            <td className="border border-[#2a4538]/20 px-4 py-2 text-sm text-[#3d5a4a]" {...props}>
                                                 {children}
                                             </td>
                                         ),
                                         // Style blockquotes
                                         blockquote: ({ children, ...props }) => (
                                             <blockquote
-                                                className="border-l-4 border-accent/50 pl-4 italic text-muted/80 my-4"
+                                                className="border-l-4 border-[#1a6b4a]/50 pl-4 italic text-[#3d5a4a]/80 my-4"
                                                 {...props}
                                             >
                                                 {children}
@@ -314,7 +314,7 @@ export const ReadmeModal = ({ project, onClose }: ReadmeModalProps) => {
                                         ),
                                         // Style horizontal rules
                                         hr: (props) => (
-                                            <hr className="border-muted/20 my-8" {...props} />
+                                            <hr className="border-[#2a4538]/20 my-8" {...props} />
                                         ),
                                     }}
                                 >

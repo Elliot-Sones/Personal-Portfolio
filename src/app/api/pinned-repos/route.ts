@@ -58,8 +58,8 @@ export async function GET() {
         query: PINNED_REPOS_QUERY,
         variables: { username },
       }),
-      // Cache for 1 hour to avoid rate limits
-      next: { revalidate: 3600 },
+      // Cache for 5 minutes to keep pins relatively fresh
+      next: { revalidate: 300 },
     });
 
     if (!response.ok) {
@@ -95,7 +95,7 @@ export async function GET() {
           .replace(/-/g, " ")
           .replace(/_/g, " ")
           .replace(/\b\w/g, (c) => c.toUpperCase()), // Convert to title case
-        description: repo.description || "No description available",
+        description: repo.description || "",
         tech,
         link: repo.url,
         repo: `${repo.owner.login}/${repo.name}`,
