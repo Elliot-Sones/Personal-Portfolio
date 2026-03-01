@@ -54,9 +54,6 @@ export default function RLSoccerGame({ className }: { className?: string }) {
   const [spdIdx, setSpdIdx] = useState(0);
   const [score, setScore] = useState({ agent: 0, you: 0 });
   const [isFS, setIsFS] = useState(false);
-  const [entropy, setEntropy] = useState(0);
-  const [coverage, setCoverage] = useState(0);
-  const [avgReward, setAvgReward] = useState(0);
 
   const qRef = useRef(new Float32Array(NS * NA));
   const epsRef = useRef(EPS0);
@@ -165,7 +162,7 @@ export default function RLSoccerGame({ className }: { className?: string }) {
     resetEp();
     setEpisode(0); setGoals(0); setSuccessRate(0); setEpsUI(EPS0);
     setAlphaUI(ALPHA_DEFAULT);
-    setScore({ agent: 0, you: 0 }); setEntropy(0); setCoverage(0); setAvgReward(0);
+    setScore({ agent: 0, you: 0 });
   }, [resetEp]);
 
   const handleSpeed = useCallback((i: number) => { setSpdIdx(i); spdRef.current = SPEEDS[i]; }, []);
@@ -457,26 +454,6 @@ export default function RLSoccerGame({ className }: { className?: string }) {
       setEpisode(epRef.current); setGoals(glRef.current);
       setSuccessRate(rate); setEpsUI(epsRef.current);
       setAlphaUI(alphaRef.current);
-
-      const qt = qRef.current;
-      let totEnt = 0, vis = 0;
-      for (let s = 0; s < NS; s++) {
-        let hasQ = false, mx = -Infinity;
-        for (let a = 0; a < NA; a++) { const v = qt[s * NA + a]; if (v !== 0) hasQ = true; if (v > mx) mx = v; }
-        if (!hasQ) continue;
-        vis++;
-        let sum = 0;
-        const exps = new Float32Array(NA);
-        for (let a = 0; a < NA; a++) { exps[a] = Math.exp(qt[s * NA + a] - mx); sum += exps[a]; }
-        let ent = 0;
-        for (let a = 0; a < NA; a++) { const p = exps[a] / sum; if (p > 0) ent -= p * Math.log2(p); }
-        totEnt += ent;
-      }
-      setEntropy(vis > 0 ? +(totEnt / vis).toFixed(2) : +(Math.log2(NA)).toFixed(2));
-      setCoverage(+(((vis / NS) * 100).toFixed(1)));
-
-      const rr = recentRewRef.current;
-      setAvgReward(rr.length > 0 ? +(rr.reduce((a, b) => a + b, 0) / rr.length).toFixed(1) : 0);
     }, 500);
 
     // Render loop
@@ -666,26 +643,26 @@ export default function RLSoccerGame({ className }: { className?: string }) {
     >
       {/* Title bar */}
       <div
-        className="flex items-center gap-2 px-4 py-2"
-        style={{ flexShrink: 0, borderBottom: "2px solid rgba(244, 234, 213, 0.15)", background: "rgba(15, 30, 22, 0.5)" }}
+        className="flex items-center px-4"
+        style={{ flexShrink: 0, gap: isFS ? 10 : 8, padding: isFS ? "10px 20px" : "8px 16px", borderBottom: "2px solid rgba(244, 234, 213, 0.15)", background: "rgba(15, 30, 22, 0.5)" }}
       >
-        <span className="inline-block w-[10px] h-[10px]" style={{ background: "#ff5f57", boxShadow: "1px 1px 0 rgba(0,0,0,0.2)" }} />
-        <span className="inline-block w-[10px] h-[10px]" style={{ background: "#ffbd2e", boxShadow: "1px 1px 0 rgba(0,0,0,0.2)" }} />
-        <span className="inline-block w-[10px] h-[10px]" style={{ background: "#28c840", boxShadow: "1px 1px 0 rgba(0,0,0,0.2)" }} />
-        <span className="ml-3 text-xs tracking-wider flex-1" style={{ color: "var(--muted)" }}>
+        <span className="inline-block" style={{ width: isFS ? 14 : 10, height: isFS ? 14 : 10, background: "#ff5f57", boxShadow: "1px 1px 0 rgba(0,0,0,0.2)" }} />
+        <span className="inline-block" style={{ width: isFS ? 14 : 10, height: isFS ? 14 : 10, background: "#ffbd2e", boxShadow: "1px 1px 0 rgba(0,0,0,0.2)" }} />
+        <span className="inline-block" style={{ width: isFS ? 14 : 10, height: isFS ? 14 : 10, background: "#28c840", boxShadow: "1px 1px 0 rgba(0,0,0,0.2)" }} />
+        <span className="tracking-wider flex-1" style={{ marginLeft: 12, fontSize: isFS ? 16 : 12, color: "var(--muted)" }}>
           {mode === "train" ? "rl-agent ~ training" : "rl-agent ~ 1v1"}
         </span>
-        <button onClick={toggleFS} className="text-[10px] font-mono px-2 py-0.5" style={{ background: "transparent", border: "1px solid rgba(244,234,213,0.15)", color: "var(--muted)", cursor: "pointer" }}>
+        <button onClick={toggleFS} className="font-mono" style={{ fontSize: isFS ? 14 : 10, padding: isFS ? "4px 12px" : "2px 8px", background: "transparent", border: "1px solid rgba(244,234,213,0.15)", color: "var(--muted)", cursor: "pointer" }}>
           {isFS ? "Exit FS" : "Fullscreen"}
         </button>
       </div>
 
       {/* Instruction line */}
       <div
-        className="px-4 py-1 text-[10px] font-mono text-center tracking-wide"
-        style={{ flexShrink: 0, color: "rgba(244, 234, 213, 0.55)", background: "rgba(15, 30, 22, 0.3)" }}
+        className="font-mono text-center tracking-wide"
+        style={{ flexShrink: 0, fontSize: isFS ? 14 : 10, padding: isFS ? "6px 20px" : "4px 16px", color: "rgba(244, 234, 213, 0.55)", background: "rgba(15, 30, 22, 0.3)" }}
       >
-        Tune the learning rate &amp; exploration, train the agent, then challenge it 1v1
+        Watch the AI learn to play soccer, then challenge it yourself
       </div>
 
       {/* Game canvas area */}
@@ -693,8 +670,8 @@ export default function RLSoccerGame({ className }: { className?: string }) {
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
 
         {/* Score/Stats overlay — top left */}
-        <div className="absolute top-2 left-2 px-3 py-2 text-[10px] font-mono leading-relaxed pointer-events-none select-none"
-          style={{ background: "rgba(15,30,22,0.8)", border: "1px solid rgba(244,234,213,0.12)", color: "var(--muted)" }}>
+        <div className="absolute font-mono leading-relaxed pointer-events-none select-none"
+          style={{ top: isFS ? 12 : 8, left: isFS ? 12 : 8, padding: isFS ? "10px 16px" : "8px 12px", fontSize: isFS ? 16 : 10, background: "rgba(15,30,22,0.8)", border: "1px solid rgba(244,234,213,0.12)", color: "var(--muted)" }}>
           {mode === "train" ? (
             <>
               <div>Episode: <span style={{ color: "var(--foreground)" }}>{episode}</span></div>
@@ -709,84 +686,79 @@ export default function RLSoccerGame({ className }: { className?: string }) {
 
         {/* WASD hint — bottom center (play mode) */}
         {mode === "play" && (
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 pointer-events-none select-none text-[9px] font-mono"
-            style={{ color: "rgba(244,234,213,0.3)" }}>
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 pointer-events-none select-none font-mono"
+            style={{ fontSize: isFS ? 14 : 9, color: "rgba(244,234,213,0.3)" }}>
             <div className="flex flex-col items-center gap-0.5">
               <div className="flex gap-0.5">
-                <span style={{ width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(244,234,213,0.15)", borderRadius: 2 }}>W</span>
+                <span style={{ width: isFS ? 28 : 18, height: isFS ? 28 : 18, display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(244,234,213,0.15)", borderRadius: 2 }}>W</span>
               </div>
               <div className="flex gap-0.5">
-                <span style={{ width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(244,234,213,0.15)", borderRadius: 2 }}>A</span>
-                <span style={{ width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(244,234,213,0.15)", borderRadius: 2 }}>S</span>
-                <span style={{ width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(244,234,213,0.15)", borderRadius: 2 }}>D</span>
+                <span style={{ width: isFS ? 28 : 18, height: isFS ? 28 : 18, display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(244,234,213,0.15)", borderRadius: 2 }}>A</span>
+                <span style={{ width: isFS ? 28 : 18, height: isFS ? 28 : 18, display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(244,234,213,0.15)", borderRadius: 2 }}>S</span>
+                <span style={{ width: isFS ? 28 : 18, height: isFS ? 28 : 18, display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(244,234,213,0.15)", borderRadius: 2 }}>D</span>
               </div>
-              <span style={{ marginTop: 2, padding: "2px 10px", border: "1px solid rgba(244,234,213,0.15)", borderRadius: 2, letterSpacing: "0.1em" }}>SPACE kick</span>
+              <span style={{ marginTop: 2, padding: isFS ? "4px 14px" : "2px 10px", border: "1px solid rgba(244,234,213,0.15)", borderRadius: 2, letterSpacing: "0.1em" }}>SPACE kick</span>
             </div>
           </div>
         )}
 
-        {/* Epsilon bar (train) */}
+        {/* Legend — top right (train mode) */}
         {mode === "train" && (
-          <div className="absolute bottom-0 left-0 right-0" style={{ height: 3, background: "rgba(15,30,22,0.6)" }}>
-            <div style={{ height: "100%", width: `${(1 - epsUI) * 100}%`, background: "linear-gradient(90deg,#00e87b,rgba(0,232,123,0.3))", transition: "width 0.5s ease" }} />
+          <div className="absolute font-mono pointer-events-none select-none"
+            style={{ top: isFS ? 12 : 8, right: isFS ? 12 : 8, padding: isFS ? "6px 12px" : "4px 8px", fontSize: isFS ? 14 : 9, background: "rgba(15,30,22,0.7)", border: "1px solid rgba(244,234,213,0.08)", color: "rgba(244,234,213,0.5)" }}>
+            <span style={{ color: "#00e87b" }}>&#9679;</span> AI&ensp;<span style={{ color: "#fbbf24" }}>&#9679;</span> Ball&ensp;<span style={{ color: "#8b5cf6" }}>&#9679;</span> Defender
           </div>
         )}
       </div>
 
-      {/* Control bar — OUTSIDE the field, below canvas */}
+      {/* Control bar */}
       <div
-        className="px-3 py-2 font-mono text-[10px] flex flex-wrap items-center gap-x-4 gap-y-1"
+        className="font-mono flex items-center justify-between"
         style={{
           flexShrink: 0,
+          fontSize: isFS ? 15 : 10,
+          padding: isFS ? "14px 20px" : "12px 12px",
           borderTop: "2px solid rgba(244, 234, 213, 0.15)",
           background: "rgba(15, 30, 22, 0.6)",
           color: "var(--muted)",
         }}
       >
-        {/* Mode + Speed + Reset */}
-        <div className="flex items-center gap-1">
-          <button onClick={handleMode} className="px-2 py-0.5 transition-colors"
-            style={{ background: mode === "play" ? "rgba(255,95,87,0.2)" : "rgba(15,30,22,0.8)", border: mode === "play" ? "1px solid rgba(255,95,87,0.5)" : "1px solid rgba(244,234,213,0.12)", color: mode === "play" ? "#ff5f57" : "var(--muted)", cursor: "pointer" }}>
+        {/* Left: Mode + Speed + Reset */}
+        <div className="flex items-center" style={{ flexShrink: 0, gap: isFS ? 6 : 4 }}>
+          <button onClick={handleMode} className="transition-colors"
+            style={{ padding: isFS ? "4px 12px" : "2px 8px", background: mode === "play" ? "rgba(255,95,87,0.2)" : "rgba(15,30,22,0.8)", border: mode === "play" ? "1px solid rgba(255,95,87,0.5)" : "1px solid rgba(244,234,213,0.12)", color: mode === "play" ? "#ff5f57" : "var(--muted)", cursor: "pointer" }}>
             {mode === "train" ? "1v1" : "Train"}
           </button>
           {mode === "train" && SPEEDS.map((s, i) => (
-            <button key={s} onClick={() => handleSpeed(i)} className="px-2 py-0.5 transition-colors"
-              style={{ background: i === spdIdx ? "rgba(0,232,123,0.25)" : "rgba(15,30,22,0.8)", border: i === spdIdx ? "1px solid rgba(0,232,123,0.5)" : "1px solid rgba(244,234,213,0.12)", color: i === spdIdx ? "#00e87b" : "var(--muted)", cursor: "pointer" }}>
+            <button key={s} onClick={() => handleSpeed(i)} className="transition-colors"
+              style={{ padding: isFS ? "4px 12px" : "2px 8px", background: i === spdIdx ? "rgba(0,232,123,0.25)" : "rgba(15,30,22,0.8)", border: i === spdIdx ? "1px solid rgba(0,232,123,0.5)" : "1px solid rgba(244,234,213,0.12)", color: i === spdIdx ? "#00e87b" : "var(--muted)", cursor: "pointer" }}>
               {s}x
             </button>
           ))}
-          <button onClick={handleReset} className="px-2 py-0.5 transition-colors"
-            style={{ background: "rgba(15,30,22,0.8)", border: "1px solid rgba(244,234,213,0.12)", color: "var(--muted)", cursor: "pointer" }}>
+          <button onClick={handleReset} className="transition-colors"
+            style={{ padding: isFS ? "4px 12px" : "2px 8px", background: "rgba(15,30,22,0.8)", border: "1px solid rgba(244,234,213,0.12)", color: "var(--muted)", cursor: "pointer" }}>
             Reset
           </button>
         </div>
 
-        <div style={{ width: 1, height: 16, background: "rgba(244,234,213,0.1)" }} />
-
-        {/* Alpha slider */}
-        <div className="flex items-center gap-1">
-          <span style={{ color: "rgba(244,234,213,0.5)" }}>&#945;</span>
-          <input type="range" min="0.01" max="0.5" step="0.01" value={alphaUI}
-            onChange={handleAlpha} style={{ width: 56, accentColor: "#00e87b", cursor: "pointer" }} />
-          <span style={{ color: "var(--foreground)", minWidth: 28 }}>{alphaUI.toFixed(2)}</span>
-        </div>
-
-        {/* Epsilon slider */}
-        <div className="flex items-center gap-1">
-          <span style={{ color: "rgba(244,234,213,0.5)" }}>&#949;</span>
-          <input type="range" min="0" max="1" step="0.01" value={epsUI}
-            onChange={handleEps} style={{ width: 56, accentColor: "#00e87b", cursor: "pointer" }} />
-          <span style={{ color: "#00e87b", minWidth: 34 }}>{epsUI.toFixed(3)}</span>
-        </div>
-
-        <div style={{ width: 1, height: 16, background: "rgba(244,234,213,0.1)" }} />
-
-        {/* Stats */}
-        <div className="flex items-center gap-3 flex-wrap">
-          <span><span style={{ color: "rgba(244,234,213,0.4)" }}>&#947;</span> {GAMMA}</span>
-          <span><span style={{ color: "rgba(244,234,213,0.4)" }}>entropy</span> <span style={{ color: "#fbbf24" }}>{entropy}</span></span>
-          <span><span style={{ color: "rgba(244,234,213,0.4)" }}>Q cov</span> <span style={{ color: "#8b5cf6" }}>{coverage}%</span></span>
-          <span><span style={{ color: "rgba(244,234,213,0.4)" }}>avg rew</span> <span style={{ color: avgReward >= 0 ? "#00e87b" : "#ff5f57" }}>{avgReward}</span></span>
+        {/* Right: Sliders */}
+        <div className="flex items-center" style={{ flex: 1, gap: isFS ? 16 : 6, marginLeft: isFS ? 16 : 8, minWidth: 0 }}>
+          <div className="flex items-center gap-1" style={{ flex: 1, minWidth: 0 }} title="How fast the AI adapts">
+            <span style={{ color: "rgba(244,234,213,0.45)", flexShrink: 0 }}>{isFS ? "Learning" : "Lr"}</span>
+            <div style={{ flex: 1, minWidth: 20 }}>
+              <input type="range" min="0.01" max="0.5" step="0.01" value={alphaUI}
+                onChange={handleAlpha} style={{ width: "100%", accentColor: "#00e87b", cursor: "pointer", display: "block" }} />
+            </div>
+            <span style={{ color: "var(--muted)", flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>{alphaUI.toFixed(2)}</span>
+          </div>
+          <div className="flex items-center gap-1" style={{ flex: 1, minWidth: 0 }} title="How much the AI experiments vs uses what it knows">
+            <span style={{ color: "rgba(244,234,213,0.45)", flexShrink: 0 }}>{isFS ? "Curiosity" : "Cur"}</span>
+            <div style={{ flex: 1, minWidth: 20 }}>
+              <input type="range" min="0" max="1" step="0.01" value={epsUI}
+                onChange={handleEps} style={{ width: "100%", accentColor: "#00e87b", cursor: "pointer", display: "block" }} />
+            </div>
+            <span style={{ color: "#00e87b", flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>{epsUI.toFixed(2)}</span>
+          </div>
         </div>
       </div>
     </div>
