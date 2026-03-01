@@ -259,7 +259,7 @@ export function AudioPlayer() {
     <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
       <KickSoundController />
       <div
-        className={`group relative flex flex-col items-center justify-center pixel-card transition-all duration-300 ease-in-out ${isExpanded
+        className={`group relative flex flex-col items-center justify-center glass-card-inner transition-all duration-300 ease-in-out ${isExpanded
           ? "min-h-[10rem] w-56 gap-3 px-6 pt-4 pb-5 scale-100"
           : "h-12 w-28 gap-0 px-2 py-0 sm:h-14 sm:w-32 hover:scale-105"
           }`}
@@ -275,7 +275,7 @@ export function AudioPlayer() {
           <button
             type="button"
             onClick={togglePlayback}
-            className="grid h-10 w-10 sm:h-11 sm:w-11 place-items-center pixel-btn bg-[#8b7355]/60 text-[#f0e6d2] transition-all duration-300 ease-out hover:bg-[#a08060] hover:text-white"
+            className="grid h-10 w-10 sm:h-11 sm:w-11 place-items-center glass-btn bg-[#8b7355]/60 text-[#f0e6d2] transition-all duration-300 ease-out hover:bg-[#a08060] hover:text-white"
             aria-label={isPlaying ? "Pause stadium atmosphere" : "Play stadium atmosphere"}
           >
             {isPlaying ? <PauseIcon /> : <PlayIcon />}
@@ -284,7 +284,7 @@ export function AudioPlayer() {
           <button
             type="button"
             onClick={toggleTheme}
-            className={`grid h-10 w-10 sm:h-11 sm:w-11 place-items-center pixel-btn text-[#f0e6d2] transition-all duration-300 ease-out hover:text-white ${theme === "light"
+            className={`grid h-10 w-10 sm:h-11 sm:w-11 place-items-center glass-btn text-[#f0e6d2] transition-all duration-300 ease-out hover:text-white ${theme === "light"
               ? "bg-[#d4a84b]/70 hover:bg-[#e8bc5a]"
               : "bg-[#7a9fc4]/50 hover:bg-[#8fb3d6]"
               }`}

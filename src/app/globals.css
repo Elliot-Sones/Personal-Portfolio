@@ -1,68 +1,68 @@
 @import "tailwindcss";
 
+/* ============================================
+   STADIUM NIGHTS - Color System
+   ============================================ */
+
 :root,
 [data-theme="dark"] {
-  /* Stardew Valley rainy day palette - warm greens with cozy undertones */
-  --background: #2d4a3e;
+  --background: #0a1410;
   --foreground: #f4ead5;
-  --text-color: #2a4538;
+  --text-color: #f4ead5;
   --muted: rgba(244, 234, 213, 0.6);
-  --accent: #8fbc8f;
-  --accent-warm: #daa06d;
-  --card-bg: rgba(35, 58, 48, 0.9);
-  --border-soft: rgba(244, 234, 213, 0.12);
+  --accent: #00e87b;
+  --accent-warm: #fbbf24;
+  --card-bg: rgba(10, 20, 16, 0.75);
+  --border-soft: rgba(255, 255, 255, 0.08);
 
-  /* Pixel-art style colors */
-  --pixel-highlight: #a8d8a8;
-  --pixel-shadow: #1a3028;
+  --glow: rgba(0, 232, 123, 0.35);
+  --glow-warm: rgba(251, 191, 36, 0.3);
+  --surface: rgba(10, 20, 16, 0.75);
 
-  /* Rain overlay colors - softer for cozy feel */
-  --rain-color: rgba(180, 200, 220, 0.35);
-  --fog-color: rgba(200, 210, 200, 0.06);
-  --vignette-color: rgba(20, 35, 28, 0.5);
+  --field-top: #1a3025;
+  --field-mid: #122018;
+  --field-bottom: #0a140e;
+  --pitch-top: #1e3a2d;
+  --pitch-mid: #152a20;
+  --pitch-bottom: #0e1c14;
 
-  /* Theme-specific field colors */
-  --field-top: #3a5f4f;
-  --field-mid: #2d4a3e;
-  --field-bottom: #1f3329;
-  --pitch-top: #4a7a5f;
-  --pitch-mid: #3a5f4a;
-  --pitch-bottom: #2a4538;
+  --rain-color: rgba(0, 232, 123, 0.08);
+  --fog-color: rgba(0, 232, 123, 0.02);
+  --vignette-color: rgba(0, 10, 5, 0.6);
+
+  --pixel-size: 4px;
 }
 
 /* ============================================
-   LIGHT MODE - Sunny Day Theme
+   LIGHT MODE - Dusk Stadium
    ============================================ */
 [data-theme="light"] {
-  /* Bright sunny day palette - vibrant greens with warm sunlight */
-  --background: #5a9a6a;
+  --background: #1a3328;
   --foreground: #f4ead5;
-  --text-color: #2a4538;
+  --text-color: #f4ead5;
   --muted: rgba(244, 234, 213, 0.7);
-  --accent: #7dd87d;
-  --accent-warm: #ffb347;
-  --card-bg: rgba(70, 130, 90, 0.85);
-  --border-soft: rgba(244, 234, 213, 0.2);
+  --accent: #00ff88;
+  --accent-warm: #fbbf24;
+  --card-bg: rgba(20, 40, 30, 0.7);
+  --border-soft: rgba(255, 255, 255, 0.12);
 
-  /* Pixel-art style colors - brighter for sunny day */
-  --pixel-highlight: #b8e8b8;
-  --pixel-shadow: #2a5038;
+  --glow: rgba(0, 255, 136, 0.3);
+  --glow-warm: rgba(251, 191, 36, 0.25);
+  --surface: rgba(20, 40, 30, 0.7);
 
-  /* No rain in light mode */
+  --field-top: #2a5040;
+  --field-mid: #1e3a2d;
+  --field-bottom: #152a20;
+  --pitch-top: #346a52;
+  --pitch-mid: #2a5040;
+  --pitch-bottom: #1e3a2d;
+
   --rain-color: transparent;
   --fog-color: transparent;
-  --vignette-color: rgba(255, 200, 100, 0.1);
-
-  /* Theme-specific field colors - sunny vibrant grass */
-  --field-top: #6aaf7a;
-  --field-mid: #5a9a6a;
-  --field-bottom: #4a8a5a;
-  --pitch-top: #7ac08a;
-  --pitch-mid: #6aaf7a;
-  --pitch-bottom: #5a9f6a;
+  --vignette-color: rgba(0, 20, 10, 0.3);
 }
 
-/* Custom CSS variables for Tailwind theme */
+/* Tailwind theme mapping */
 :root {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -71,25 +71,26 @@
   --color-card: var(--card-bg);
   --color-border: var(--border-soft);
   --font-sans: var(--font-geist-sans);
-  --font-display: var(--font-display);
+  --font-display: var(--font-syne);
   --font-mono: var(--font-geist-mono);
 }
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
 
 body {
   margin: 0;
   min-height: 100vh;
   background: var(--background);
-  color: var(--text-color);
+  color: var(--foreground);
   font-family: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
   overflow-x: hidden;
 }
 
-/* Ensure system cursor is always visible */
-
 body.bg-field {
   position: relative;
-  /* Uses CSS variables for theme-aware field colors */
   background: linear-gradient(180deg, var(--field-top) 0%, var(--field-mid) 50%, var(--field-bottom) 100%);
   transition: background 0.5s ease-in-out;
 }
@@ -103,12 +104,29 @@ a:hover {
   color: var(--accent);
 }
 
+/* Noise texture overlay for atmosphere */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  mix-blend-mode: overlay;
+}
+
+/* ============================================
+   PITCH / SOCCER FIELD
+   ============================================ */
+
 .pitch-surface {
   position: fixed;
   inset: 0;
   z-index: -4;
   pointer-events: none;
-  /* Theme-aware grass colors */
   background: linear-gradient(180deg, var(--pitch-top) 0%, var(--pitch-mid) 45%, var(--pitch-bottom) 100%);
   display: flex;
   justify-content: center;
@@ -122,26 +140,28 @@ a:hover {
   content: "";
   position: absolute;
   inset: 0;
-  /* Pixel-art style grass variation - like Stardew tiles */
-  background: repeating-linear-gradient(90deg,
-      rgba(168, 216, 168, 0.06) 0,
-      rgba(168, 216, 168, 0.06) 8%,
+  /* Stadium floodlight cones from above */
+  background:
+    radial-gradient(ellipse at 25% -10%, rgba(0, 232, 123, 0.08), transparent 50%),
+    radial-gradient(ellipse at 75% -10%, rgba(0, 232, 123, 0.08), transparent 50%),
+    repeating-linear-gradient(90deg,
+      rgba(0, 232, 123, 0.03) 0,
+      rgba(0, 232, 123, 0.03) 8%,
       transparent 8%,
-      transparent 16%),
-    /* Warm ambient light */
-    radial-gradient(circle at 50% 20%, rgba(218, 160, 109, 0.06), transparent 55%);
+      transparent 16%);
   mix-blend-mode: screen;
-  opacity: 0.2;
+  opacity: 0.4;
 }
 
 .pitch-surface::after {
   content: "";
   position: absolute;
   inset: 0;
-  /* Cozy evening atmosphere - warm glow like indoor lights */
-  background: linear-gradient(180deg, rgba(50, 70, 60, 0.15), rgba(0, 0, 0, 0.35) 85%),
-    radial-gradient(circle at 50% 100%, rgba(218, 160, 109, 0.15), transparent 50%);
-  opacity: 0.7;
+  /* Night atmosphere with overhead floodlight glow */
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5) 85%),
+    radial-gradient(ellipse at 50% -20%, rgba(0, 232, 123, 0.1), transparent 60%);
+  opacity: 0.8;
 }
 
 .pitch-canvas {
@@ -158,12 +178,11 @@ a:hover {
   position: relative;
   width: 100%;
   height: 100%;
-  /* Warm cream-colored lines - cozy pixel game feel */
-  border: 3px solid rgba(244, 234, 213, 0.5);
+  border: 3px solid rgba(244, 234, 213, 0.3);
   border-radius: clamp(32px, 5vw, 90px);
   pointer-events: none;
   z-index: 0;
-  --line-color: rgba(244, 234, 213, 0.52);
+  --line-color: rgba(244, 234, 213, 0.3);
   --penalty-width: min(62%, 680px);
   --penalty-depth: clamp(200px, 24vw, 340px);
   --six-width: min(34%, 400px);
@@ -189,8 +208,7 @@ a:hover {
   border: 2px solid var(--line-color);
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  /* Warm cozy glow */
-  background: radial-gradient(circle, rgba(244, 234, 213, 0.1) 0, transparent 65%);
+  background: radial-gradient(circle, rgba(0, 232, 123, 0.06) 0, transparent 65%);
 }
 
 .pitch-center-spot {
@@ -203,8 +221,7 @@ a:hover {
   margin-top: -5px;
   border-radius: 50%;
   background: var(--line-color);
-  /* Warm pixel-style glow */
-  box-shadow: 0 0 10px rgba(244, 234, 213, 0.4);
+  box-shadow: 0 0 12px rgba(0, 232, 123, 0.3);
 }
 
 .pitch-penalty-area {
@@ -214,7 +231,7 @@ a:hover {
   border: 2px solid var(--line-color);
   transform: translateX(-50%);
   border-radius: 0;
-  background: linear-gradient(180deg, rgba(12, 48, 24, 0.28), transparent);
+  background: linear-gradient(180deg, rgba(0, 232, 123, 0.04), transparent);
 }
 
 .pitch-penalty-top {
@@ -231,7 +248,7 @@ a:hover {
   border-bottom: 0;
   border-top-left-radius: clamp(18px, 3vw, 42px);
   border-top-right-radius: clamp(18px, 3vw, 42px);
-  background: linear-gradient(0deg, rgba(12, 48, 24, 0.28), transparent);
+  background: linear-gradient(0deg, rgba(0, 232, 123, 0.04), transparent);
 }
 
 .pitch-six-yard {
@@ -263,8 +280,7 @@ a:hover {
   margin-left: -5px;
   border-radius: 50%;
   background: var(--line-color);
-  /* Warm cozy spot glow */
-  box-shadow: 0 0 10px rgba(244, 234, 213, 0.35);
+  box-shadow: 0 0 10px rgba(0, 232, 123, 0.25);
 }
 
 .pitch-penalty-spot-top {
@@ -309,512 +325,231 @@ a:hover {
 }
 
 .pitch-corner-top-left {
-  top: calc(-2px);
-  left: calc(-2px);
+  top: -2px;
+  left: -2px;
   clip-path: inset(0 50% 50% 0);
 }
 
 .pitch-corner-top-right {
-  top: calc(-2px);
-  right: calc(-2px);
+  top: -2px;
+  right: -2px;
   clip-path: inset(0 0 50% 50%);
 }
 
 .pitch-corner-bottom-left {
-  bottom: calc(-2px);
-  left: calc(-2px);
+  bottom: -2px;
+  left: -2px;
   clip-path: inset(50% 50% 0 0);
 }
 
 .pitch-corner-bottom-right {
-  bottom: calc(-2px);
-  right: calc(-2px);
+  bottom: -2px;
+  right: -2px;
   clip-path: inset(50% 0 0 50%);
 }
 
 /* ============================================
-   PIXEL ART UI STYLES - True stepped pixel borders
+   GLASS UI SYSTEM
    ============================================ */
 
-/* Base pixel size - adjust for larger/smaller pixels */
-:root {
-  --pixel-size: 4px;
-}
-
-/* Chunky pixel border for sections - with visible stepped corners */
-.pixel-border {
+/* Section container glass card */
+.glass-card {
   position: relative;
-  background: var(--card-bg);
-  border: none;
-  border-radius: 0 !important;
-  /* Clip the corners to create stepped pixel effect */
-  clip-path: polygon(
-      /* Top edge with stepped corners */
-      0 calc(var(--pixel-size) * 2),
-      var(--pixel-size) calc(var(--pixel-size) * 2),
-      var(--pixel-size) var(--pixel-size),
-      calc(var(--pixel-size) * 2) var(--pixel-size),
-      calc(var(--pixel-size) * 2) 0,
-      calc(100% - var(--pixel-size) * 2) 0,
-      calc(100% - var(--pixel-size) * 2) var(--pixel-size),
-      calc(100% - var(--pixel-size)) var(--pixel-size),
-      calc(100% - var(--pixel-size)) calc(var(--pixel-size) * 2),
-      100% calc(var(--pixel-size) * 2),
-      /* Right edge */
-      100% calc(100% - var(--pixel-size) * 2),
-      calc(100% - var(--pixel-size)) calc(100% - var(--pixel-size) * 2),
-      calc(100% - var(--pixel-size)) calc(100% - var(--pixel-size)),
-      calc(100% - var(--pixel-size) * 2) calc(100% - var(--pixel-size)),
-      calc(100% - var(--pixel-size) * 2) 100%,
-      /* Bottom edge */
-      calc(var(--pixel-size) * 2) 100%,
-      calc(var(--pixel-size) * 2) calc(100% - var(--pixel-size)),
-      var(--pixel-size) calc(100% - var(--pixel-size)),
-      var(--pixel-size) calc(100% - var(--pixel-size) * 2),
-      0 calc(100% - var(--pixel-size) * 2));
+  background: var(--surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
 }
 
-/* Pixel border outline using box-shadow stacking for visible pixels */
-.pixel-border::before {
+/* Inner card for items within sections */
+.glass-card-inner {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0.75rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.glass-card-inner:hover {
+  border-color: rgba(0, 232, 123, 0.2);
+  box-shadow: 0 0 30px var(--glow);
+}
+
+/* Hero section - animated gradient border */
+.glass-card-hero {
+  overflow: visible;
+}
+
+.glass-card-hero::before {
   content: "";
   position: absolute;
-  inset: -4px;
-  background: var(--foreground);
-  z-index: -1;
-  clip-path: polygon(0 calc(var(--pixel-size) * 2),
-      var(--pixel-size) calc(var(--pixel-size) * 2),
-      var(--pixel-size) var(--pixel-size),
-      calc(var(--pixel-size) * 2) var(--pixel-size),
-      calc(var(--pixel-size) * 2) 0,
-      calc(100% - var(--pixel-size) * 2) 0,
-      calc(100% - var(--pixel-size) * 2) var(--pixel-size),
-      calc(100% - var(--pixel-size)) var(--pixel-size),
-      calc(100% - var(--pixel-size)) calc(var(--pixel-size) * 2),
-      100% calc(var(--pixel-size) * 2),
-      100% calc(100% - var(--pixel-size) * 2),
-      calc(100% - var(--pixel-size)) calc(100% - var(--pixel-size) * 2),
-      calc(100% - var(--pixel-size)) calc(100% - var(--pixel-size)),
-      calc(100% - var(--pixel-size) * 2) calc(100% - var(--pixel-size)),
-      calc(100% - var(--pixel-size) * 2) 100%,
-      calc(var(--pixel-size) * 2) 100%,
-      calc(var(--pixel-size) * 2) calc(100% - var(--pixel-size)),
-      var(--pixel-size) calc(100% - var(--pixel-size)),
-      var(--pixel-size) calc(100% - var(--pixel-size) * 2),
-      0 calc(100% - var(--pixel-size) * 2));
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--gradient-angle, 0deg),
+    var(--accent),
+    transparent 25%,
+    var(--accent-warm) 50%,
+    transparent 75%,
+    var(--accent)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: gradient-rotate 6s linear infinite;
+  opacity: 0.6;
 }
 
-/* Shadow layer for depth - offset pixels */
-.pixel-border::after {
+/* Gold-tinted cards for certificates/achievements */
+.glass-card-gold {
+  border-color: rgba(251, 191, 36, 0.15);
+}
+
+.glass-card-gold .glass-card-inner {
+  border-color: rgba(251, 191, 36, 0.1);
+}
+
+.glass-card-gold .glass-card-inner:hover {
+  border-color: rgba(251, 191, 36, 0.3);
+  box-shadow: 0 0 30px var(--glow-warm);
+}
+
+/* Navigation bar */
+.glass-nav {
+  background: rgba(10, 20, 16, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 1rem;
+  position: relative;
+}
+
+.glass-nav::after {
   content: "";
   position: absolute;
-  inset: 0;
-  transform: translate(6px, 6px);
-  background: var(--pixel-shadow);
-  z-index: -2;
-  clip-path: polygon(0 calc(var(--pixel-size) * 2),
-      var(--pixel-size) calc(var(--pixel-size) * 2),
-      var(--pixel-size) var(--pixel-size),
-      calc(var(--pixel-size) * 2) var(--pixel-size),
-      calc(var(--pixel-size) * 2) 0,
-      calc(100% - var(--pixel-size) * 2) 0,
-      calc(100% - var(--pixel-size) * 2) var(--pixel-size),
-      calc(100% - var(--pixel-size)) var(--pixel-size),
-      calc(100% - var(--pixel-size)) calc(var(--pixel-size) * 2),
-      100% calc(var(--pixel-size) * 2),
-      100% calc(100% - var(--pixel-size) * 2),
-      calc(100% - var(--pixel-size)) calc(100% - var(--pixel-size) * 2),
-      calc(100% - var(--pixel-size)) calc(100% - var(--pixel-size)),
-      calc(100% - var(--pixel-size) * 2) calc(100% - var(--pixel-size)),
-      calc(100% - var(--pixel-size) * 2) 100%,
-      calc(var(--pixel-size) * 2) 100%,
-      calc(var(--pixel-size) * 2) calc(100% - var(--pixel-size)),
-      var(--pixel-size) calc(100% - var(--pixel-size)),
-      var(--pixel-size) calc(100% - var(--pixel-size) * 2),
-      0 calc(100% - var(--pixel-size) * 2));
+  bottom: -1px;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.4;
 }
 
-/* Pixel border variant - softer for nav */
-.pixel-border-soft {
-  position: relative;
-  background: var(--card-bg);
-  border: 3px solid rgba(244, 234, 213, 0.6);
-  border-radius: 0 !important;
-  box-shadow:
-    3px 3px 0 0 var(--pixel-shadow),
-    inset 1px 1px 0 0 rgba(168, 216, 168, 0.2);
-  /* Simpler stepped corners for nav */
-  clip-path: polygon(0 var(--pixel-size),
-      var(--pixel-size) var(--pixel-size),
-      var(--pixel-size) 0,
-      calc(100% - var(--pixel-size)) 0,
-      calc(100% - var(--pixel-size)) var(--pixel-size),
-      100% var(--pixel-size),
-      100% calc(100% - var(--pixel-size)),
-      calc(100% - var(--pixel-size)) calc(100% - var(--pixel-size)),
-      calc(100% - var(--pixel-size)) 100%,
-      var(--pixel-size) 100%,
-      var(--pixel-size) calc(100% - var(--pixel-size)),
-      0 calc(100% - var(--pixel-size)));
+/* Modern button */
+.glass-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
 }
 
-/* Pixel card style - inner cards with stepped corners */
+.glass-btn:hover {
+  background: rgba(0, 232, 123, 0.1);
+  border-color: rgba(0, 232, 123, 0.3);
+  box-shadow: 0 0 20px rgba(0, 232, 123, 0.15);
+}
+
+.glass-btn:active {
+  transform: scale(0.98);
+}
+
+/* Glass input */
+.glass-input {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 0.5rem !important;
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--glow), 0 0 20px var(--glow);
+}
+
+/* Glass tag/badge */
+.glass-tag {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+}
+
+.glass-tag:hover {
+  background: rgba(0, 232, 123, 0.08);
+  border-color: rgba(0, 232, 123, 0.3);
+  box-shadow: 0 0 15px rgba(0, 232, 123, 0.1);
+}
+
+/* Gradient text effect */
+.gradient-text {
+  background: linear-gradient(to right, #ffffff, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Outcome badge with gold glow */
+.badge-gold {
+  color: var(--accent-warm);
+  text-shadow: 0 0 15px var(--glow-warm);
+}
+
+/* Accent stripes for experience cards */
+.accent-stripe-green {
+  border-left: 3px solid var(--accent);
+}
+
+.accent-stripe-gold {
+  border-left: 3px solid var(--accent-warm);
+}
+
+/* ============================================
+   TERMINAL PIXEL STYLE (preserved for retro terminal)
+   ============================================ */
+
 .pixel-card {
   position: relative;
   background: rgba(35, 58, 48, 0.6);
   border: 2px solid rgba(244, 234, 213, 0.5);
   border-radius: 0 !important;
   box-shadow: 2px 2px 0 0 rgba(26, 48, 40, 0.6);
-  /* Single pixel step on corners */
-  clip-path: polygon(0 var(--pixel-size),
-      var(--pixel-size) var(--pixel-size),
-      var(--pixel-size) 0,
-      calc(100% - var(--pixel-size)) 0,
-      calc(100% - var(--pixel-size)) var(--pixel-size),
-      100% var(--pixel-size),
-      100% calc(100% - var(--pixel-size)),
-      calc(100% - var(--pixel-size)) calc(100% - var(--pixel-size)),
-      calc(100% - var(--pixel-size)) 100%,
-      var(--pixel-size) 100%,
-      var(--pixel-size) calc(100% - var(--pixel-size)),
-      0 calc(100% - var(--pixel-size)));
-}
-
-/* Pixel button style with stepped edges */
-.pixel-btn {
-  position: relative;
-  border: 3px solid var(--foreground);
-  border-radius: 0 !important;
-  box-shadow: 3px 3px 0 0 var(--pixel-shadow);
-  transition: transform 0.1s, box-shadow 0.1s;
-  clip-path: polygon(0 var(--pixel-size),
-      var(--pixel-size) var(--pixel-size),
-      var(--pixel-size) 0,
-      calc(100% - var(--pixel-size)) 0,
-      calc(100% - var(--pixel-size)) var(--pixel-size),
-      100% var(--pixel-size),
-      100% calc(100% - var(--pixel-size)),
-      calc(100% - var(--pixel-size)) calc(100% - var(--pixel-size)),
-      calc(100% - var(--pixel-size)) 100%,
-      var(--pixel-size) 100%,
-      var(--pixel-size) calc(100% - var(--pixel-size)),
-      0 calc(100% - var(--pixel-size)));
-}
-
-.pixel-btn:hover {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0 0 var(--pixel-shadow);
-}
-
-.pixel-btn:active {
-  transform: translate(3px, 3px);
-  box-shadow: none;
-}
-
-/* Pixel input fields with inset pixel shadow */
-.pixel-input {
-  border: 2px solid rgba(244, 234, 213, 0.5) !important;
-  border-radius: 0 !important;
-  box-shadow:
-    inset 3px 3px 0 0 rgba(26, 48, 40, 0.4),
-    inset -1px -1px 0 0 rgba(168, 216, 168, 0.1);
-}
-
-.pixel-input:focus {
-  border-color: var(--accent) !important;
-  box-shadow:
-    inset 3px 3px 0 0 rgba(26, 48, 40, 0.4),
-    0 0 0 2px var(--accent);
-}
-
-/* Pixel tag/badge style */
-.pixel-tag {
-  border: 2px solid rgba(244, 234, 213, 0.4);
-  border-radius: 0 !important;
-  box-shadow: 1px 1px 0 0 rgba(26, 48, 40, 0.5);
-  /* Tiny pixel corners */
-  clip-path: polygon(0 2px, 2px 2px, 2px 0,
-      calc(100% - 2px) 0, calc(100% - 2px) 2px, 100% 2px,
-      100% calc(100% - 2px), calc(100% - 2px) calc(100% - 2px), calc(100% - 2px) 100%,
-      2px 100%, 2px calc(100% - 2px), 0 calc(100% - 2px));
-}
-
-/* Remove all rounded corners for pixel aesthetic */
-.pixel-border *,
-.pixel-border-soft *,
-.pixel-card * {
-  border-radius: 0 !important;
-}
-
-/* Pixelated image rendering for any images inside pixel containers */
-.pixel-border img,
-.pixel-card img {
-  image-rendering: auto;
-  /* Keep photos smooth, but can change to pixelated if wanted */
+  clip-path: polygon(
+    0 var(--pixel-size),
+    var(--pixel-size) var(--pixel-size),
+    var(--pixel-size) 0,
+    calc(100% - var(--pixel-size)) 0,
+    calc(100% - var(--pixel-size)) var(--pixel-size),
+    100% var(--pixel-size),
+    100% calc(100% - var(--pixel-size)),
+    calc(100% - var(--pixel-size)) calc(100% - var(--pixel-size)),
+    calc(100% - var(--pixel-size)) 100%,
+    var(--pixel-size) 100%,
+    var(--pixel-size) calc(100% - var(--pixel-size)),
+    0 calc(100% - var(--pixel-size))
+  );
 }
 
 /* ============================================
-   PIXEL ART ANIMATIONS
+   ANIMATIONS
    ============================================ */
 
-/* Cloud floating animation - moves from left to right */
-@keyframes cloudFloat {
-  0% {
-    transform: translateX(-100px);
-  }
-
-  100% {
-    transform: translateX(calc(100vw + 100px));
-  }
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
 }
 
-/* Rain falling animation */
-@keyframes rainFall {
-  0% {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-
-  10% {
-    opacity: 0.7;
-  }
-
-  90% {
-    opacity: 0.7;
-  }
-
-  100% {
-    transform: translateY(100vh);
-    opacity: 0;
+@keyframes gradient-rotate {
+  to {
+    --gradient-angle: 360deg;
   }
 }
 
-/* Gentle grass sway */
-@keyframes grassSway {
-
-  0%,
-  100% {
-    transform: skewX(0deg);
-  }
-
-  50% {
-    transform: skewX(2deg);
-  }
-}
-
-/* ============================================
-   SUN ANIMATIONS - Light Mode
-   ============================================ */
-
-/* Sun pulse animation - gentle breathing effect */
-@keyframes sunPulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.05);
-  }
-}
-
-/* Sun ray pulse - staggered ray animation */
-@keyframes rayPulse {
-  0%,
-  100% {
-    opacity: 0.9;
-    transform: scaleY(1);
-  }
-
-  50% {
-    opacity: 1;
-    transform: scaleY(1.15);
-  }
-}
-
-/* Sun glow animation */
-@keyframes sunGlow {
-  0%,
-  100% {
-    opacity: 0.6;
-    transform: scale(2.5);
-  }
-
-  50% {
-    opacity: 0.8;
-    transform: scale(2.8);
-  }
-}
-
-/* Utility classes for sun animations */
-.animate-sun-pulse {
-  animation: sunPulse 4s ease-in-out infinite;
-}
-
-.animate-ray-pulse {
-  animation: rayPulse 2s ease-in-out infinite;
-}
-
-.animate-sun-glow {
-  animation: sunGlow 3s ease-in-out infinite;
-}
-
-/* ============================================
-   MNIST CANVAS STYLES
-   ============================================ */
-
-.mnist-canvas-container {
-  border: 3px solid var(--foreground);
-  border-radius: 0 !important;
-  box-shadow:
-    4px 4px 0 0 var(--pixel-shadow),
-    inset 2px 2px 0 0 rgba(0, 0, 0, 0.3);
-  clip-path: polygon(0 var(--pixel-size),
-      var(--pixel-size) var(--pixel-size),
-      var(--pixel-size) 0,
-      calc(100% - var(--pixel-size)) 0,
-      calc(100% - var(--pixel-size)) var(--pixel-size),
-      100% var(--pixel-size),
-      100% calc(100% - var(--pixel-size)),
-      calc(100% - var(--pixel-size)) calc(100% - var(--pixel-size)),
-      calc(100% - var(--pixel-size)) 100%,
-      var(--pixel-size) 100%,
-      var(--pixel-size) calc(100% - var(--pixel-size)),
-      0 calc(100% - var(--pixel-size)));
-}
-
-.mnist-canvas {
-  display: block;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-}
-
-/* Pixelated loading animation */
-.mnist-loader {
-  width: 24px;
-  height: 24px;
-  background: var(--accent);
-  animation: mnistPulse 0.6s ease-in-out infinite alternate;
-}
-
-@keyframes mnistPulse {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-
-  100% {
-    transform: scale(1.3);
-    opacity: 0.6;
-  }
-}
-
-/* Confidence bar styling */
-.confidence-bar {
-  height: 8px;
-  background: rgba(244, 234, 213, 0.15);
-  border: 1px solid rgba(244, 234, 213, 0.3);
-  overflow: hidden;
-}
-
-.confidence-bar-fill {
-  height: 100%;
-  background: var(--accent);
-  transition: width 0.4s ease-out;
-}
-
-.confidence-bar-fill.top-prediction {
-  background: linear-gradient(90deg, var(--accent), var(--accent-warm));
-}
-
-/* ============================================
-   AUDIO PLAYER PIXEL STYLES
-   ============================================ */
-
-/* Audio player specific styling */
-.audio-player-pixel-card.pixel-card {
-  background: rgba(35, 58, 48, 0.9) !important;
-  background-color: rgba(35, 58, 48, 0.9) !important;
-}
-
-/* Smooth transitions for audio player expansion */
-.audio-player-container {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Add a subtle lift effect on hover */
-.audio-player-container:hover {
-  transform: translateY(-2px);
-}
-
-/* Pixel-styled range input for volume slider */
-input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  background: transparent;
-  cursor: pointer;
-}
-
-input[type="range"]::-webkit-slider-track {
-  background: rgba(244, 234, 213, 0.2);
-  height: 8px;
-  border: 2px solid rgba(244, 234, 213, 0.4);
-  box-shadow: inset 2px 2px 0 0 rgba(26, 48, 40, 0.3);
-}
-
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  height: 16px;
-  width: 16px;
-  background: var(--accent);
-  border: 2px solid var(--foreground);
-  box-shadow: 2px 2px 0 0 var(--pixel-shadow);
-  margin-top: -6px;
-  transition: all 0.15s ease-out;
-}
-
-input[type="range"]::-webkit-slider-thumb:hover {
-  background: var(--pixel-highlight);
-  transform: scale(1.1);
-}
-
-input[type="range"]::-webkit-slider-thumb:active {
-  transform: scale(0.95);
-  box-shadow: 1px 1px 0 0 var(--pixel-shadow);
-}
-
-input[type="range"]::-moz-range-track {
-  background: rgba(244, 234, 213, 0.2);
-  height: 8px;
-  border: 2px solid rgba(244, 234, 213, 0.4);
-  box-shadow: inset 2px 2px 0 0 rgba(26, 48, 40, 0.3);
-}
-
-input[type="range"]::-moz-range-thumb {
-  height: 16px;
-  width: 16px;
-  background: var(--accent);
-  border: 2px solid var(--foreground);
-  box-shadow: 2px 2px 0 0 var(--pixel-shadow);
-  border-radius: 0;
-  transition: all 0.15s ease-out;
-}
-
-input[type="range"]::-moz-range-thumb:hover {
-  background: var(--pixel-highlight);
-  transform: scale(1.1);
-}
-
-input[type="range"]::-moz-range-thumb:active {
-  transform: scale(0.95);
-  box-shadow: 1px 1px 0 0 var(--pixel-shadow);
-}
-
-/* ============================================
-   SKILLS TICKER ANIMATION
-   ============================================ */
-
-/* Infinite horizontal scroll animation */
+/* Infinite horizontal scroll */
 @keyframes scroll-x {
   0% {
     transform: translateX(0);
@@ -828,7 +563,62 @@ input[type="range"]::-moz-range-thumb:active {
   animation: scroll-x 30s linear infinite;
 }
 
-/* Pause on hover for readability */
 .animate-scroll-x:hover {
   animation-play-state: paused;
+}
+
+/* ============================================
+   RANGE INPUT - Modernized
+   ============================================ */
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-track {
+  background: rgba(255, 255, 255, 0.1);
+  height: 4px;
+  border-radius: 2px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  background: var(--accent);
+  border: 2px solid var(--foreground);
+  border-radius: 50%;
+  margin-top: -6px;
+  transition: all 0.15s ease-out;
+  box-shadow: 0 0 10px var(--glow);
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 20px var(--glow);
+}
+
+input[type="range"]::-moz-range-track {
+  background: rgba(255, 255, 255, 0.1);
+  height: 4px;
+  border-radius: 2px;
+}
+
+input[type="range"]::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  background: var(--accent);
+  border: 2px solid var(--foreground);
+  border-radius: 50%;
+  transition: all 0.15s ease-out;
+  box-shadow: 0 0 10px var(--glow);
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 20px var(--glow);
 }

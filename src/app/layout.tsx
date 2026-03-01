@@ -1,12 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, VT323 } from "next/font/google";
-import Script from "next/script";
+import { Geist, Geist_Mono, Syne } from "next/font/google";
 import "./globals.css";
-import { AudioPlayer } from "@/components/AudioPlayer";
 import { PixelSoccerField } from "@/components/PixelSoccerField";
-import { FilmOverlay } from "@/components/FilmOverlay";
-import { RainOverlay } from "@/components/RainOverlay";
-import { PixelDecorations } from "@/components/PixelDecorations";
 import { ThemeProvider } from "@/components/ThemeContext";
 
 const geistSans = Geist({
@@ -19,9 +14,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const vt323 = VT323({
-  weight: "400",
-  variable: "--font-display",
+const syne = Syne({
+  variable: "--font-syne",
   subsets: ["latin"],
 });
 
@@ -42,16 +36,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${vt323.variable} antialiased bg-field text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} ${syne.variable} antialiased bg-field text-foreground`}
       >
         <ThemeProvider>
-          <Script src="https://unpkg.com/@rive-app/webgl@2" strategy="afterInteractive" />
           <PixelSoccerField />
-          <FilmOverlay />
-          <RainOverlay />
-          <PixelDecorations />
           {children}
-          <AudioPlayer />
         </ThemeProvider>
       </body>
     </html>

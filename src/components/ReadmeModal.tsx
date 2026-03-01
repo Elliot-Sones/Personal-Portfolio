@@ -131,7 +131,7 @@ export const ReadmeModal = ({ project, onClose }: ReadmeModalProps) => {
             {/* Single pixel-styled container */}
             <motion.div
                 ref={contentRef}
-                className="relative w-auto max-w-[80vw] max-h-[80vh] overflow-y-auto pixel-border"
+                className="relative w-auto max-w-[80vw] max-h-[80vh] overflow-y-auto rounded-2xl border border-white/10"
                 style={{ backgroundColor: '#f4ead5' }}
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -143,7 +143,7 @@ export const ReadmeModal = ({ project, onClose }: ReadmeModalProps) => {
                     className="sticky top-0 z-10 flex items-center justify-between p-4 border-b border-foreground/20"
                     style={{ backgroundColor: '#f4ead5' }}
                 >
-                    <h2 className="font-display text-xl uppercase tracking-[0.1em] text-[#2a4538]">
+                    <h2 className="font-display text-xl tracking-[0.02em] text-[#2a4538]">
                         {project.title}
                     </h2>
                     <div className="flex items-center gap-4">
@@ -243,7 +243,7 @@ export const ReadmeModal = ({ project, onClose }: ReadmeModalProps) => {
                                         // Style headings
                                         h1: ({ children, ...props }) => (
                                             <h1
-                                                className="font-display text-3xl uppercase tracking-[0.08em] text-foreground mt-8 mb-4 first:mt-0"
+                                                className="font-display text-3xl tracking-[0.02em] text-foreground mt-8 mb-4 first:mt-0"
                                                 {...props}
                                             >
                                                 {children}
@@ -251,7 +251,7 @@ export const ReadmeModal = ({ project, onClose }: ReadmeModalProps) => {
                                         ),
                                         h2: ({ children, ...props }) => (
                                             <h2
-                                                className="font-display text-2xl uppercase tracking-[0.08em] text-foreground mt-8 mb-3 border-b border-muted/20 pb-2"
+                                                className="font-display text-2xl tracking-[0.02em] text-foreground mt-8 mb-3 border-b border-muted/20 pb-2"
                                                 {...props}
                                             >
                                                 {children}
@@ -259,7 +259,7 @@ export const ReadmeModal = ({ project, onClose }: ReadmeModalProps) => {
                                         ),
                                         h3: ({ children, ...props }) => (
                                             <h3
-                                                className="font-display text-xl uppercase tracking-[0.08em] text-foreground mt-6 mb-2"
+                                                className="font-display text-xl tracking-[0.02em] text-foreground mt-6 mb-2"
                                                 {...props}
                                             >
                                                 {children}
