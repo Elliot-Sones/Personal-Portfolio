@@ -24,6 +24,18 @@ const focuses = [
 // Hackathon experience highlights
 const hackathons = [
   {
+    name: "Hack Canada 2026",
+    project: "CoCivil — Land Development Due Diligence Platform",
+    date: "March 2026",
+    logo: "/experience/cocivil_logo.svg",
+    image: "",
+    outcome: "Won Google Studio AI",
+    git: "https://github.com/Elliot-Sones/Hack_Canada",
+    description:
+      "Built a full-stack due diligence platform for Toronto land development. Generates planning submission packages from a plain-English query using AI, zoning analysis, 3D massing, and RAG-powered policy search.",
+    link: "https://cocivils.com",
+  },
+  {
     name: "NTangible",
     project: "Machine Learning Research Intern",
     date: "November 2025",
