@@ -24,6 +24,18 @@ const focuses = [
 // Hackathon experience highlights
 const hackathons = [
   {
+    name: "SPLxUTSPAN 2026 Data Challenge",
+    project: "Free Throw Prediction from Motion Capture",
+    date: "February 2026",
+    logo: "/experience/spl_logo.png",
+    image: "/experience/spl_image.png",
+    outcome: "Won 1st Place",
+    git: "https://github.com/Elliot-Sones/SPLxUTSPAN-2026-Data-Challenge",
+    description:
+      "Kaggle competition predicting basketball free throw outcomes from 69-joint motion capture data. Built per-player biomechanical models, temporal commitment analysis, kinetic chain features, and CNN ensembles to achieve 0.006148 MSE.",
+    link: "https://www.kaggle.com/competitions/spl-utspan-data-challenge-2026",
+  },
+  {
     name: "Hack Canada 2026",
     project: "CoCivil — Land Development Due Diligence Platform",
     date: "March 2026",
