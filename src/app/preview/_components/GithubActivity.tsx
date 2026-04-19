@@ -12,6 +12,39 @@ function formatDate(iso: string | null): string {
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DAY_LABELS = ["", "Mon", "", "Wed", "", "Fri", ""];
 
+function StreakCard() {
+  const [svg, setSvg] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/streak-stats?user=Elliot-Sones&theme=dark&hide_border=true")
+      .then((r) => r.text())
+      .then((text) => {
+        // Make the SVG scale to container width and transparent background so our card shows
+        const scaled = text
+          .replace(/width=['"]\d+(?:px)?['"]/i, 'width="100%"')
+          .replace(/height=['"]\d+(?:px)?['"]/i, "");
+        setSvg(scaled);
+      })
+      .catch(() => setSvg(null));
+  }, []);
+
+  if (svg) {
+    return (
+      <div
+        className="rounded-xl overflow-hidden flex items-center justify-center bg-[#151515] border border-[#2a2a2a] p-2"
+        dangerouslySetInnerHTML={{ __html: svg }}
+      />
+    );
+  }
+  return (
+    <div className="rounded-xl overflow-hidden flex items-center justify-center bg-[#151515] border border-[#2a2a2a] p-2">
+      <span className="text-white/40 text-xs font-[family-name:var(--font-jbmono)] tracking-[0.2em] uppercase">
+        Loading streak…
+      </span>
+    </div>
+  );
+}
+
 export function GithubActivity() {
   const [data, setData] = useState<GithubActivityData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -61,67 +94,9 @@ export function GithubActivity() {
 
   return (
     <div className="grid md:grid-cols-[minmax(0,1fr)_minmax(0,3fr)] gap-3 w-full">
-      {/* STREAK CARD — matches streak-stats.demolab.com dark theme */}
-      <div className="rounded-xl bg-[#151515] border border-[#2a2a2a] p-5">
-        <div className="grid grid-cols-3 gap-3 text-center h-full items-center">
-          {/* Total contributions */}
-          <div className="flex flex-col items-center justify-center">
-            <div className="text-3xl font-bold text-white leading-none">
-              {data.totalContributions.toLocaleString()}
-            </div>
-            <div className="mt-2 text-[11px] text-white/90">Total Contributions</div>
-            <div className="mt-1 text-[9px] text-white/50">
-              {formatDate(data.startDate)} - Present
-            </div>
-          </div>
+      {/* STREAK CARD — proxied via /api/streak-stats so same-origin + animations run */}
+      <StreakCard />
 
-          {/* Current streak */}
-          <div className="flex flex-col items-center justify-center border-x border-white/10">
-            <div className="relative flex items-center justify-center w-[76px] h-[76px]">
-              <svg
-                viewBox="0 0 76 76"
-                className="absolute inset-0 w-full h-full"
-                fill="none"
-              >
-                <circle cx="38" cy="38" r="34" stroke="#FB8C00" strokeWidth="3" fill="none" />
-              </svg>
-              <svg
-                className="absolute -top-1 left-1/2 -translate-x-1/2"
-                width="16"
-                height="20"
-                viewBox="0 0 32 40"
-                fill="#FB8C00"
-              >
-                <path d="M16 0 C 16 10, 6 10, 6 22 C 6 32, 10 38, 16 38 C 22 38, 26 32, 26 22 C 26 14, 22 12, 22 8 C 20 12, 18 12, 18 6 C 18 2, 16 0, 16 0 Z" />
-              </svg>
-              <span className="relative text-3xl font-bold text-white leading-none">
-                {data.currentStreak}
-              </span>
-            </div>
-            <div className="mt-2 text-[11px] text-[#FB8C00] font-semibold">
-              Current Streak
-            </div>
-            <div className="mt-1 text-[9px] text-white/50">
-              {data.currentStreakStart
-                ? `${formatDate(data.currentStreakStart)} - ${formatDate(data.currentStreakEnd)}`
-                : "—"}
-            </div>
-          </div>
-
-          {/* Longest streak */}
-          <div className="flex flex-col items-center justify-center">
-            <div className="text-3xl font-bold text-white leading-none">
-              {data.longestStreak}
-            </div>
-            <div className="mt-2 text-[11px] text-white/90">Longest Streak</div>
-            <div className="mt-1 text-[9px] text-white/50">
-              {data.longestStreakStart
-                ? `${formatDate(data.longestStreakStart)} - ${formatDate(data.longestStreakEnd)}`
-                : "—"}
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* CONTRIBUTION GRAPH — GitHub light mode, fills width responsively */}
       <div className="rounded-xl bg-white border border-gray-200 p-4 text-[#24292f] flex flex-col">
