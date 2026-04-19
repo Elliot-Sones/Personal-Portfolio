@@ -1,6 +1,7 @@
 "use client";
 
 import { Nav, PageHead, PageFooter } from "../_components/Nav";
+import { SocialIcon } from "../_components/SocialIcon";
 import { socials } from "../_lib/data";
 
 export default function ContactPage() {
@@ -24,8 +25,11 @@ export default function ContactPage() {
                   rel={s.href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
                   className="group flex items-center justify-between p-4 rounded-xl border border-white/10 bg-[#0a1410]/60 backdrop-blur-xl hover:border-[#00e87b]/40 transition"
                 >
-                  <span className="font-[family-name:var(--font-bebas)] text-xl tracking-[0.04em] text-[#f4ead5] group-hover:text-[#00e87b] transition">
-                    {s.label}
+                  <span className="flex items-center gap-3">
+                    <SocialIcon name={s.label} className="w-5 h-5 text-white/70 group-hover:text-[#00e87b] transition" />
+                    <span className="font-[family-name:var(--font-bebas)] text-xl tracking-[0.04em] text-[#f4ead5] group-hover:text-[#00e87b] transition">
+                      {s.label}
+                    </span>
                   </span>
                   <span className="font-[family-name:var(--font-jbmono)] text-[11px] tracking-[0.25em] uppercase text-white/50 group-hover:text-[#00e87b] transition">
                     →

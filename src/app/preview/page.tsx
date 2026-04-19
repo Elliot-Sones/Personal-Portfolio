@@ -3,6 +3,7 @@
 import RLSoccerGame from "@/components/RLSoccerGame";
 import { Nav, PageFooter } from "./_components/Nav";
 import { GithubActivity } from "./_components/GithubActivity";
+import { SocialIcon } from "./_components/SocialIcon";
 import { socials } from "./_lib/data";
 
 export default function PreviewLanding() {
@@ -37,8 +38,9 @@ export default function PreviewLanding() {
                   href={s.href}
                   target={s.href.startsWith("mailto:") ? undefined : "_blank"}
                   rel={s.href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
-                  className="px-3.5 py-1.5 rounded-full border border-white/15 font-[family-name:var(--font-jbmono)] text-[11px] tracking-[0.2em] uppercase text-white/60 hover:text-[#00e87b] hover:border-[#00e87b]/60 hover:bg-[#00e87b]/5 transition"
+                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/15 font-[family-name:var(--font-jbmono)] text-[11px] tracking-[0.2em] uppercase text-white/60 hover:text-[#00e87b] hover:border-[#00e87b]/60 hover:bg-[#00e87b]/5 transition"
                 >
+                  <SocialIcon name={s.label} />
                   {s.label}
                 </a>
               ))}
