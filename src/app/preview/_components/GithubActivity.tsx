@@ -3,17 +3,6 @@
 import { useEffect, useState } from "react";
 import type { GithubActivity as GithubActivityData } from "@/app/api/github-activity/route";
 
-// GitHub dark-mode palette (authentic)
-const DARK_LEVELS = ["#161b22", "#0e4429", "#006d32", "#26a641", "#39d353"];
-
-function levelFromCount(count: number): number {
-  if (count === 0) return 0;
-  if (count <= 3) return 1;
-  if (count <= 6) return 2;
-  if (count <= 9) return 3;
-  return 4;
-}
-
 function formatDate(iso: string | null): string {
   if (!iso) return "";
   const d = new Date(iso + "T00:00:00");
@@ -47,13 +36,13 @@ export function GithubActivity() {
 
   if (!data) {
     return (
-      <div className="p-6 rounded-xl border border-white/5 bg-[#0a1410]/60 backdrop-blur-xl font-[family-name:var(--font-jbmono)] text-[11px] tracking-[0.2em] uppercase text-white/40">
+      <div className="p-6 rounded-xl border border-white/5 bg-white/95 font-[family-name:var(--font-jbmono)] text-[11px] tracking-[0.2em] uppercase text-gray-400">
         Loading GitHub activity…
       </div>
     );
   }
 
-  // Month labels: first week that starts in a new month
+  // Month labels: first week that enters a new month (skip duplicates)
   const monthLabels: { weekIndex: number; label: string }[] = [];
   let lastMonth = -1;
   data.weeks.forEach((w, wi) => {
@@ -67,12 +56,14 @@ export function GithubActivity() {
     }
   });
 
+  // GitHub light-mode legend colors
+  const LIGHT_LEGEND = ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"];
+
   return (
-    <div className="grid md:grid-cols-[minmax(0,1fr)_minmax(0,2.2fr)] gap-5">
-      {/* STREAK CARD */}
+    <div className="grid md:grid-cols-[minmax(0,1fr)_minmax(0,2.3fr)] gap-5">
+      {/* STREAK CARD — stays Stadium Nights dark */}
       <div className="rounded-xl bg-[#0a1410]/60 backdrop-blur-xl border border-white/5 p-6">
-        <div className="grid grid-cols-3 gap-2 text-center">
-          {/* Total */}
+        <div className="grid grid-cols-3 gap-2 text-center h-full items-center">
           <div className="flex flex-col items-center justify-center py-2">
             <div className="font-[family-name:var(--font-bebas)] text-5xl tracking-[0.01em] text-[#f4ead5] leading-none">
               {data.totalContributions.toLocaleString()}
@@ -85,7 +76,6 @@ export function GithubActivity() {
             </div>
           </div>
 
-          {/* Current streak */}
           <div className="flex flex-col items-center justify-center border-x border-white/10 py-2">
             <div
               className="relative w-[92px] h-[92px] rounded-full flex items-center justify-center"
@@ -103,11 +93,12 @@ export function GithubActivity() {
               Current Streak
             </div>
             <div className="mt-1 font-[family-name:var(--font-jbmono)] text-[9px] tracking-[0.1em] uppercase text-white/40">
-              {data.currentStreakStart ? `${formatDate(data.currentStreakStart)} — ${formatDate(data.currentStreakEnd)}` : "—"}
+              {data.currentStreakStart
+                ? `${formatDate(data.currentStreakStart)} — ${formatDate(data.currentStreakEnd)}`
+                : "—"}
             </div>
           </div>
 
-          {/* Longest */}
           <div className="flex flex-col items-center justify-center py-2">
             <div className="font-[family-name:var(--font-bebas)] text-5xl tracking-[0.01em] text-[#f4ead5] leading-none">
               {data.longestStreak}
@@ -116,35 +107,39 @@ export function GithubActivity() {
               Longest
             </div>
             <div className="mt-1 font-[family-name:var(--font-jbmono)] text-[9px] tracking-[0.1em] uppercase text-white/40">
-              {data.longestStreakStart ? `${formatDate(data.longestStreakStart)} — ${formatDate(data.longestStreakEnd)}` : "—"}
+              {data.longestStreakStart
+                ? `${formatDate(data.longestStreakStart)} — ${formatDate(data.longestStreakEnd)}`
+                : "—"}
             </div>
           </div>
         </div>
       </div>
 
-      {/* CONTRIBUTION GRAPH */}
-      <div className="rounded-xl bg-[#0a1410]/60 backdrop-blur-xl border border-white/5 p-6">
+      {/* CONTRIBUTION GRAPH — GitHub light mode, white card, pixel-identical */}
+      <div className="rounded-xl bg-white border border-gray-200 p-5 text-[#24292f]">
         <div className="flex items-baseline justify-between mb-4">
-          <div className="text-[#f4ead5] text-sm font-semibold">
+          <div className="text-[15px] font-semibold text-[#24292f]">
             {data.totalContributions.toLocaleString()} contributions in the last year
           </div>
-          <div className="font-[family-name:var(--font-jbmono)] text-[10px] tracking-[0.2em] uppercase text-white/40">
+          <a
+            href={`https://github.com/${data.username}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[12px] text-[#57606a] hover:text-[#0969da] hover:underline"
+          >
             @{data.username}
-          </div>
+          </a>
         </div>
 
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full">
             {/* Month labels */}
-            <div
-              className="relative h-4 ml-[26px]"
-              style={{ width: `${data.weeks.length * 13}px` }}
-            >
+            <div className="relative h-4 ml-[30px]" style={{ width: `${data.weeks.length * 13}px` }}>
               {monthLabels.map((m) => (
                 <div
                   key={`${m.weekIndex}-${m.label}`}
-                  className="absolute font-[family-name:var(--font-jbmono)] text-[10px] text-white/50"
-                  style={{ left: `${m.weekIndex * 13}px` }}
+                  className="absolute text-[11px] text-[#57606a]"
+                  style={{ left: `${m.weekIndex * 13}px`, top: 0 }}
                 >
                   {m.label}
                 </div>
@@ -153,12 +148,12 @@ export function GithubActivity() {
 
             {/* Grid */}
             <div className="flex gap-[3px] mt-1">
-              {/* Day labels */}
-              <div className="flex flex-col gap-[3px] mr-[6px] pt-0">
+              {/* Day labels column */}
+              <div className="flex flex-col gap-[3px] mr-[6px]">
                 {DAY_LABELS.map((d, i) => (
                   <div
                     key={i}
-                    className="w-5 h-[10px] font-[family-name:var(--font-jbmono)] text-[10px] text-white/50 leading-[10px] text-right pr-1"
+                    className="w-6 h-[10px] text-[11px] text-[#57606a] leading-[10px] text-right pr-1"
                   >
                     {d}
                   </div>
@@ -173,12 +168,15 @@ export function GithubActivity() {
                     if (!day) {
                       return <div key={di} className="w-[10px] h-[10px]" />;
                     }
-                    const level = levelFromCount(day.count);
                     return (
                       <div
                         key={di}
-                        className="w-[10px] h-[10px] rounded-[2px] transition-colors"
-                        style={{ backgroundColor: DARK_LEVELS[level] }}
+                        className="w-[10px] h-[10px] rounded-[2px]"
+                        style={{
+                          backgroundColor: day.color, // exact color GitHub's API returns
+                          outline: day.count === 0 ? "1px solid rgba(27,31,36,0.06)" : "none",
+                          outlineOffset: "-1px",
+                        }}
                         title={`${day.count} contribution${day.count === 1 ? "" : "s"} on ${formatDate(day.date)}`}
                       />
                     );
@@ -187,13 +185,31 @@ export function GithubActivity() {
               ))}
             </div>
 
-            {/* Legend */}
-            <div className="flex items-center justify-end gap-1 mt-3 font-[family-name:var(--font-jbmono)] text-[10px] text-white/50">
-              <span>Less</span>
-              {DARK_LEVELS.map((c, i) => (
-                <div key={i} className="w-[10px] h-[10px] rounded-[2px]" style={{ backgroundColor: c }} />
-              ))}
-              <span>More</span>
+            {/* Footer: Learn-how link + Less/More legend */}
+            <div className="flex items-center justify-between mt-4">
+              <a
+                href="https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-github-profile/managing-contribution-settings-on-your-profile/viewing-contributions-on-your-profile"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[12px] text-[#0969da] hover:underline"
+              >
+                Learn how we count contributions
+              </a>
+              <div className="flex items-center gap-1 text-[11px] text-[#57606a]">
+                <span>Less</span>
+                {LIGHT_LEGEND.map((c, i) => (
+                  <div
+                    key={i}
+                    className="w-[10px] h-[10px] rounded-[2px]"
+                    style={{
+                      backgroundColor: c,
+                      outline: i === 0 ? "1px solid rgba(27,31,36,0.06)" : "none",
+                      outlineOffset: "-1px",
+                    }}
+                  />
+                ))}
+                <span>More</span>
+              </div>
             </div>
           </div>
         </div>
