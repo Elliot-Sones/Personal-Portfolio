@@ -52,7 +52,7 @@ export function WindowFrame({
     if (hydratedRef.current) return;
     hydratedRef.current = true;
     try {
-      const raw = localStorage.getItem(`preview-window:v3:${id}`);
+      const raw = localStorage.getItem(`preview-window:v2:${id}`);
       if (raw) {
         const saved = JSON.parse(raw) as Partial<WindowState>;
         setState({
@@ -71,7 +71,7 @@ export function WindowFrame({
   const save = (next: WindowState) => {
     setState(next);
     try {
-      localStorage.setItem(`preview-window:v3:${id}`, JSON.stringify(next));
+      localStorage.setItem(`preview-window:v2:${id}`, JSON.stringify(next));
     } catch {
       /* ignore */
     }
@@ -153,6 +153,18 @@ export function WindowFrame({
         <div className={`flex-1 min-h-0 ${noScroll ? "overflow-hidden" : "overflow-auto"} ${bodyClassName}`}>
           {children}
         </div>
+        {/* Resize handle indicator (bottom-right corner) */}
+        <svg
+          aria-hidden
+          className="pointer-events-none absolute bottom-1 right-1 opacity-30 group-hover:opacity-70 transition-opacity"
+          width="10"
+          height="10"
+          viewBox="0 0 10 10"
+        >
+          <line x1="0" y1="9" x2="9" y2="0" stroke="#f4ead5" strokeWidth="0.75" />
+          <line x1="4" y1="9" x2="9" y2="4" stroke="#f4ead5" strokeWidth="0.75" />
+          <line x1="8" y1="9" x2="9" y2="8" stroke="#f4ead5" strokeWidth="0.75" />
+        </svg>
       </div>
     </Rnd>
   );
