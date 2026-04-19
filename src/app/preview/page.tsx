@@ -14,20 +14,20 @@ export default function PreviewLanding() {
         {/* HERO */}
         <section className="grid md:grid-cols-[1.1fr_1fr] gap-8 md:gap-10 items-start pb-6">
           <div>
-            <div className="font-[family-name:var(--font-jbmono)] text-[11px] tracking-[0.3em] uppercase text-[#00e87b] flex items-center gap-3 mb-4">
+            <div className="font-[family-name:var(--font-jbmono)] text-[11px] tracking-[0.3em] uppercase text-[#00e87b] flex items-center gap-3 mb-6">
               <span className="w-7 h-px bg-[#00e87b]" />
               RL · ML · APPLIED AI
             </div>
-            <h1 className="font-[family-name:var(--font-bebas)] text-5xl sm:text-6xl lg:text-7xl tracking-[0.01em] text-[#f4ead5] leading-[0.9] mb-3 whitespace-nowrap">
+            <h1 className="font-[family-name:var(--font-bebas)] text-5xl sm:text-6xl lg:text-7xl tracking-[0.01em] text-[#f4ead5] leading-[0.9] mb-5 whitespace-nowrap">
               Elliot Sones.
             </h1>
             <div
-              className="font-[family-name:var(--font-jbmono)] text-sm tracking-[0.2em] uppercase text-[#00e87b] mb-4"
+              className="font-[family-name:var(--font-jbmono)] text-sm tracking-[0.2em] uppercase text-[#00e87b] mb-6"
               style={{ textShadow: "0 0 20px rgba(0, 232, 123, 0.35)" }}
             >
               ML Engineer &amp; CS Student
             </div>
-            <p className="text-sm sm:text-base leading-relaxed text-white/70 max-w-xl mb-5">
+            <p className="text-sm sm:text-base leading-relaxed text-white/70 max-w-xl mb-7">
               Computer Science student at Toronto Metropolitan University building intelligent agents and deep learning systems. Focused on reinforcement learning, transformer architectures, and applied AI.
             </p>
             <div className="flex flex-wrap gap-2">
@@ -66,7 +66,7 @@ export default function PreviewLanding() {
               @Elliot-Sones ↗
             </a>
           </div>
-          <GithubActivity compact />
+          <GithubActivity />
         </section>
 
       </main>
