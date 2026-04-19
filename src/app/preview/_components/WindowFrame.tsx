@@ -19,6 +19,8 @@ interface WindowFrameProps {
   defaultState: WindowState;
   minWidth?: number;
   minHeight?: number;
+  maxWidth?: number;
+  maxHeight?: number;
   zIndex?: number;
   onFocus?: (id: string) => void;
   bounds?: string;
@@ -36,6 +38,8 @@ export function WindowFrame({
   defaultState,
   minWidth = 280,
   minHeight = 180,
+  maxWidth,
+  maxHeight,
   zIndex = 1,
   onFocus,
   bounds = "parent",
@@ -84,6 +88,8 @@ export function WindowFrame({
       position={{ x: state.x, y: state.y }}
       minWidth={minWidth}
       minHeight={minHeight}
+      maxWidth={maxWidth}
+      maxHeight={maxHeight}
       dragHandleClassName={`window-drag-${id}`}
       onDragStop={(_, d) => save({ ...state, x: d.x, y: d.y })}
       onResizeStop={(_, __, ref, ___, pos) =>
@@ -153,18 +159,6 @@ export function WindowFrame({
         <div className={`flex-1 min-h-0 ${noScroll ? "overflow-hidden" : "overflow-auto"} ${bodyClassName}`}>
           {children}
         </div>
-        {/* Resize handle indicator (bottom-right corner) */}
-        <svg
-          aria-hidden
-          className="pointer-events-none absolute bottom-1 right-1 opacity-30 group-hover:opacity-70 transition-opacity"
-          width="10"
-          height="10"
-          viewBox="0 0 10 10"
-        >
-          <line x1="0" y1="9" x2="9" y2="0" stroke="#f4ead5" strokeWidth="0.75" />
-          <line x1="4" y1="9" x2="9" y2="4" stroke="#f4ead5" strokeWidth="0.75" />
-          <line x1="8" y1="9" x2="9" y2="8" stroke="#f4ead5" strokeWidth="0.75" />
-        </svg>
       </div>
     </Rnd>
   );
