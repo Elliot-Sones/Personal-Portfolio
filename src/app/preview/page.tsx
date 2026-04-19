@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import RLSoccerGame from "@/components/RLSoccerGame";
 import { Nav, PageFooter } from "./_components/Nav";
 import { GithubActivity } from "./_components/GithubActivity";
@@ -13,8 +12,8 @@ export default function PreviewLanding() {
 
       <main className="mx-auto max-w-[1480px] px-6 sm:px-10 lg:px-16 pt-36 sm:pt-40 pb-16">
         {/* HERO */}
-        <section className="grid md:grid-cols-[1.1fr_1fr] gap-10 md:gap-14 items-center min-h-[calc(100vh-10rem)] pb-8">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
+        <section className="grid md:grid-cols-[1.1fr_1fr] gap-10 md:gap-14 items-start pb-8">
+          <div>
             <div className="font-[family-name:var(--font-jbmono)] text-[11px] tracking-[0.3em] uppercase text-[#00e87b] flex items-center gap-3 mb-6">
               <span className="w-7 h-px bg-[#00e87b]" />
               RL · ML · APPLIED AI
@@ -44,16 +43,10 @@ export default function PreviewLanding() {
                 </a>
               ))}
             </div>
-          </motion.div>
+          </div>
 
           <div className="hidden md:block">
-            <div className="rounded-2xl border border-white/10 bg-[#0a1410]/60 backdrop-blur-xl p-4">
-              <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/5 font-[family-name:var(--font-jbmono)] text-[10px] tracking-[0.2em] uppercase text-white/50">
-                <span>RL Soccer · Live</span>
-                <span className="text-[#00e87b]">Interactive</span>
-              </div>
-              <RLSoccerGame />
-            </div>
+            <RLSoccerGame />
           </div>
         </section>
 
