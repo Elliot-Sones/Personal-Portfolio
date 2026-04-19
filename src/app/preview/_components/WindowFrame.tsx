@@ -52,7 +52,7 @@ export function WindowFrame({
     if (hydratedRef.current) return;
     hydratedRef.current = true;
     try {
-      const raw = localStorage.getItem(`preview-window:v2:${id}`);
+      const raw = localStorage.getItem(`preview-window:v3:${id}`);
       if (raw) {
         const saved = JSON.parse(raw) as Partial<WindowState>;
         setState({
@@ -71,7 +71,7 @@ export function WindowFrame({
   const save = (next: WindowState) => {
     setState(next);
     try {
-      localStorage.setItem(`preview-window:v2:${id}`, JSON.stringify(next));
+      localStorage.setItem(`preview-window:v3:${id}`, JSON.stringify(next));
     } catch {
       /* ignore */
     }
