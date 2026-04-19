@@ -9,10 +9,7 @@ export function Nav() {
 
   return (
     <>
-      <div className="bg-[#00e87b]/10 border-b border-[#00e87b]/30 text-[#00e87b] font-[family-name:var(--font-jbmono)] text-[11px] tracking-[0.25em] uppercase text-center py-2.5">
-        Preview · Multi-page · {pathname}
-      </div>
-      <header className="fixed top-10 left-0 right-0 z-50 px-4 sm:px-6 lg:px-8 pt-4">
+      <header className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 lg:px-8 pt-4">
         <nav className="mx-auto max-w-6xl flex items-center justify-between gap-4 px-5 py-3 rounded-xl bg-[#0a1410]/85 backdrop-blur-xl border border-white/[0.06]">
           <Link href="/preview" className="font-[family-name:var(--font-bebas)] text-lg tracking-[0.18em] text-[#f4ead5] hover:text-[#00e87b] transition">
             ELLIOT SONES
