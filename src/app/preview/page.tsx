@@ -1,19 +1,19 @@
 "use client";
 
 import RLSoccerGame from "@/components/RLSoccerGame";
-import { Nav, PageFooter } from "./_components/Nav";
+import { Nav } from "./_components/Nav";
 import { GithubActivity } from "./_components/GithubActivity";
 import { SocialIcon } from "./_components/SocialIcon";
 import { socials } from "./_lib/data";
 
 export default function PreviewLanding() {
   return (
-    <div className="relative isolate min-h-screen text-[#f4ead5]">
+    <div className="relative isolate h-screen overflow-hidden text-[#f4ead5]">
       <Nav />
 
-      <main className="mx-auto max-w-[1480px] px-6 sm:px-10 lg:px-16 pt-28 pb-4">
+      <main className="mx-auto max-w-[1480px] px-6 sm:px-10 lg:px-16 pt-24 pb-4 h-screen flex flex-col">
         {/* HERO */}
-        <section className="grid md:grid-cols-[1.1fr_1fr] gap-8 md:gap-10 items-start pb-6">
+        <section className="grid md:grid-cols-[1.1fr_1fr] gap-8 md:gap-10 items-start pb-4 flex-1 min-h-0">
           <div>
             <div className="font-[family-name:var(--font-jbmono)] text-[11px] tracking-[0.3em] uppercase text-[#00e87b] flex items-center gap-3 mb-6">
               <span className="w-7 h-px bg-[#00e87b]" />
@@ -53,7 +53,7 @@ export default function PreviewLanding() {
         </section>
 
         {/* GITHUB ACTIVITY — compact strip */}
-        <section className="pt-4 pb-2 border-t border-white/10">
+        <section className="pt-4 pb-2 border-t border-white/10 shrink-0">
           <div className="flex items-center justify-between mb-3">
             <div className="font-[family-name:var(--font-jbmono)] text-[11px] tracking-[0.3em] uppercase text-[#00e87b] flex items-center gap-3">
               <span className="w-7 h-px bg-[#00e87b]" />
@@ -72,8 +72,6 @@ export default function PreviewLanding() {
         </section>
 
       </main>
-
-      <PageFooter />
     </div>
   );
 }
