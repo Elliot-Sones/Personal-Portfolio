@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Nav, PageHead, PageFooter } from "../_components/Nav";
+import { GithubActivity } from "../_components/GithubActivity";
 import { fallbackProjects, focuses, type Project } from "../_lib/data";
 
 export default function ProjectsPage() {
@@ -28,6 +29,25 @@ export default function ProjectsPage() {
     <div className="relative isolate min-h-screen text-[#f4ead5]">
       <Nav />
       <main className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-40 sm:pt-48 pb-16">
+        {/* GitHub activity — moved from home */}
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-4">
+            <div className="font-[family-name:var(--font-jbmono)] text-[11px] tracking-[0.3em] uppercase text-[#00e87b] flex items-center gap-3">
+              <span className="w-7 h-px bg-[#00e87b]" />
+              Live on GitHub
+            </div>
+            <a
+              href="https://github.com/Elliot-Sones"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-[family-name:var(--font-jbmono)] text-[10px] tracking-[0.2em] uppercase text-white/50 hover:text-[#00e87b] transition"
+            >
+              @Elliot-Sones ↗
+            </a>
+          </div>
+          <GithubActivity />
+        </section>
+
         <PageHead number="03" label="Projects" title="Personal Projects." tagline="Deep learning, RL, transformers — built from scratch." />
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
