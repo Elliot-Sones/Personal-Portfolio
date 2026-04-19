@@ -10,7 +10,6 @@ const descriptions: Record<string, string> = {
   about: "Soccer, anime, music, Portugal, and the rest of me.",
   experience: "Hackathons, internships, and the work behind the wins.",
   projects: "Deep learning, RL, transformers — built from scratch.",
-  github: "Streaks, commits, and live activity.",
   certificates: "Stanford · DeepLearning.AI · U. Michigan.",
   contact: "Reach out. I read everything.",
 };
@@ -66,8 +65,62 @@ export default function PreviewLanding() {
           </div>
         </section>
 
+        {/* GITHUB ACTIVITY */}
+        <section className="py-16 border-t border-white/10">
+          <div className="flex items-baseline justify-between mb-8">
+            <div>
+              <div className="font-[family-name:var(--font-jbmono)] text-[11px] tracking-[0.3em] uppercase text-[#00e87b] flex items-center gap-3">
+                <span className="w-7 h-px bg-[#00e87b]" />
+                Building in public
+              </div>
+              <h2 className="font-[family-name:var(--font-bebas)] text-4xl sm:text-5xl tracking-[0.01em] text-[#f4ead5] mt-3 leading-none">
+                Live on GitHub.
+              </h2>
+            </div>
+            <a
+              href="https://github.com/Elliot-Sones"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-[family-name:var(--font-jbmono)] text-[11px] tracking-[0.25em] uppercase text-white/60 hover:text-[#00e87b] transition"
+            >
+              @Elliot-Sones ↗
+            </a>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-5 mb-5">
+            <div className="p-6 rounded-xl bg-[#0a1410]/60 backdrop-blur-xl border border-white/5 flex items-center justify-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://streak-stats.demolab.com?user=Elliot-Sones&theme=dark&hide_border=true&background=0a1410&stroke=f4ead5&ring=00e87b&fire=00e87b&currStreakLabel=00e87b&sideLabels=f4ead5&sideNums=f4ead5&currStreakNum=f4ead5&dates=f4ead5"
+                alt="GitHub streak stats"
+                className="w-full max-w-md"
+              />
+            </div>
+            <div className="p-6 rounded-xl bg-[#0a1410]/60 backdrop-blur-xl border border-white/5 flex items-center justify-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://github-readme-stats.vercel.app/api?username=Elliot-Sones&show_icons=true&theme=dark&hide_border=true&bg_color=0a1410&title_color=00e87b&text_color=f4ead5&icon_color=00e87b"
+                alt="GitHub stats"
+                className="w-full max-w-md"
+              />
+            </div>
+          </div>
+          <div className="p-6 rounded-xl bg-[#0a1410]/60 backdrop-blur-xl border border-white/5">
+            <div className="font-[family-name:var(--font-jbmono)] text-[11px] tracking-[0.25em] uppercase text-white/50 mb-4">
+              Last 12 months
+            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://ghchart.rshah.org/00e87b/Elliot-Sones"
+              alt="GitHub contribution grid"
+              className="w-full"
+              style={{ filter: "brightness(1.1)" }}
+            />
+          </div>
+        </section>
+
         {/* SECTION CARDS */}
-        <section className="py-10 border-t border-white/10">
+        <section className="py-16 border-t border-white/10">
           <div className="font-[family-name:var(--font-jbmono)] text-[11px] tracking-[0.3em] uppercase text-white/50 mb-8">
             Explore
           </div>

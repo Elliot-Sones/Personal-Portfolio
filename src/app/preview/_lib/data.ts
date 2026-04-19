@@ -211,7 +211,6 @@ export const pages = [
   { slug: "about", label: "About", number: "01" },
   { slug: "experience", label: "Experience", number: "02" },
   { slug: "projects", label: "Projects", number: "03" },
-  { slug: "github", label: "GitHub", number: "04" },
-  { slug: "certificates", label: "Certificates", number: "05" },
-  { slug: "contact", label: "Contact", number: "06" },
+  { slug: "certificates", label: "Certificates", number: "04" },
+  { slug: "contact", label: "Contact", number: "05" },
 ];
