@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { use } from "react";
+import { Nav, PageFooter } from "../../_components/Nav";
 
 const caseStudies: Record<string, {
   title: string;
@@ -13,7 +14,7 @@ const caseStudies: Record<string, {
   "rl-soccer": {
     title: "Teaching an Agent to Play Soccer.",
     subtitle:
-      "A PPO agent trained to play soccer from a custom 2D environment — the one you can play against in the hero on the home page.",
+      "A PPO agent trained to play soccer from a custom 2D environment — the one you can play against on the home page.",
     label: "Case Study · Reinforcement Learning",
     meta: [
       { label: "Stack", value: "PyTorch · Gymnasium · Canvas" },
@@ -64,59 +65,40 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
   const cs = caseStudies[slug] ?? fallback;
 
   return (
-    <div className="relative isolate min-h-screen text-[#f4ead5] font-[family-name:var(--font-jbmono)]">
-      <div className="bg-[#fbbf24]/10 border-b border-[#fbbf24]/30 text-[#fbbf24] text-[11px] tracking-[0.25em] uppercase text-center py-2.5">
-        Preview · Sub-page · /preview/projects/{slug}
-      </div>
+    <div className="relative isolate min-h-screen text-[#f4ead5]">
+      <Nav />
+      <main className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pt-40 sm:pt-48 pb-16">
+        <Link
+          href="/preview/projects"
+          className="font-[family-name:var(--font-jbmono)] text-[11px] tracking-[0.25em] uppercase text-white/50 hover:text-[#00e87b] transition mb-6 inline-block"
+        >
+          ← All projects
+        </Link>
 
-      <header className="fixed top-2 left-0 right-0 z-50 px-4 sm:px-6 lg:px-8 pt-4">
-        <nav className="mx-auto max-w-6xl flex items-center justify-between gap-4 px-5 py-3 rounded-xl bg-[#0a1410]/80 backdrop-blur-xl border border-white/[0.06]">
-          <div className="flex items-center gap-4">
-            <Link href="/preview" className="text-[11px] tracking-[0.25em] uppercase text-white/60 hover:text-[#00e87b] transition">
-              ← Home
-            </Link>
-            <div className="w-px h-4 bg-white/15" />
-            <div className="font-[family-name:var(--font-bebas)] text-lg tracking-[0.18em] text-[#f4ead5]">
-              ELLIOT SONES
-            </div>
-          </div>
-          <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-[#00e87b]/10 border border-[#00e87b]/30 text-[10px] tracking-[0.15em] uppercase text-[#00e87b]">
-            <span className="w-1.5 h-1.5 bg-[#00e87b] rounded-full" />
-            <span>{slug.toUpperCase()}</span>
-          </div>
-        </nav>
-      </header>
+        <div className="font-[family-name:var(--font-jbmono)] text-[11px] tracking-[0.3em] uppercase text-[#00e87b] flex items-center gap-3 mb-4">
+          <span className="w-7 h-px bg-[#00e87b]" />
+          {cs.label}
+        </div>
+        <h1 className="font-[family-name:var(--font-bebas)] text-5xl sm:text-7xl tracking-[0.01em] leading-[0.9] mb-6">
+          {cs.title}
+        </h1>
+        <p className="text-lg sm:text-xl leading-relaxed text-white/75 mb-10 max-w-3xl">{cs.subtitle}</p>
 
-      <main className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pt-32 sm:pt-40 pb-20">
-        <section className="py-12">
-          <div className="max-w-3xl">
-            <div className="text-[11px] tracking-[0.3em] uppercase text-[#00e87b] flex items-center gap-3 mb-6">
-              <span className="w-7 h-px bg-[#00e87b]" />
-              {cs.label}
+        <div className="flex flex-wrap gap-8 py-5 border-y border-white/10 mb-10">
+          {cs.meta.map((m) => (
+            <div key={m.label}>
+              <div className="font-[family-name:var(--font-jbmono)] text-[10px] tracking-[0.25em] uppercase text-white/50">{m.label}</div>
+              <div className="text-sm text-[#f4ead5] mt-1">{m.value}</div>
             </div>
-            <h1 className="font-[family-name:var(--font-bebas)] text-6xl sm:text-7xl tracking-[0.01em] leading-[0.9] mb-6">
-              {cs.title}
-            </h1>
-            <p className="font-sans text-lg sm:text-xl leading-relaxed text-white/75 mb-10">
-              {cs.subtitle}
-            </p>
-            <div className="flex flex-wrap gap-8 py-5 border-y border-white/10">
-              {cs.meta.map((m) => (
-                <div key={m.label}>
-                  <div className="text-[10px] tracking-[0.25em] uppercase text-white/50">{m.label}</div>
-                  <div className="text-sm text-[#f4ead5] mt-1 font-sans">{m.value}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+          ))}
+        </div>
 
-        <div className="aspect-video rounded-xl border border-white/10 bg-gradient-to-br from-[#00e87b]/5 to-[#0a1410]/80 flex items-center justify-center text-[11px] tracking-[0.25em] uppercase text-white/40 my-10">
+        <div className="aspect-video rounded-xl border border-white/10 bg-gradient-to-br from-[#00e87b]/5 to-[#0a1410]/80 flex items-center justify-center font-[family-name:var(--font-jbmono)] text-[11px] tracking-[0.25em] uppercase text-white/40 mb-10">
           [ Screenshot or embedded demo ]
         </div>
 
-        {cs.sections.length > 0 && (
-          <article className="max-w-3xl mx-auto font-sans">
+        {cs.sections.length > 0 ? (
+          <article className="max-w-3xl">
             {cs.sections.map((sec) => (
               <div key={sec.heading}>
                 <h2 className="font-[family-name:var(--font-bebas)] text-4xl tracking-[0.02em] text-[#f4ead5] mt-12 mb-4">
@@ -132,7 +114,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
 
             {slug === "rl-soccer" && (
               <div className="my-10 p-6 rounded-xl border border-white/10 bg-[#0a1410]/60 backdrop-blur-xl">
-                <div className="text-[11px] tracking-[0.25em] uppercase text-white/50 mb-3">
+                <div className="font-[family-name:var(--font-jbmono)] text-[11px] tracking-[0.25em] uppercase text-white/50 mb-3">
                   Reward Curve · 2.3M Steps
                 </div>
                 <svg viewBox="0 0 800 250" className="w-full h-auto">
@@ -156,48 +138,24 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
             )}
 
             <div className="flex flex-wrap gap-3 my-10">
-              <Link
-                href="/preview"
-                className="px-6 py-3 rounded-md bg-[#00e87b] text-[#0a1410] text-[11px] tracking-[0.25em] uppercase font-bold hover:brightness-110 transition"
-              >
+              <Link href="/preview" className="px-6 py-3 rounded-md bg-[#00e87b] text-[#0a1410] font-[family-name:var(--font-jbmono)] text-[11px] tracking-[0.25em] uppercase font-bold hover:brightness-110 transition">
                 Play on home ↗
               </Link>
               <a
                 href="https://github.com/Elliot-Sones"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-6 py-3 rounded-md border border-[#00e87b] text-[#00e87b] text-[11px] tracking-[0.25em] uppercase font-bold hover:bg-[#00e87b]/10 transition"
+                className="px-6 py-3 rounded-md border border-[#00e87b] text-[#00e87b] font-[family-name:var(--font-jbmono)] text-[11px] tracking-[0.25em] uppercase font-bold hover:bg-[#00e87b]/10 transition"
               >
                 View on GitHub ↗
               </a>
             </div>
           </article>
+        ) : (
+          <p className="text-white/60 max-w-xl">This project doesn&apos;t have a full case study yet. Writeup in progress.</p>
         )}
-
-        <section className="mt-16 pt-8 border-t border-white/10">
-          <div className="text-[11px] tracking-[0.25em] uppercase text-[#00e87b] mb-6">More projects</div>
-          <div className="grid sm:grid-cols-3 gap-4">
-            {["transformers", "rl-fighting-agent", "neural-networks-fundamentals"]
-              .filter((s) => s !== slug)
-              .slice(0, 3)
-              .map((s) => (
-                <Link
-                  key={s}
-                  href={`/preview/projects/${s}`}
-                  className="p-5 rounded-xl border border-white/10 bg-[#0a1410]/60 backdrop-blur-xl hover:border-[#00e87b]/30 hover:-translate-y-1 transition"
-                >
-                  <div className="aspect-video mb-4 rounded-lg bg-gradient-to-br from-[#00e87b]/5 to-[#0a1410]/80" />
-                  <div className="font-[family-name:var(--font-bebas)] text-lg tracking-[0.02em] text-[#f4ead5] capitalize">
-                    {s.replace(/-/g, " ")}
-                  </div>
-                  <div className="text-[11px] tracking-[0.25em] uppercase text-[#00e87b] mt-3">
-                    Read case study →
-                  </div>
-                </Link>
-              ))}
-          </div>
-        </section>
       </main>
+      <PageFooter />
     </div>
   );
 }
