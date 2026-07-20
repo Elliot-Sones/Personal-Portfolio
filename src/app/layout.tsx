@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Syne } from "next/font/google";
+import {
+  Fraunces,
+  Geist,
+  Geist_Mono,
+  JetBrains_Mono,
+  Syne,
+} from "next/font/google";
 import "./globals.css";
-import { PixelSoccerField } from "@/components/PixelSoccerField";
-import { ThemeProvider } from "@/components/ThemeContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,12 +23,30 @@ const syne = Syne({
   subsets: ["latin"],
 });
 
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  axes: ["opsz"],
+});
+
+const jbMono = JetBrains_Mono({
+  variable: "--font-jbmono",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
-  title: "Elliot's Portfolio",
+  metadataBase: new URL("https://elliotsones.com"),
+  title: "Elliot Sones — ML Engineer",
   description:
-    "Personal website for Elliot showcasing skills, work, projects, and ways to get in touch.",
+    "Computer Science student at TMU building intelligent agents and deep learning systems. Reinforcement learning, transformer architectures, applied AI.",
   icons: {
     icon: "/icon.png",
+  },
+  openGraph: {
+    title: "Elliot Sones — ML Engineer",
+    description:
+      "Building intelligent agents — and the infra that lets them play.",
+    images: ["/icon.png"],
   },
 };
 
@@ -36,12 +58,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${syne.variable} antialiased bg-field text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} ${syne.variable} ${fraunces.variable} ${jbMono.variable} antialiased`}
       >
-        <ThemeProvider>
-          <PixelSoccerField />
-          {children}
-        </ThemeProvider>
+        {children}
       </body>
     </html>
   );

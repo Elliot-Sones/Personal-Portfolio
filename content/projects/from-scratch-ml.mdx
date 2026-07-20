@@ -1,0 +1,24 @@
+---
+title: "ML, From Scratch"
+hook: "No high-level wrappers: MLP, CNN, RNN, and Transformer architectures implemented from first principles — each with a live demo you can try."
+year: "2025"
+badges: ["fundamentals"]
+tech: ["Python", "NumPy", "PyTorch", "Transformers"]
+repo: "https://github.com/Elliot-Sones/Neural_Networks_Fundamentals"
+order: 4
+---
+
+## Why from scratch
+
+Frameworks hide exactly the parts you should understand. So I built the parts — every model implemented from first principles, no high-level ML wrappers:
+
+- **Multi-Layer Perceptron** — MNIST digit classification, 784 → 256 → 128 → 10 with ReLU, Adam, He init, L2 regularization. 97%+ test accuracy. [Live demo](https://huggingface.co/spaces/Eli181927/elliot_digit_classifier/)
+- **Convolutional Neural Network** — two-digit classification (0–99). 97.88% accuracy. [Live demo](https://huggingface.co/spaces/Eli181927/0-99_Classification)
+- **Recurrent Neural Network** — doodle classification across 10 animals. 94.36% accuracy. [Live demo](https://huggingface.co/spaces/Eli181927/Classification-doodle-RNN)
+- **Transformers** — "Attention Is All You Need" re-implemented end-to-end: an encoder for emotion analysis, a decoder trained as a Shakespeare generator, and the full encoder–decoder translating English to French. [Live demo](https://huggingface.co/spaces/Eli181927/Transformer_Demo)
+
+## What I learned
+
+Backprop stops being magic the third time you derive it. The payoff shows up everywhere else: when a training run misbehaves in PyTorch, I have a mental model of what's actually happening in the graph — because I've built the graph.
+
+The fundamentals repo is [here](https://github.com/Elliot-Sones/Neural_Networks_Fundamentals) and the transformer deep-dive (encoder/decoder walkthroughs) is [here](https://github.com/Elliot-Sones/Transformers).

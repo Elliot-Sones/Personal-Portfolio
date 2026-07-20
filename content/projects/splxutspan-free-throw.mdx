@@ -1,0 +1,31 @@
+---
+title: "Free-Throw Prediction from Motion Capture"
+hook: "1st place, SPLxUTSPAN 2026 Data Challenge — predicting where a free throw lands (angle, depth, left/right) from 69 joints of motion-capture data."
+year: "2026"
+badges: ["1st place"]
+tech: ["Python", "scikit-learn", "1D CNN", "Kaggle"]
+repo: "https://github.com/Elliot-Sones/SPLxUTSPAN-2026-Data-Challenge"
+demo: "https://www.kaggle.com/competitions/spl-utspan-data-challenge-2026"
+order: 2
+---
+
+## The problem
+
+Over 1–2 seconds, a basketball player coordinates 69 tracked body joints to propel a ball toward the hoop. Given 240 frames of motion capture at 60fps — 207 features per frame — predict three scaled outcomes describing where the ball lands: its **angle**, **depth**, and **left/right offset** relative to the hoop. 345 training shots, 113 test shots, 5 players; scored on mean MSE across the three targets.
+
+## Approach
+
+The core insight: every player shoots differently — not just in skill, but in mechanism. A global model averages over player-specific biomechanics and captures none of them. The final pipeline treats each player independently at every stage.
+
+- **Per-player locally weighted regression.** Each prediction is built from the player's own data, weighted by biomechanical similarity via a Gaussian kernel — each test shot is explained primarily by the most similar training shots from that same player. (−13% error)
+- **Temporal commitment points.** Different targets are decided at different moments: depth commits ~930ms before release (forward momentum fixed mid-jump), angle ~550ms before (elbow geometry locked), left/right only after release (final wrist snap). Features are extracted at the frame each outcome is actually decided.
+- **Kinetic chain + hand physics.** Features track energy transfer from hips through trunk and shoulder to the fingertips — fingertip velocities, finger spread, wrist flexion and curl across all five fingers.
+- **Velocity CNN + Position CNN.** Two 1D CNNs over the raw sequences — one on joint velocities, one on positions. They fail on different shots (predictions correlate at only r=0.63 for depth), which made the ensemble worth more than either alone.
+
+Final leaderboard score: **0.006148 MSE**, first place.
+
+## What I learned
+
+Feature engineering isn't dead. The end-to-end models alone were good; the model with biomechanically-motivated features was better. Knowing something about the domain — how a shooting motion actually chains from legs to wrist — was worth more than extra layers.
+
+Full writeup and code in the [repo](https://github.com/Elliot-Sones/SPLxUTSPAN-2026-Data-Challenge); there's also a [presentation walkthrough](https://www.youtube.com/watch?v=W278CqHmPhU).

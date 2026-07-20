@@ -1,0 +1,36 @@
+---
+title: "RL Soccer Agent"
+hook: "A tabular Q-learning agent that learns to play 2-a-side soccer in your browser — and the playable proof that RL is more subtle than the tutorials suggest."
+year: "2026"
+badges: ["playable"]
+tech: ["TypeScript", "Q-learning", "React", "Canvas"]
+repo: "https://github.com/Elliot-Sones"
+order: 1
+---
+
+<RLDemo />
+
+## The problem
+
+Most RL demos stop at CartPole. I wanted an agent I could actually *play against* — something with enough state structure that the interesting parts of reinforcement learning (exploration decay, reward shaping, curriculum) would stop being abstract.
+
+The game: 2-a-side soccer on a 10×7 grid. The agent sees the ball, both players, and the goals; it picks one of five actions per tick; it trains live in the browser tab you're reading this in.
+
+## How it works
+
+The agent is tabular Q-learning with an ε-greedy policy — no neural network, on purpose. When the function approximator is a lookup table, you can watch every update happen and debug by inspection:
+
+```python
+# the whole idea, in one line
+Q[s][a] += alpha * (reward + gamma * max(Q[s']) - Q[s][a])
+```
+
+- **State** (~discretized): ball position, agent position, opponent position, ball ownership
+- **Reward**: goal scored, plus small shaping terms (moving the ball toward goal, stealing possession)
+- **Training**: self-play against a scripted bot, ε decaying from 1.0 → 0.01, ~5,000 episodes to competence
+
+## What I learned
+
+The first version learned to *camp its own goal*. Shaping rewards that looked sensible — "reward moving toward the opponent's goal" — created a local optimum where never risking possession beat trying to score. The fix was a curriculum: train scoring against an empty net first, then introduce the defender. That ordering mattered more than any hyperparameter I touched.
+
+The full writeup of what broke is in [Learning Blogs](/learning).

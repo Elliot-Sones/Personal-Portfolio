@@ -10,5 +10,10 @@
 - Control bar elements must fit without cutoff in both modes
 
 ## Key Components
-- `src/app/page.tsx` — main portfolio page
-- `src/components/RLSoccerGame.tsx` — RL soccer mini-game with training/1v1 modes
+- `src/app/(site)/` — new portfolio (sidebar shell, home, projects, competitions, learning, experience)
+- `src/app/v1/` — archived soccer-theme site (do not restyle)
+- `src/lib/site-data.ts` — content data (vitals, working/learning, competitions, experience, certificates)
+- `src/lib/github.ts` + `src/lib/ai-usage.ts` — live stats data sources
+- `scripts/update-ai-usage.mjs` — regenerates `data/ai-usage.json` (`npm run stats`)
+- `content/projects/*.mdx`, `content/learning/*.mdx` — case studies and essays
+- `src/components/RLSoccerGame.tsx` — RL soccer mini-game, embedded in the RL case study

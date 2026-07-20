@@ -1,0 +1,30 @@
+---
+title: "CoCivil — Land Development Due Diligence"
+hook: "Won Google Studio AI at Hack Canada 2026 — turns a plain-English query about an Ontario property into a complete planning submission package."
+year: "2026"
+badges: ["winner"]
+tech: ["Next.js", "RAG", "LLM agents", "Three.js"]
+repo: "https://github.com/Elliot-Sones/Hack_Canada"
+demo: "https://cocivils.com"
+order: 3
+---
+
+## The problem
+
+Due diligence for land development means weeks of zoning bylaw reading, setback math, and policy archaeology before you know whether a lot is even buildable. We built CoCivil at Hack Canada to compress that into a query.
+
+## What it does
+
+Type "What can I build at 123 Queen West?" and the platform:
+
+- **Parses the query** into an address + intent with an LLM agent
+- **Pulls parcel data** from Toronto Open Data and evaluates it against Zoning By-law 569-2013 — designations, overlays, setbacks, height limits, lot coverage — with adjacency analysis and frontage detection for full site context
+- **Reasons over planning law** with an AI assistant grounded in the Planning Act, the Provincial Planning Statement (2024), and Ontario Regulation 462/24 — proposing variance strategies and approval pathways with citations
+- **Generates 3D massing** from plain English (Three.js), plus an interactive 2D floor-plan editor with real-time Ontario Building Code compliance checking
+- **Assembles the submission package** — compliance matrices, planning rationales, shadow studies — auditable and flagged for professional review
+
+## What I learned
+
+RAG quality is retrieval quality. The demo moment that won the judges over wasn't the generation — it was that every claim in the package linked back to the bylaw section it came from. Grounding is the feature; the LLM is the plumbing.
+
+Built in 36 hours with a team. My part: the RAG policy search and the agent orchestration.

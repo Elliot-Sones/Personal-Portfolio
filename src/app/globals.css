@@ -622,3 +622,120 @@ input[type="range"]::-moz-range-thumb:hover {
   transform: scale(1.2);
   box-shadow: 0 0 20px var(--glow);
 }
+
+/* ============================================
+   SITE v2 — Warm Paper design system
+   ============================================ */
+@theme {
+  --color-paper: #f8f4eb;
+  --color-raised: #fffdf7;
+  --color-sunken: #f0ead9;
+  --color-ink: #1c1a15;
+  --color-inksoft: #4a463c;
+  --color-mute: #8a8375;
+  --color-faint: #a39b88;
+  --color-line: #e2dac5;
+  --color-ember: #b3542e;
+  --color-claude: #d97757;
+  --color-codex: #10a37f;
+  --color-kimi: #6d5bd0;
+  --color-live: #3d9970;
+  --color-gh0: #ece5d2;
+  --color-gh1: #aae6b8;
+  --color-gh2: #6ccb7f;
+  --color-gh3: #3da85c;
+  --color-gh4: #267a41;
+}
+
+/* v2 shared primitives */
+.site-card {
+  background: var(--color-raised);
+  border: 1px solid var(--color-line);
+  border-radius: 6px;
+}
+
+.site-h {
+  font-family: var(--font-jbmono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-mute);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.site-h::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--color-line);
+}
+.site-h b {
+  color: var(--color-ember);
+  font-weight: 500;
+}
+
+/* draw-in underline for nav + links */
+.u-draw {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  transition: background-size 0.25s ease;
+}
+.u-draw:hover {
+  background-size: 100% 1px;
+}
+
+/* status badges */
+.badge {
+  font-family: var(--font-jbmono), monospace;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2.5px 7px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.badge-live { background: #dff2e5; color: #267a41; border: 1px solid #9ed4ae; }
+.badge-ship { background: #f6e3d8; color: #b3542e; border: 1px solid #dfa27e; }
+.badge-plain { border: 1px solid #c9c2b0; color: var(--color-mute); }
+
+/* noise texture (self-contained SVG turbulence, ~4%) */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* selection + focus in ember */
+::selection {
+  background: rgba(179, 84, 46, 0.25);
+}
+:focus-visible {
+  outline: 2px solid var(--color-ember);
+  outline-offset: 2px;
+}
+
+/* live dot pulse */
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--color-live);
+  display: inline-block;
+  animation: live-pulse 2.2s ease-in-out infinite;
+}
+
+/* responsible motion */
+@media (prefers-reduced-motion: reduce) {
+  .live-dot { animation: none; }
+  .u-draw { transition: none; }
+}
