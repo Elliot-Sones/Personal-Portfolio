@@ -30,28 +30,39 @@ function Hero() {
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col gap-12">
+    <div className="mx-auto flex max-w-[880px] flex-col gap-14">
       <div className="reveal" style={{ "--reveal-i": 0 } as React.CSSProperties}>
         <Hero />
       </div>
 
-      {/* Working on */}
       <section className="reveal" style={{ "--reveal-i": 1 } as React.CSSProperties}>
         <SectionHeader title="What I'm working on" />
         <WorkCards items={workCards} />
       </section>
 
-      {/* Live strip */}
       <section className="reveal" style={{ "--reveal-i": 2 } as React.CSSProperties}>
-        <SectionHeader title="Live" />
-        <div className="mt-3.5 grid grid-cols-1 items-stretch gap-3.5 lg:grid-cols-2">
-          <AiUsagePanel />
-          <GitHubPanel />
-        </div>
+        <SectionHeader title="AI pair-programming" />
+        <AiUsagePanel />
       </section>
 
-      {/* Learning */}
       <section className="reveal" style={{ "--reveal-i": 3 } as React.CSSProperties}>
+        <SectionHeader
+          title="GitHub"
+          right={
+            <a
+              href="https://github.com/Elliot-Sones"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="u-draw transition-colors hover:text-ember"
+            >
+              Elliot-Sones ↗
+            </a>
+          }
+        />
+        <GitHubPanel />
+      </section>
+
+      <section className="reveal" style={{ "--reveal-i": 4 } as React.CSSProperties}>
         <SectionHeader title="What I'm learning" />
         <StatusList items={learningNow} />
       </section>
