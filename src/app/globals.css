@@ -631,20 +631,21 @@ input[type="range"]::-moz-range-thumb:hover {
   --color-raised: #fffdf7;
   --color-sunken: #f0ead9;
   --color-ink: #1c1a15;
-  --color-inksoft: #4a463c;
-  --color-mute: #8a8375;
-  --color-faint: #a39b88;
+  --color-inksoft: #46422f;
+  --color-mute: #6f6959;
+  --color-faint: #8a8375;
   --color-line: #e2dac5;
   --color-ember: #b3542e;
+  --color-emberdeep: #8d3f1e;
   --color-claude: #d97757;
   --color-codex: #10a37f;
   --color-kimi: #6d5bd0;
   --color-live: #3d9970;
-  --color-gh0: #ece5d2;
-  --color-gh1: #aae6b8;
-  --color-gh2: #6ccb7f;
-  --color-gh3: #3da85c;
-  --color-gh4: #267a41;
+  --color-gh0: #ebe3cd;
+  --color-gh1: #eccfa4;
+  --color-gh2: #dd9c67;
+  --color-gh3: #c2662f;
+  --color-gh4: #8d3f1e;
 }
 
 /* v2 shared primitives */
@@ -656,7 +657,7 @@ input[type="range"]::-moz-range-thumb:hover {
 
 .site-h {
   font-family: var(--font-jbmono), monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--color-mute);
@@ -675,6 +676,69 @@ input[type="range"]::-moz-range-thumb:hover {
   font-weight: 500;
 }
 
+/* Editorial display type — Fraunces at full optical size, wonk on */
+.display-hed {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 1;
+  font-weight: 540;
+  letter-spacing: -0.028em;
+  line-height: 1.04;
+  color: var(--color-ink);
+  text-wrap: balance;
+}
+.display-hed em {
+  font-style: italic;
+  font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 1;
+  color: var(--color-ember);
+}
+
+/* Page titles — smaller display cut */
+.page-hed {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-variation-settings: "opsz" 90, "WONK" 0;
+  font-weight: 520;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  color: var(--color-ink);
+  text-wrap: balance;
+}
+
+/* Readable serif body — replaces tiny mono paragraphs */
+.prose-serif {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-variation-settings: "opsz" 14;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--color-inksoft);
+}
+
+/* Big statistic numerals */
+.stat-num {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-variation-settings: "opsz" 72;
+  font-variant-numeric: tabular-nums;
+  font-weight: 560;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+/* Hanging index numerals for editorial lists */
+.index-num {
+  font-family: var(--font-jbmono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--color-ember);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Ink frame that makes third-party dark embeds read as intentional */
+.sleeve {
+  background: var(--color-ink);
+  border: 1px solid var(--color-ink);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
 /* draw-in underline for nav + links */
 .u-draw {
   background-image: linear-gradient(currentColor, currentColor);
@@ -690,15 +754,15 @@ input[type="range"]::-moz-range-thumb:hover {
 /* status badges */
 .badge {
   font-family: var(--font-jbmono), monospace;
-  font-size: 8px;
+  font-size: 9px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  padding: 2.5px 7px;
+  padding: 3px 8px;
   border-radius: 3px;
   white-space: nowrap;
 }
-.badge-live { background: #dff2e5; color: #267a41; border: 1px solid #9ed4ae; }
-.badge-ship { background: #f6e3d8; color: #b3542e; border: 1px solid #dfa27e; }
+.badge-live { background: #dff2e5; color: #1e6b38; border: 1px solid #9ed4ae; }
+.badge-ship { background: #f6e3d8; color: #9c4523; border: 1px solid #dfa27e; }
 .badge-plain { border: 1px solid #c9c2b0; color: var(--color-mute); }
 
 /* noise texture (self-contained SVG turbulence, ~4%) */
@@ -734,8 +798,37 @@ input[type="range"]::-moz-range-thumb:hover {
   animation: live-pulse 2.2s ease-in-out infinite;
 }
 
+/* choreographed page load — one staggered rise, nothing else */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.reveal {
+  opacity: 0;
+  animation: rise-in 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(var(--reveal-i, 0) * 110ms);
+}
+
+/* hover arrow nudge for editorial list rows */
+.arrow-nudge {
+  display: inline-block;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+}
+.group:hover .arrow-nudge {
+  transform: translateX(4px);
+}
+
 /* responsible motion */
 @media (prefers-reduced-motion: reduce) {
   .live-dot { animation: none; }
   .u-draw { transition: none; }
+  .reveal { animation: none; opacity: 1; }
+  .arrow-nudge { transition: none; }
 }
+

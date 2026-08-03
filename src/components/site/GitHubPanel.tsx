@@ -2,26 +2,59 @@ import {
   getGithubActivity,
   getRecentCommits,
   relativeTime,
+  shortDate,
   type ContributionWeek,
+  type GithubActivity,
   type RecentCommit,
 } from "@/lib/github";
 
-function StreakCard() {
+function StreakStats({ activity }: { activity: GithubActivity }) {
+  const stats = [
+    {
+      num: activity.totalContributions,
+      label: "contributions",
+      sub: "past year",
+      ember: false,
+    },
+    {
+      num: activity.currentStreak,
+      label: "day streak",
+      sub: activity.currentStreakStart
+        ? `${shortDate(activity.currentStreakStart)} → today`
+        : "resting",
+      ember: true,
+    },
+    {
+      num: activity.longestStreak,
+      label: "longest streak",
+      sub:
+        activity.longestStreakStart && activity.longestStreakEnd
+          ? `${shortDate(activity.longestStreakStart)} → ${shortDate(activity.longestStreakEnd)}`
+          : "",
+      ember: false,
+    },
+  ];
+
   return (
-    <a
-      href="https://github.com/Elliot-Sones"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="mx-auto mb-3 block w-full max-w-[495px] overflow-hidden rounded-[6px] border border-line"
-    >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="https://streak-stats.demolab.com?user=Elliot-Sones&theme=dark&hide_border=true"
-        alt="Elliot's GitHub streak stats — total contributions, current streak, longest streak"
-        className="block w-full"
-        loading="lazy"
-      />
-    </a>
+    <div className="mb-4 grid grid-cols-3 divide-x divide-line rounded-[6px] border border-line">
+      {stats.map((s) => (
+        <div key={s.label} className="px-3.5 py-3">
+          <div
+            className={`stat-num text-[27px] leading-none ${s.ember ? "text-ember" : ""}`}
+          >
+            {s.num.toLocaleString("en-US")}
+          </div>
+          <div className="mt-1.5 font-[family-name:var(--font-jbmono)] text-[9.5px] uppercase tracking-[0.14em] text-mute">
+            {s.label}
+          </div>
+          {s.sub && (
+            <div className="mt-0.5 font-[family-name:var(--font-jbmono)] text-[9px] text-faint">
+              {s.sub}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -46,7 +79,7 @@ function ContributionCalendar({ weeks }: { weeks: ContributionWeek[] }) {
   const recent = weeks.slice(-26);
   return (
     <div>
-      <div className="grid grid-rows-7 grid-flow-col gap-[3px] h-[104px]">
+      <div className="grid h-[104px] grid-flow-col grid-rows-7 gap-[3px]">
         {recent.flatMap((week, wi) =>
           Array.from({ length: 7 }).map((_, di) => {
             const day = week.days.find((d) => d.weekday === di);
@@ -106,8 +139,8 @@ export async function GitHubPanel() {
   if (!activity) {
     return (
       <div className="site-card p-5">
-        <div className="font-[family-name:var(--font-jbmono)] text-[10px] uppercase tracking-[0.16em] text-mute mb-2">
-          GitHub — Elliot-Sones
+        <div className="mb-2 font-[family-name:var(--font-jbmono)] text-[10px] uppercase tracking-[0.16em] text-mute">
+          GitHub · Elliot-Sones
         </div>
         <p className="font-[family-name:var(--font-jbmono)] text-[11px] text-faint">
           GitHub data unavailable right now.
@@ -117,12 +150,19 @@ export async function GitHubPanel() {
   }
 
   return (
-    <div className="site-card p-5 h-full flex flex-col">
-      <div className="flex items-center justify-between font-[family-name:var(--font-jbmono)] text-[10px] uppercase tracking-[0.16em] text-mute mb-3">
-        <span>GitHub — {activity.username}</span>
+    <div className="site-card flex h-full flex-col p-5">
+      <div className="mb-3 flex items-center justify-between font-[family-name:var(--font-jbmono)] text-[10px] uppercase tracking-[0.16em] text-mute">
+        <a
+          href="https://github.com/Elliot-Sones"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="u-draw transition-colors hover:text-ember"
+        >
+          GitHub · {activity.username}
+        </a>
         <span className="live-dot" aria-label="live" />
       </div>
-      <StreakCard />
+      <StreakStats activity={activity} />
       <ContributionCalendar weeks={activity.weeks} />
       <CommitFeed commits={commits} />
     </div>

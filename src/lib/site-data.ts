@@ -6,6 +6,7 @@ export const socials = [
 ];
 
 export const navItems = [
+  { slug: "about", label: "About" },
   { slug: "experience", label: "Experience" },
   { slug: "projects", label: "Projects" },
   { slug: "competitions", label: "Competitions" },
@@ -32,24 +33,58 @@ export const focuses = [
   },
 ];
 
-export const workingOn: StatusItem[] = [
+export interface WorkCard {
+  title: string;
+  org: string; // context line under the title
+  detail: string;
+  badge: string;
+  tone: "live" | "ship" | "plain";
+  logo?: string;
+  logoDark?: boolean;
+  link?: string;
+  since?: string; // e.g. "May 2026"
+}
+
+export const workCards: WorkCard[] = [
   {
-    title: "whisper-flow",
-    detail: "Personal push-to-talk dictation for macOS",
-    badge: "building",
+    title: "Trajekt Sports",
+    org: "Operations Intern",
+    detail:
+      "Toronto sports-tech company behind the Trajekt Arc pitching robot, used by MLB teams to replicate real pitchers in batting practice.",
+    badge: "current",
     tone: "live",
+    logo: "/experience/trajekt_icon.png",
+    link: "https://www.trajektsports.com/",
+    since: "May 2026",
   },
   {
-    title: "probabilistic-pitcher-physics",
-    detail: "Pitcher physics modeling and validation from public Statcast data",
-    badge: "modeling",
-    tone: "plain",
+    title: "NTangible",
+    org: "ML Research Intern",
+    detail:
+      "Exploring real-world applications of AI/ML in sports psychology, combining technical development with performance analytics.",
+    badge: "current",
+    tone: "live",
+    logo: "/experience/ntangible_logo.png",
+    logoDark: true,
+    since: "Nov 2025",
   },
   {
-    title: "This portfolio",
-    detail: "Next.js 16 · MDX · live stats — you're looking at it",
-    badge: "shipping",
-    tone: "ship",
+    title: "SelfLearners",
+    org: "Co-founder & CTO",
+    detail:
+      "Building a global ecosystem that helps ambitious people become self-directed learners — community, mentorship, and proven methods.",
+    badge: "current",
+    tone: "live",
+    logo: "/experience/selflearners_logo.png",
+    link: "https://selflearners.io/",
+  },
+  {
+    title: "SMT Data Challenge",
+    org: "SportsMEDIA Technology",
+    detail: "Annual baseball analytics competition.",
+    badge: "in progress",
+    tone: "live",
+    logo: "/experience/smt_logo.png",
   },
 ];
 

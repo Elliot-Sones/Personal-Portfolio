@@ -9,7 +9,7 @@ import { SocialIcon } from "@/components/site/SocialIcon";
 function Wordmark() {
   return (
     <Link href="/" className="block group">
-      <div className="font-[family-name:var(--font-fraunces)] text-[24px] leading-[1.05] tracking-[-0.02em] whitespace-nowrap text-ink">
+      <div className="font-[family-name:var(--font-fraunces)] text-[26px] leading-[1.05] tracking-[-0.02em] whitespace-nowrap text-ink">
         <HoverMorph>
           Elliot Sones<span className="text-ember">.</span>
         </HoverMorph>
@@ -27,7 +27,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   return (
     <nav className="flex flex-col">
-      {navItems.map((item) => {
+      {navItems.map((item, i) => {
         const href = `/${item.slug}`;
         const active = pathname.startsWith(href);
         return (
@@ -35,10 +35,17 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             key={item.slug}
             href={href}
             onClick={onNavigate}
-            className={`group flex items-baseline border-t border-line py-2.5 font-[family-name:var(--font-jbmono)] text-[12px] transition-colors ${
+            className={`group flex items-baseline gap-3 border-t border-line py-2.5 font-[family-name:var(--font-jbmono)] text-[12.5px] transition-colors ${
               active ? "text-ink font-bold" : "text-inksoft hover:text-ink"
             }`}
           >
+            <span
+              className={`text-[9.5px] tabular-nums transition-colors ${
+                active ? "text-ember" : "text-faint group-hover:text-ember"
+              }`}
+            >
+              {String(i + 1).padStart(2, "0")}
+            </span>
             <span className="u-draw">{item.label}</span>
           </Link>
         );

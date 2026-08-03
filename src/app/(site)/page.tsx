@@ -1,159 +1,72 @@
+import Link from "next/link";
 import { AiUsagePanel } from "@/components/site/AiUsagePanel";
 import { GitHubPanel } from "@/components/site/GitHubPanel";
 import { SectionHeader } from "@/components/site/SectionHeader";
 import { StatusList } from "@/components/site/StatusList";
-import { workingOn, learningNow, focuses } from "@/lib/site-data";
+import { WorkCards } from "@/components/site/WorkCards";
+import { workCards, learningNow } from "@/lib/site-data";
 
-const anime = [
-  { src: "/anime-onepiece.png", title: "One Piece" },
-  { src: "/anime-aot.png", title: "Attack on Titan" },
-  { src: "/anime-jjk.png", title: "Jujutsu Kaisen" },
-  { src: "/anime-sololeveling.png", title: "Solo Leveling" },
-];
-
-function AnimeStrip() {
+function Hero() {
   return (
-    <div className="mt-5">
-      <div className="font-[family-name:var(--font-jbmono)] text-[9.5px] uppercase tracking-[0.18em] text-faint">
-        Favorite anime
-      </div>
-      <div className="mt-2 flex flex-wrap gap-3">
-        {anime.map((a) => (
-          <div
-            key={a.title}
-            className="group rounded-[6px] border border-line bg-card p-2 transition-transform hover:-translate-y-0.5"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={a.src}
-              alt={a.title}
-              className="h-24 w-24 rounded-[4px] object-cover"
-              loading="lazy"
-            />
-            <div className="mt-1.5 text-center font-[family-name:var(--font-jbmono)] text-[9px] text-mute">
-              {a.title}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function SoccerCard() {
-  return (
-    <a
-      href="https://www.playmakerstats.com/player/elliot-sones/1259756"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group block overflow-hidden rounded-[6px] border border-line bg-card transition-colors hover:border-ember"
-    >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/elliot-lank.jpg"
-        alt="Elliot playing soccer"
-        className="h-44 w-full object-cover"
-        loading="lazy"
-      />
-      <div className="flex items-baseline justify-between px-3 py-2.5">
-        <span className="font-[family-name:var(--font-fraunces)] text-[14px] font-medium text-ink">
-          Soccer
+    <section className="pt-2 md:pt-6">
+      <div className="flex items-baseline justify-between gap-4">
+        <span className="font-[family-name:var(--font-jbmono)] text-[10px] uppercase tracking-[0.22em] text-mute">
+          Field notes from a machine-learning engineer
         </span>
-        <span className="font-[family-name:var(--font-jbmono)] text-[9px] text-faint group-hover:text-ember transition-colors">
-          playmaker profile ↗
+        <span className="hidden shrink-0 font-[family-name:var(--font-jbmono)] text-[10px] uppercase tracking-[0.16em] text-faint sm:block">
+          Toronto · TMU &apos;29
         </span>
       </div>
-    </a>
-  );
-}
-
-function MusicCard() {
-  return (
-    <div className="rounded-[6px] border border-line bg-card p-3">
-      <div className="mb-2.5 flex items-baseline justify-between px-1">
-        <span className="font-[family-name:var(--font-fraunces)] text-[14px] font-medium text-ink">
-          Music
-        </span>
-        <span className="font-[family-name:var(--font-jbmono)] text-[9px] text-faint">spotify</span>
+      <h1 className="display-hed mt-5 max-w-[16ch] text-[clamp(38px,5.4vw,68px)]">
+        Building intelligent agents, and the infra that lets them <em>play</em>.
+      </h1>
+      <p className="prose-serif mt-6 max-w-[520px]">
+        I&apos;m Elliot. I train models from scratch: reinforcement learning,
+        transformers, and lately the GPU kernels underneath them. Right now
+        I&apos;m at Trajekt Sports and NTangible, and building SelfLearners.
+      </p>
+      <div className="mt-7 flex items-baseline gap-6 font-[family-name:var(--font-jbmono)] text-[11.5px]">
+        <Link href="/projects" className="group text-ember">
+          <span className="u-draw">Read the case studies</span>{" "}
+          <span className="arrow-nudge">→</span>
+        </Link>
+        <a
+          href="/resume.pdf"
+          className="text-inksoft transition-colors hover:text-ember"
+        >
+          <span className="u-draw">Resume</span> ↗
+        </a>
       </div>
-      <iframe
-        title="Spotify playlist"
-        style={{ borderRadius: "8px" }}
-        src="https://open.spotify.com/embed/playlist/37i9dQZF1DX9RwfGbeGQwP?utm_source=generator&theme=0"
-        width="100%"
-        height="152"
-        frameBorder="0"
-        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-        loading="lazy"
-      />
-    </div>
+    </section>
   );
 }
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-12">
+      <div className="reveal" style={{ "--reveal-i": 0 } as React.CSSProperties}>
+        <Hero />
+      </div>
+
+      {/* Working on */}
+      <section className="reveal" style={{ "--reveal-i": 1 } as React.CSSProperties}>
+        <SectionHeader marker="01" title="What I'm working on" />
+        <WorkCards items={workCards} />
+      </section>
+
       {/* Live strip */}
-      <section>
-        <SectionHeader title="Live" />
-        <div className="mt-3 grid grid-cols-1 lg:grid-cols-2 gap-3.5 items-stretch">
+      <section className="reveal" style={{ "--reveal-i": 2 } as React.CSSProperties}>
+        <SectionHeader marker="02" title="Live" />
+        <div className="mt-3.5 grid grid-cols-1 items-stretch gap-3.5 lg:grid-cols-2">
           <AiUsagePanel />
           <GitHubPanel />
         </div>
       </section>
 
-      {/* Working on / Learning */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8">
-        <div>
-          <SectionHeader title="What I'm working on" />
-          <StatusList items={workingOn} />
-        </div>
-        <div>
-          <SectionHeader title="What I'm learning" />
-          <StatusList items={learningNow} />
-        </div>
-      </section>
-
-      {/* About */}
-      <section>
-        <SectionHeader title="About" />
-        <div className="mt-3 grid grid-cols-1 lg:grid-cols-[1.35fr_0.65fr] gap-6 items-start">
-          <div>
-            <h1 className="font-[family-name:var(--font-fraunces)] text-[28px] font-medium tracking-[-0.02em] text-ink mb-2.5">
-              When I&apos;m not coding…
-            </h1>
-            <p className="font-[family-name:var(--font-jbmono)] text-[12.5px] leading-[1.8] text-inksoft mb-2.5">
-              <em className="font-[family-name:var(--font-fraunces)] text-[14px] italic text-ink">
-                I&apos;m Elliot — a CS student at Toronto Metropolitan University
-              </em>{" "}
-              training agents that play games and building tools that use LLMs. Most of
-              my learning happens in public: hackathons, Kaggle, and an unreasonable
-              number of tokens.
-            </p>
-            <p className="font-[family-name:var(--font-jbmono)] text-[12.5px] leading-[1.8] text-inksoft">
-              When I&apos;m not coding, I play as much soccer as I can — I&apos;ve played
-              my whole life, including one season in Portugal. When I&apos;m not playing,
-              it&apos;s music, anime, and friends.
-            </p>
-            <AnimeStrip />
-            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {focuses.map((f) => (
-                <div key={f.title} className="rounded-[6px] border border-line bg-card p-4">
-                  <div className="font-[family-name:var(--font-fraunces)] text-[15px] font-medium text-ink">
-                    {f.title}
-                  </div>
-                  <p className="mt-1.5 font-[family-name:var(--font-jbmono)] text-[11px] leading-relaxed text-inksoft">
-                    {f.detail}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="flex flex-col gap-3.5">
-            <SoccerCard />
-            <MusicCard />
-          </div>
-        </div>
+      {/* Learning */}
+      <section className="reveal" style={{ "--reveal-i": 3 } as React.CSSProperties}>
+        <SectionHeader marker="03" title="What I'm learning" />
+        <StatusList items={learningNow} />
       </section>
     </div>
   );
