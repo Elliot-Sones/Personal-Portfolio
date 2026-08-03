@@ -78,14 +78,6 @@ export const workCards: WorkCard[] = [
     logo: "/experience/selflearners_logo.png",
     link: "https://selflearners.io/",
   },
-  {
-    title: "SMT Data Challenge",
-    org: "SportsMEDIA Technology",
-    detail: "Annual baseball analytics competition.",
-    badge: "in progress",
-    tone: "live",
-    logo: "/experience/smt_logo.png",
-  },
 ];
 
 export const learningNow: StatusItem[] = [
@@ -111,6 +103,14 @@ export interface Competition {
 }
 
 export const competitions: Competition[] = [
+  {
+    slug: "smt-data-challenge-2026",
+    name: "SportsMEDIA Technology",
+    project: "SMT Data Challenge",
+    date: "Summer 2026",
+    logo: "/experience/smt_logo.png",
+    description: "Annual baseball analytics competition.",
+  },
   {
     slug: "huskyhack-2026",
     name: "HuskyHack 2026",

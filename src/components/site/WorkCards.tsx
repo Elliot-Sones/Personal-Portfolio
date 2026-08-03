@@ -53,7 +53,7 @@ function CardBody({ w }: { w: WorkCard }) {
 
 export function WorkCards({ items }: { items: WorkCard[] }) {
   return (
-    <div className="mt-3.5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="mt-3.5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
       {items.map((w) =>
         w.link ? (
           <a
