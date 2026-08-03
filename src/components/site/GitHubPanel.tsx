@@ -1,25 +1,57 @@
 import {
   getGithubActivity,
+  getRecentCommits,
+  relativeTime,
+  shortDate,
   type ContributionWeek,
   type GithubActivity,
+  type RecentCommit,
 } from "@/lib/github";
 
 function StreakStats({ activity }: { activity: GithubActivity }) {
   const stats = [
-    { num: activity.totalContributions, label: "contributions / yr", ember: false },
-    { num: activity.currentStreak, label: "day streak", ember: true },
-    { num: activity.longestStreak, label: "longest streak", ember: false },
+    {
+      num: activity.totalContributions,
+      label: "contributions",
+      sub: "past year",
+      ember: false,
+    },
+    {
+      num: activity.currentStreak,
+      label: "day streak",
+      sub: activity.currentStreakStart
+        ? `${shortDate(activity.currentStreakStart)} → today`
+        : "resting",
+      ember: true,
+    },
+    {
+      num: activity.longestStreak,
+      label: "longest streak",
+      sub:
+        activity.longestStreakStart && activity.longestStreakEnd
+          ? `${shortDate(activity.longestStreakStart)} → ${shortDate(activity.longestStreakEnd)}`
+          : "",
+      ember: false,
+    },
   ];
+
   return (
-    <div className="flex gap-12">
+    <div className="mb-4 grid grid-cols-3 divide-x divide-line rounded-[6px] border border-line">
       {stats.map((s) => (
-        <div key={s.label}>
-          <div className={`stat-num text-[32px] leading-none ${s.ember ? "text-ember" : ""}`}>
+        <div key={s.label} className="px-3.5 py-3">
+          <div
+            className={`stat-num text-[27px] leading-none ${s.ember ? "text-ember" : ""}`}
+          >
             {s.num.toLocaleString("en-US")}
           </div>
-          <div className="mt-1.5 font-[family-name:var(--font-jbmono)] text-[9px] uppercase tracking-[0.16em] text-mute">
+          <div className="mt-1.5 font-[family-name:var(--font-jbmono)] text-[9.5px] uppercase tracking-[0.14em] text-mute">
             {s.label}
           </div>
+          {s.sub && (
+            <div className="mt-0.5 font-[family-name:var(--font-jbmono)] text-[9px] text-faint">
+              {s.sub}
+            </div>
+          )}
         </div>
       ))}
     </div>
@@ -44,10 +76,10 @@ function formatDay(date: string): string {
 }
 
 function ContributionCalendar({ weeks }: { weeks: ContributionWeek[] }) {
-  const recent = weeks.slice(-52);
+  const recent = weeks.slice(-26);
   return (
     <div>
-      <div className="grid h-[88px] grid-flow-col grid-rows-7 gap-[3px]">
+      <div className="grid h-[104px] grid-flow-col grid-rows-7 gap-[3px]">
         {recent.flatMap((week, wi) =>
           Array.from({ length: 7 }).map((_, di) => {
             const day = week.days.find((d) => d.weekday === di);
@@ -65,29 +97,74 @@ function ContributionCalendar({ weeks }: { weeks: ContributionWeek[] }) {
           }),
         )}
       </div>
-      <div className="mt-2 flex justify-between font-[family-name:var(--font-jbmono)] text-[9px] text-faint">
-        <span>1 year ago</span>
+      <div className="mt-1.5 flex justify-between font-[family-name:var(--font-jbmono)] text-[9px] text-faint">
+        <span>26 weeks ago</span>
+        <span>hover a square for detail</span>
         <span>today</span>
       </div>
     </div>
   );
 }
 
+function CommitFeed({ commits }: { commits: RecentCommit[] }) {
+  if (commits.length === 0) return null;
+  return (
+    <div className="mt-3">
+      {commits.map((c, i) => (
+        <div
+          key={`${c.repo}-${i}`}
+          className="flex items-baseline gap-2 border-t border-line py-2 font-[family-name:var(--font-jbmono)] text-[11px] text-inksoft"
+        >
+          <span className="truncate">{c.message}</span>
+          <a
+            href={c.repoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 text-ember hover:underline"
+          >
+            {c.repo}
+          </a>
+          <span className="ml-auto shrink-0 text-[9.5px] text-faint">
+            {relativeTime(c.pushedAt)}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export async function GitHubPanel() {
-  const activity = await getGithubActivity();
+  const [activity, commits] = await Promise.all([getGithubActivity(), getRecentCommits(3)]);
 
   if (!activity) {
     return (
-      <p className="mt-4 font-[family-name:var(--font-jbmono)] text-[11px] text-faint">
-        GitHub data unavailable right now.
-      </p>
+      <div className="site-card p-5">
+        <div className="mb-2 font-[family-name:var(--font-jbmono)] text-[10px] uppercase tracking-[0.16em] text-mute">
+          GitHub · Elliot-Sones
+        </div>
+        <p className="font-[family-name:var(--font-jbmono)] text-[11px] text-faint">
+          GitHub data unavailable right now.
+        </p>
+      </div>
     );
   }
 
   return (
-    <div className="mt-5 flex flex-col gap-6">
+    <div className="site-card flex h-full flex-col p-5">
+      <div className="mb-3 flex items-center justify-between font-[family-name:var(--font-jbmono)] text-[10px] uppercase tracking-[0.16em] text-mute">
+        <a
+          href="https://github.com/Elliot-Sones"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="u-draw transition-colors hover:text-ember"
+        >
+          GitHub · {activity.username}
+        </a>
+        <span className="live-dot" aria-label="live" />
+      </div>
       <StreakStats activity={activity} />
       <ContributionCalendar weeks={activity.weeks} />
+      <CommitFeed commits={commits} />
     </div>
   );
 }
