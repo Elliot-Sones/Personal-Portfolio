@@ -1,5 +1,4 @@
 import { SectionHeader } from "@/components/site/SectionHeader";
-import { focuses } from "@/lib/site-data";
 
 export const metadata = { title: "About · Elliot Sones" };
 
@@ -123,26 +122,6 @@ export default function AboutPage() {
       </div>
 
       <AnimeStrip />
-
-      {/* what I build */}
-      <div>
-        <SectionHeader title="What I spend my tokens on" />
-        <div className="mt-3.5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {focuses.map((f) => (
-            <div
-              key={f.title}
-              className="rounded-[6px] border border-line bg-card p-4 transition-colors hover:border-ember"
-            >
-              <div className="font-[family-name:var(--font-fraunces)] text-[17px] font-medium text-ink">
-                {f.title}
-              </div>
-              <p className="mt-2 font-[family-name:var(--font-jbmono)] text-[11.5px] leading-[1.65] text-inksoft">
-                {f.detail}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
