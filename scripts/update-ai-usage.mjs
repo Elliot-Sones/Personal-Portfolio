@@ -36,27 +36,23 @@ function* walk(dir) {
   }
 }
 
-function monthKey(d) {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-}
-
+// Local-time day key so day buckets match the totals (toISOString would shift
+// evening entries onto the next UTC day and the numbers would stop adding up).
 function dayKey(d) {
-  return d.toISOString().slice(0, 10);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
 function blankStats() {
   return { tokens: 0, input: 0, output: 0, sessions: new Set(), byDay: new Map(), cost: 0 };
 }
 
-function currentMonth(d) {
-  const now = new Date();
-  return monthKey(d) === monthKey(now);
-}
-
-// Start of the 14-day chart window (local midnight, 13 days back).
-const CHART_START = (() => {
+// Single rolling window: totals, cost, sessions, and the day chart all cover
+// the same last-14-days span (local midnight, 13 days back, through now), so
+// the headline number always equals the sum of the bars.
+const WINDOW_DAYS = 14;
+const WINDOW_START = (() => {
   const d = new Date();
-  d.setDate(d.getDate() - 13);
+  d.setDate(d.getDate() - (WINDOW_DAYS - 1));
   d.setHours(0, 0, 0, 0);
   return d;
 })();
@@ -64,30 +60,24 @@ const CHART_START = (() => {
 // Headline "tokens" matches the providers' own dashboards: fresh input + output
 // + cache READS (metered, billed at 0.1x). Cache writes are excluded from the
 // token count but included in the cost estimate at 1.25x.
-// Monthly totals are month-scoped; the day chart covers the last 14 days even
-// when that window crosses a month boundary.
 function addTokens(stats, { input, output, cacheRead = 0, cacheWrite = 0, sessionId, timestamp, rate }) {
   const d = new Date(timestamp);
-  if (Number.isNaN(d.getTime())) return;
+  if (Number.isNaN(d.getTime()) || d < WINDOW_START) return;
   const tokens = input + output + cacheRead;
   if (!tokens && !cacheWrite) return;
-  if (currentMonth(d)) {
-    stats.tokens += tokens;
-    stats.input += input;
-    stats.output += output;
-    if (rate) {
-      stats.cost +=
-        (input / 1e6) * rate.input +
-        (output / 1e6) * rate.output +
-        (cacheRead / 1e6) * rate.input * CACHE_READ_MULT +
-        (cacheWrite / 1e6) * rate.input * CACHE_WRITE_MULT;
-    }
-    if (sessionId) stats.sessions.add(sessionId);
+  stats.tokens += tokens;
+  stats.input += input;
+  stats.output += output;
+  if (rate) {
+    stats.cost +=
+      (input / 1e6) * rate.input +
+      (output / 1e6) * rate.output +
+      (cacheRead / 1e6) * rate.input * CACHE_READ_MULT +
+      (cacheWrite / 1e6) * rate.input * CACHE_WRITE_MULT;
   }
-  if (d >= CHART_START) {
-    const k = dayKey(d);
-    stats.byDay.set(k, (stats.byDay.get(k) ?? 0) + tokens);
-  }
+  if (sessionId) stats.sessions.add(sessionId);
+  const k = dayKey(d);
+  stats.byDay.set(k, (stats.byDay.get(k) ?? 0) + tokens);
 }
 
 function parseClaude() {
@@ -181,21 +171,18 @@ function parseCodex() {
     });
   }
   for (const [id, t] of threads) {
+    if (t.lastDate < WINDOW_START) continue;
     const tokens = t.input + t.cached + t.output;
-    if (currentMonth(t.lastDate)) {
-      stats.tokens += tokens;
-      stats.input += t.input;
-      stats.output += t.output;
-      stats.cost +=
-        (t.input / 1e6) * RATES.codex.input +
-        (t.output / 1e6) * RATES.codex.output +
-        (t.cached / 1e6) * RATES.codex.input * CACHE_READ_MULT;
-      stats.sessions.add(id);
-    }
-    if (t.lastDate >= CHART_START) {
-      const k = dayKey(t.lastDate);
-      stats.byDay.set(k, (stats.byDay.get(k) ?? 0) + tokens);
-    }
+    stats.tokens += tokens;
+    stats.input += t.input;
+    stats.output += t.output;
+    stats.cost +=
+      (t.input / 1e6) * RATES.codex.input +
+      (t.output / 1e6) * RATES.codex.output +
+      (t.cached / 1e6) * RATES.codex.input * CACHE_READ_MULT;
+    stats.sessions.add(id);
+    const k = dayKey(t.lastDate);
+    stats.byDay.set(k, (stats.byDay.get(k) ?? 0) + tokens);
   }
   return stats;
 }
@@ -239,9 +226,9 @@ function parseKimi() {
   return stats;
 }
 
-function last14Days(tools) {
+function windowDays(tools) {
   const days = [];
-  for (let i = 13; i >= 0; i--) {
+  for (let i = WINDOW_DAYS - 1; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
     const k = dayKey(d);
@@ -270,11 +257,11 @@ const kimi = parseKimi();
 
 const out = {
   generatedAt: new Date().toISOString(),
-  month: monthKey(new Date()),
+  windowDays: WINDOW_DAYS,
   claude: toolOut(claude),
   codex: toolOut(codex),
   kimi: toolOut(kimi),
-  days: last14Days({ claude, codex, kimi }),
+  days: windowDays({ claude, codex, kimi }),
 };
 
 fs.mkdirSync(path.dirname(OUT), { recursive: true });

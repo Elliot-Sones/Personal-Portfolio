@@ -88,7 +88,7 @@ export function AiUsagePanel() {
       </div>
       <div className="stat-num text-[36px] leading-none">{formatTokens(total)}</div>
       <div className="mt-1.5 font-[family-name:var(--font-jbmono)] text-[10px] tracking-[0.04em] text-mute">
-        tokens this month (incl. cached context) · ~{formatCost(totalCost)} at API rates
+        tokens in the last 14 days (incl. cached context) · ~{formatCost(totalCost)} at API rates
       </div>
       <div className="mt-3 mb-2 flex h-3.5 overflow-hidden rounded-[3px]">
         {tools.map(({ key, color, tool }) =>

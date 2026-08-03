@@ -18,7 +18,7 @@ export interface AiUsageDay {
 
 export interface AiUsage {
   generatedAt: string;
-  month: string;
+  windowDays: number;
   claude: AiUsageTool;
   codex: AiUsageTool;
   kimi: AiUsageTool;

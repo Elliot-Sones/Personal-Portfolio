@@ -1,19 +1,19 @@
 {
-  "generatedAt": "2026-08-03T21:49:54.464Z",
-  "month": "2026-08",
+  "generatedAt": "2026-08-03T21:54:08.768Z",
+  "windowDays": 14,
   "claude": {
-    "tokens": 945979596,
-    "sessions": 11,
-    "inputTokens": 1463354,
-    "outputTokens": 3947253,
-    "estCost": 492.39
+    "tokens": 3807878757,
+    "sessions": 35,
+    "inputTokens": 5593055,
+    "outputTokens": 19139326,
+    "estCost": 3580.33
   },
   "codex": {
-    "tokens": 0,
-    "sessions": 0,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "estCost": 0
+    "tokens": 950256454,
+    "sessions": 82,
+    "inputTokens": 25480198,
+    "outputTokens": 3443008,
+    "estCost": 181.45
   },
   "kimi": {
     "tokens": 0,
@@ -25,19 +25,19 @@
   "days": [
     {
       "date": "2026-07-21",
-      "claude": 605596306,
+      "claude": 613320793,
       "codex": 0,
       "kimi": 0
     },
     {
       "date": "2026-07-22",
-      "claude": 443656786,
+      "claude": 323370091,
       "codex": 0,
       "kimi": 0
     },
     {
       "date": "2026-07-23",
-      "claude": 481859304,
+      "claude": 608777425,
       "codex": 148447437,
       "kimi": 0
     },
@@ -55,19 +55,19 @@
     },
     {
       "date": "2026-07-26",
-      "claude": 208930754,
+      "claude": 208924576,
       "codex": 748344993,
       "kimi": 0
     },
     {
       "date": "2026-07-27",
-      "claude": 154244442,
+      "claude": 153739389,
       "codex": 0,
       "kimi": 0
     },
     {
       "date": "2026-07-28",
-      "claude": 0,
+      "claude": 511231,
       "codex": 0,
       "kimi": 0
     },
@@ -85,13 +85,13 @@
     },
     {
       "date": "2026-07-31",
-      "claude": 7331049,
+      "claude": 1596127,
       "codex": 0,
       "kimi": 0
     },
     {
       "date": "2026-08-01",
-      "claude": 0,
+      "claude": 5734922,
       "codex": 0,
       "kimi": 0
     },
@@ -103,7 +103,7 @@
     },
     {
       "date": "2026-08-03",
-      "claude": 890307054,
+      "claude": 914998557,
       "codex": 0,
       "kimi": 0
     }
