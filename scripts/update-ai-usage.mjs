@@ -53,27 +53,41 @@ function currentMonth(d) {
   return monthKey(d) === monthKey(now);
 }
 
+// Start of the 14-day chart window (local midnight, 13 days back).
+const CHART_START = (() => {
+  const d = new Date();
+  d.setDate(d.getDate() - 13);
+  d.setHours(0, 0, 0, 0);
+  return d;
+})();
+
 // Headline "tokens" matches the providers' own dashboards: fresh input + output
 // + cache READS (metered, billed at 0.1x). Cache writes are excluded from the
 // token count but included in the cost estimate at 1.25x.
+// Monthly totals are month-scoped; the day chart covers the last 14 days even
+// when that window crosses a month boundary.
 function addTokens(stats, { input, output, cacheRead = 0, cacheWrite = 0, sessionId, timestamp, rate }) {
   const d = new Date(timestamp);
-  if (Number.isNaN(d.getTime()) || !currentMonth(d)) return;
+  if (Number.isNaN(d.getTime())) return;
   const tokens = input + output + cacheRead;
   if (!tokens && !cacheWrite) return;
-  stats.tokens += tokens;
-  stats.input += input;
-  stats.output += output;
-  if (rate) {
-    stats.cost +=
-      (input / 1e6) * rate.input +
-      (output / 1e6) * rate.output +
-      (cacheRead / 1e6) * rate.input * CACHE_READ_MULT +
-      (cacheWrite / 1e6) * rate.input * CACHE_WRITE_MULT;
+  if (currentMonth(d)) {
+    stats.tokens += tokens;
+    stats.input += input;
+    stats.output += output;
+    if (rate) {
+      stats.cost +=
+        (input / 1e6) * rate.input +
+        (output / 1e6) * rate.output +
+        (cacheRead / 1e6) * rate.input * CACHE_READ_MULT +
+        (cacheWrite / 1e6) * rate.input * CACHE_WRITE_MULT;
+    }
+    if (sessionId) stats.sessions.add(sessionId);
   }
-  if (sessionId) stats.sessions.add(sessionId);
-  const k = dayKey(d);
-  stats.byDay.set(k, (stats.byDay.get(k) ?? 0) + tokens);
+  if (d >= CHART_START) {
+    const k = dayKey(d);
+    stats.byDay.set(k, (stats.byDay.get(k) ?? 0) + tokens);
+  }
 }
 
 function parseClaude() {
@@ -167,17 +181,21 @@ function parseCodex() {
     });
   }
   for (const [id, t] of threads) {
-    if (!currentMonth(t.lastDate)) continue;
-    stats.tokens += t.input + t.cached + t.output;
-    stats.input += t.input;
-    stats.output += t.output;
-    stats.cost +=
-      (t.input / 1e6) * RATES.codex.input +
-      (t.output / 1e6) * RATES.codex.output +
-      (t.cached / 1e6) * RATES.codex.input * CACHE_READ_MULT;
-    stats.sessions.add(id);
-    const k = dayKey(t.lastDate);
-    stats.byDay.set(k, (stats.byDay.get(k) ?? 0) + t.input + t.cached + t.output);
+    const tokens = t.input + t.cached + t.output;
+    if (currentMonth(t.lastDate)) {
+      stats.tokens += tokens;
+      stats.input += t.input;
+      stats.output += t.output;
+      stats.cost +=
+        (t.input / 1e6) * RATES.codex.input +
+        (t.output / 1e6) * RATES.codex.output +
+        (t.cached / 1e6) * RATES.codex.input * CACHE_READ_MULT;
+      stats.sessions.add(id);
+    }
+    if (t.lastDate >= CHART_START) {
+      const k = dayKey(t.lastDate);
+      stats.byDay.set(k, (stats.byDay.get(k) ?? 0) + tokens);
+    }
   }
   return stats;
 }

@@ -1,111 +1,111 @@
 {
-  "generatedAt": "2026-07-18T16:56:02.842Z",
-  "month": "2026-07",
+  "generatedAt": "2026-08-03T21:49:54.464Z",
+  "month": "2026-08",
   "claude": {
-    "tokens": 9286684643,
-    "sessions": 75,
-    "inputTokens": 42322938,
-    "outputTokens": 63654831,
-    "estCost": 14056.06
+    "tokens": 945979596,
+    "sessions": 11,
+    "inputTokens": 1463354,
+    "outputTokens": 3947253,
+    "estCost": 492.39
   },
   "codex": {
-    "tokens": 2178233155,
-    "sessions": 58,
-    "inputTokens": 49108199,
-    "outputTokens": 6407516,
-    "estCost": 390.8
+    "tokens": 0,
+    "sessions": 0,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "estCost": 0
   },
   "kimi": {
-    "tokens": 37653615,
-    "sessions": 2,
-    "inputTokens": 1825355,
-    "outputTokens": 225570,
-    "estCost": 3.8
+    "tokens": 0,
+    "sessions": 0,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "estCost": 0
   },
   "days": [
     {
-      "date": "2026-07-05",
+      "date": "2026-07-21",
+      "claude": 605596306,
+      "codex": 0,
+      "kimi": 0
+    },
+    {
+      "date": "2026-07-22",
+      "claude": 443656786,
+      "codex": 0,
+      "kimi": 0
+    },
+    {
+      "date": "2026-07-23",
+      "claude": 481859304,
+      "codex": 148447437,
+      "kimi": 0
+    },
+    {
+      "date": "2026-07-24",
+      "claude": 260339317,
+      "codex": 4109569,
+      "kimi": 0
+    },
+    {
+      "date": "2026-07-25",
+      "claude": 65672238,
+      "codex": 0,
+      "kimi": 0
+    },
+    {
+      "date": "2026-07-26",
+      "claude": 208930754,
+      "codex": 748344993,
+      "kimi": 0
+    },
+    {
+      "date": "2026-07-27",
+      "claude": 154244442,
+      "codex": 0,
+      "kimi": 0
+    },
+    {
+      "date": "2026-07-28",
       "claude": 0,
       "codex": 0,
       "kimi": 0
     },
     {
-      "date": "2026-07-06",
-      "claude": 540304415,
+      "date": "2026-07-29",
+      "claude": 600956471,
+      "codex": 49354455,
+      "kimi": 0
+    },
+    {
+      "date": "2026-07-30",
+      "claude": 0,
       "codex": 0,
       "kimi": 0
     },
     {
-      "date": "2026-07-07",
-      "claude": 848789747,
+      "date": "2026-07-31",
+      "claude": 7331049,
       "codex": 0,
       "kimi": 0
     },
     {
-      "date": "2026-07-08",
-      "claude": 479674543,
+      "date": "2026-08-01",
+      "claude": 0,
       "codex": 0,
       "kimi": 0
     },
     {
-      "date": "2026-07-09",
-      "claude": 609373994,
-      "codex": 23360500,
-      "kimi": 0
-    },
-    {
-      "date": "2026-07-10",
-      "claude": 9421457,
+      "date": "2026-08-02",
+      "claude": 49937620,
       "codex": 0,
       "kimi": 0
     },
     {
-      "date": "2026-07-11",
-      "claude": 22253552,
+      "date": "2026-08-03",
+      "claude": 890307054,
       "codex": 0,
       "kimi": 0
-    },
-    {
-      "date": "2026-07-12",
-      "claude": 707713549,
-      "codex": 514478494,
-      "kimi": 0
-    },
-    {
-      "date": "2026-07-13",
-      "claude": 700482393,
-      "codex": 243569436,
-      "kimi": 0
-    },
-    {
-      "date": "2026-07-14",
-      "claude": 883154651,
-      "codex": 9512023,
-      "kimi": 0
-    },
-    {
-      "date": "2026-07-15",
-      "claude": 1558385366,
-      "codex": 0,
-      "kimi": 0
-    },
-    {
-      "date": "2026-07-16",
-      "claude": 946938173,
-      "codex": 0,
-      "kimi": 0
-    },
-    {
-      "date": "2026-07-17",
-      "claude": 680440960,
-      "codex": 1312283841,
-      "kimi": 20746651
-    },
-    {
-      "date": "2026-07-18",
-      "claude": 124959459,
-      "codex": 5660410,
-      "kimi": 16906964
     }
   ]
 }
