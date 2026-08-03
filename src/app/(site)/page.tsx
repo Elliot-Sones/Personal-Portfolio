@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { AiUsagePanel } from "@/components/site/AiUsagePanel";
 import { GitHubPanel } from "@/components/site/GitHubPanel";
 import { SectionHeader } from "@/components/site/SectionHeader";
@@ -25,18 +24,6 @@ function Hero() {
         lately the GPU kernels underneath them. Right now I&apos;m at Trajekt
         Sports and NTangible, and building SelfLearners.
       </p>
-      <div className="mt-7 flex items-baseline gap-6 font-[family-name:var(--font-jbmono)] text-[11.5px]">
-        <Link href="/projects" className="group text-ember">
-          <span className="u-draw">Read the case studies</span>{" "}
-          <span className="arrow-nudge">→</span>
-        </Link>
-        <a
-          href="/resume.pdf"
-          className="text-inksoft transition-colors hover:text-ember"
-        >
-          <span className="u-draw">Resume</span> ↗
-        </a>
-      </div>
     </section>
   );
 }
