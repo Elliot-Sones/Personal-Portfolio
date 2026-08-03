@@ -11,12 +11,9 @@ export default function CompetitionsPage() {
         Hackathons and data challenges.
       </h1>
       <div className="mt-6">
-        {competitions.map((c, i) => (
+        {competitions.map((c) => (
           <div key={c.slug} className="border-t border-line py-6">
             <div className="flex gap-4">
-              <span className="index-num hidden w-7 shrink-0 pt-1 sm:block">
-                {String(i + 1).padStart(2, "0")}
-              </span>
               {c.logo && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img

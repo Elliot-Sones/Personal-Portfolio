@@ -6,7 +6,8 @@
 
 ## Design language (v2 site)
 - Warm Paper editorial system: paper/ink/ember tokens in `globals.css` `@theme`; Fraunces (display + serif body) and JetBrains Mono (labels/metadata only, never paragraphs)
-- Shared primitives in `globals.css`: `.display-hed` (Fraunces opsz 144 + WONK, italic `em` renders ember), `.page-hed`, `.prose-serif`, `.stat-num`, `.index-num`, `.site-h` (numbered via `marker` prop on SectionHeader), `.sleeve` (ink frame for dark third-party embeds), `.reveal` (staggered load, reduced-motion safe)
+- Shared primitives in `globals.css`: `.display-hed` (Fraunces opsz 144 + WONK, italic `em` renders ember), `.page-hed`, `.prose-serif`, `.stat-num`, `.site-h`, `.sleeve` (ink frame for dark third-party embeds), `.reveal` (staggered load, reduced-motion safe)
+- No index numbering anywhere (nav, section headers, list rows) — Elliot removed it deliberately; don't reintroduce
 - GitHub heatmap uses the ember `gh0-gh4` ramp; streak stats are computed locally in `src/lib/github.ts` — do not reintroduce the dark streak-stats.demolab.com image
 - No em dashes in site copy; use commas, colons, or "·"
 

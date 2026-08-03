@@ -37,13 +37,13 @@ export default function HomePage() {
 
       {/* Working on */}
       <section className="reveal" style={{ "--reveal-i": 1 } as React.CSSProperties}>
-        <SectionHeader marker="01" title="What I'm working on" />
+        <SectionHeader title="What I'm working on" />
         <WorkCards items={workCards} />
       </section>
 
       {/* Live strip */}
       <section className="reveal" style={{ "--reveal-i": 2 } as React.CSSProperties}>
-        <SectionHeader marker="02" title="Live" />
+        <SectionHeader title="Live" />
         <div className="mt-3.5 grid grid-cols-1 items-stretch gap-3.5 lg:grid-cols-2">
           <AiUsagePanel />
           <GitHubPanel />
@@ -52,7 +52,7 @@ export default function HomePage() {
 
       {/* Learning */}
       <section className="reveal" style={{ "--reveal-i": 3 } as React.CSSProperties}>
-        <SectionHeader marker="03" title="What I'm learning" />
+        <SectionHeader title="What I'm learning" />
         <StatusList items={learningNow} />
       </section>
     </div>

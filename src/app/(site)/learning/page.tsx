@@ -20,15 +20,12 @@ export default async function LearningPage() {
             First essays are being written.
           </p>
         )}
-        {posts.map((p, i) => (
+        {posts.map((p) => (
           <Link
             key={p.slug}
             href={`/learning/${p.slug}`}
             className="group flex items-baseline gap-4 border-t border-line py-5"
           >
-            <span className="index-num w-7 shrink-0">
-              {String(i + 1).padStart(2, "0")}
-            </span>
             <span className="min-w-0 flex-1">
               <span className="u-draw font-[family-name:var(--font-fraunces)] text-[clamp(20px,2.3vw,24px)] font-medium leading-tight text-ink">
                 {p.title}

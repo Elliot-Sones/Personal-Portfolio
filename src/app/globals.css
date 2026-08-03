@@ -722,15 +722,6 @@ input[type="range"]::-moz-range-thumb:hover {
   color: var(--color-ink);
 }
 
-/* Hanging index numerals for editorial lists */
-.index-num {
-  font-family: var(--font-jbmono), monospace;
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  color: var(--color-ember);
-  font-variant-numeric: tabular-nums;
-}
-
 /* Ink frame that makes third-party dark embeds read as intentional */
 .sleeve {
   background: var(--color-ink);
