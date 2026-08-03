@@ -38,11 +38,8 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
         }`}
       >
         {children}
-        <footer className="mt-16 flex flex-wrap items-center justify-between gap-x-6 gap-y-1.5 border-t border-line pt-4 font-[family-name:var(--font-jbmono)] text-[9px] uppercase tracking-[0.16em] text-faint">
+        <footer className="mt-16 flex items-center justify-between border-t border-line pt-4 font-[family-name:var(--font-jbmono)] text-[9px] uppercase tracking-[0.16em] text-faint">
           <span>© 2026 Elliot Sones</span>
-          <span className="hidden sm:block">
-            Set in Fraunces &amp; JetBrains Mono
-          </span>
           <a href="/v1" className="hover:text-ember transition-colors" title="the old site">
             v1 ↗
           </a>
