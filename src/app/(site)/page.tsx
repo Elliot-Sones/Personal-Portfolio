@@ -17,13 +17,13 @@ function Hero() {
           Toronto · TMU &apos;29
         </span>
       </div>
-      <h1 className="display-hed mt-5 max-w-[16ch] text-[clamp(38px,5.4vw,68px)]">
-        Building intelligent agents, and the infra that lets them <em>play</em>.
+      <h1 className="display-hed mt-5 text-[clamp(46px,6.5vw,80px)]">
+        Elliot Sones<span className="text-ember">.</span>
       </h1>
       <p className="prose-serif mt-6 max-w-[520px]">
-        I&apos;m Elliot. I train models from scratch: reinforcement learning,
-        transformers, and lately the GPU kernels underneath them. Right now
-        I&apos;m at Trajekt Sports and NTangible, and building SelfLearners.
+        I train models from scratch: reinforcement learning, transformers, and
+        lately the GPU kernels underneath them. Right now I&apos;m at Trajekt
+        Sports and NTangible, and building SelfLearners.
       </p>
       <div className="mt-7 flex items-baseline gap-6 font-[family-name:var(--font-jbmono)] text-[11.5px]">
         <Link href="/projects" className="group text-ember">
