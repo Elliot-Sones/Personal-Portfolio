@@ -66,6 +66,7 @@ export const workCards: WorkCard[] = [
     tone: "live",
     logo: "/experience/ntangible_logo.png",
     logoDark: true,
+    link: "https://ntangible.co/",
     since: "Nov 2025",
   },
   {
@@ -234,6 +235,7 @@ export const experience: ExperienceItem[] = [
     current: true,
     logo: "/experience/ntangible_logo.png",
     logoDark: true,
+    link: "https://ntangible.co/",
     detail:
       "Exploring real-world applications of AI/ML in sports psychology, combining technical development with performance analytics.",
   },

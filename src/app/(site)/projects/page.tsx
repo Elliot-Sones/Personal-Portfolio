@@ -12,9 +12,8 @@ export default async function ProjectsPage() {
   return (
     <div className="reveal flex flex-col gap-12" style={{ "--reveal-i": 0 } as React.CSSProperties}>
       <div>
-        <SectionHeader title="Projects" />
-        <h1 className="page-hed mt-4 text-[clamp(28px,3.6vw,40px)]">
-          Deep dives, not an archive.
+        <h1 className="page-hed text-[clamp(28px,3.6vw,40px)]">
+          Projects<span className="text-ember">.</span>
         </h1>
         <div className="mt-6">
           {projects.length === 0 && (

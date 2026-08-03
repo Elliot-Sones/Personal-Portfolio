@@ -1,4 +1,3 @@
-import { SectionHeader } from "@/components/site/SectionHeader";
 import { competitions } from "@/lib/site-data";
 
 export const metadata = { title: "Competitions · Elliot Sones" };
@@ -6,9 +5,8 @@ export const metadata = { title: "Competitions · Elliot Sones" };
 export default function CompetitionsPage() {
   return (
     <div className="reveal" style={{ "--reveal-i": 0 } as React.CSSProperties}>
-      <SectionHeader title="Competitions" />
-      <h1 className="page-hed mt-4 text-[clamp(28px,3.6vw,40px)]">
-        Hackathons and data challenges.
+      <h1 className="page-hed text-[clamp(28px,3.6vw,40px)]">
+        Competitions<span className="text-ember">.</span>
       </h1>
       <div className="mt-6">
         {competitions.map((c) => (

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { SectionHeader } from "@/components/site/SectionHeader";
 import { getAllMeta, type PostFrontmatter } from "@/lib/mdx";
 
 export const metadata = { title: "Learning Blogs · Elliot Sones" };
@@ -10,9 +9,8 @@ export default async function LearningPage() {
 
   return (
     <div className="reveal" style={{ "--reveal-i": 0 } as React.CSSProperties}>
-      <SectionHeader title="Learning blogs" />
-      <h1 className="page-hed mt-4 text-[clamp(28px,3.6vw,40px)]">
-        Notes from training things.
+      <h1 className="page-hed text-[clamp(28px,3.6vw,40px)]">
+        Learning blogs<span className="text-ember">.</span>
       </h1>
       <div className="mt-6">
         {posts.length === 0 && (
