@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { WorkCard } from "@/lib/site-data";
 
 function Tile({ w }: { w: WorkCard }) {
@@ -21,29 +20,48 @@ function Tile({ w }: { w: WorkCard }) {
   );
 }
 
+function CardBody({ w }: { w: WorkCard }) {
+  return (
+    <>
+      <Tile w={w} />
+      <span className="min-w-0 flex-1">
+        <span className="block truncate font-[family-name:var(--font-fraunces)] text-[16.5px] font-medium leading-snug text-ink">
+          {w.title}
+        </span>
+        <span className="mt-0.5 block truncate font-[family-name:var(--font-jbmono)] text-[9.5px] uppercase tracking-[0.14em] text-mute">
+          {w.org}
+        </span>
+      </span>
+    </>
+  );
+}
+
 export function WorkCards({ items }: { items: WorkCard[] }) {
   return (
     <div className="mt-3.5 grid grid-cols-1 gap-3 md:grid-cols-3">
-      {items.map((w) => (
-        <Link
-          key={w.title}
-          href="/experience"
-          className="group flex items-center gap-3.5 rounded-[6px] border border-line bg-card px-4 py-3.5 transition-[border-color,transform,box-shadow] duration-200 hover:-translate-y-[2px] hover:border-ember hover:shadow-[0_3px_0_0_var(--color-line)]"
-        >
-          <Tile w={w} />
-          <span className="min-w-0 flex-1">
-            <span className="block truncate font-[family-name:var(--font-fraunces)] text-[16.5px] font-medium leading-snug text-ink">
-              {w.title}
+      {items.map((w) =>
+        w.link ? (
+          <a
+            key={w.title}
+            href={w.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center gap-3.5 rounded-[6px] border border-line bg-card px-4 py-3.5 transition-[border-color,transform,box-shadow] duration-200 hover:-translate-y-[2px] hover:border-ember hover:shadow-[0_3px_0_0_var(--color-line)]"
+          >
+            <CardBody w={w} />
+            <span className="arrow-nudge text-ember opacity-0 group-hover:opacity-100">
+              ↗
             </span>
-            <span className="mt-0.5 block truncate font-[family-name:var(--font-jbmono)] text-[9.5px] uppercase tracking-[0.14em] text-mute">
-              {w.org}
-            </span>
-          </span>
-          <span className="arrow-nudge text-ember opacity-0 group-hover:opacity-100">
-            →
-          </span>
-        </Link>
-      ))}
+          </a>
+        ) : (
+          <div
+            key={w.title}
+            className="flex items-center gap-3.5 rounded-[6px] border border-line bg-card px-4 py-3.5"
+          >
+            <CardBody w={w} />
+          </div>
+        ),
+      )}
     </div>
   );
 }
