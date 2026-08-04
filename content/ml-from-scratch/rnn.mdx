@@ -61,32 +61,3 @@ These preserve important information over long sequences with more stable gradie
   <Fig src="/ml-from-scratch/rnn/reliability.png" caption="Reliability diagram" />
   <Fig src="/ml-from-scratch/rnn/confidence-hist.png" caption="Confidence histogram" />
 </FigRow>
-
-### Weights
-
-Model weights are not tracked in the repo. To run the demo locally, train your own checkpoint with `training-doodle.py` (saves to `archive/`), or download from the [Hugging Face Space](https://huggingface.co/spaces/Eli181927/Classification-doodle-RNN) and place it under `archive/`.
-
-## Run it yourself
-
-```bash
-cd 3.RNN
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-
-python setup_data.py            # download Quick, Draw! data → archive/
-python training-doodle.py       # train → archive/rnn_animals_best.pt
-python eval_and_plots.py        # evaluate + generate plots
-python app.py                   # launch local demo
-```
-
-## Files
-
-```
-3.RNN/
-├── training-doodle.py          # Full RNN training with GRU
-├── app.py                      # Gradio demo app
-├── eval_and_plots.py           # Evaluation and plot generation
-├── setup_data.py               # Download & prepare Quick, Draw! data
-├── requirements.txt
-└── assets/                     # Architecture diagrams and training plots
-```

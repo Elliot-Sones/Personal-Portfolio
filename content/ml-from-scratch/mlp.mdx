@@ -40,28 +40,3 @@ Build an MLP from scratch (pure NumPy, no ML frameworks) to predict hand-drawn d
 - Passed heavy stress testing (see the demo video above)
 
 Everything, from data ingestion to UI, runs with pure NumPy. No high-level ML frameworks, yet the model delivers **97%+** accuracy and production-grade UX.
-
-## Run it yourself
-
-```bash
-cd 1.MLP
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-
-python setup_data.py            # download MNIST → archive/
-python training.py              # train → archive/trained_model.npz
-python test_model.py            # evaluate on test set
-python app.py                   # launch local demo
-```
-
-## Files
-
-```
-1.MLP/
-├── training.py                 # Full MLP training from scratch
-├── app.py                      # Gradio demo app
-├── test_model.py               # Test set evaluation
-├── setup_data.py               # Download & prepare MNIST
-├── requirements.txt
-└── assets/                     # Training plots and diagrams
-```
