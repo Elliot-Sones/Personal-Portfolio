@@ -18,6 +18,7 @@ export interface StatusItem {
   detail: string;
   badge: string;
   tone: "live" | "ship" | "plain";
+  href?: string;
 }
 
 export const focuses = [
@@ -87,6 +88,7 @@ export const learningNow: StatusItem[] = [
     detail: "Writing and tuning GPU kernels instead of importing them",
     badge: "current",
     tone: "live",
+    href: "/learning/kernel-level-optimization-transformers",
   },
 ];
 
