@@ -23,4 +23,5 @@
 - `src/lib/github.ts` + `src/lib/ai-usage.ts` — live stats data sources
 - `scripts/update-ai-usage.mjs` — regenerates `data/ai-usage.json` (`npm run stats`)
 - `content/projects/*.mdx`, `content/learning/*.mdx` — case studies and essays
+- `src/lib/ml-from-scratch.ts` + `src/app/(site)/learning/ml-from-scratch/` — "Machine Learning, from scratch" blog series (hub + one page per model, images in `public/ml-from-scratch/`, live HF demo embeds)
 - `src/components/RLSoccerGame.tsx` — RL soccer mini-game, embedded in the RL case study
