@@ -36,22 +36,24 @@ function StreakStats({ activity }: { activity: GithubActivity }) {
   ];
 
   return (
-    <div className="mb-4 grid grid-cols-3 divide-x divide-line rounded-[6px] border border-line">
+    <div className="flex flex-col divide-y divide-line">
       {stats.map((s) => (
-        <div key={s.label} className="px-3.5 py-3">
+        <div key={s.label} className="flex items-baseline gap-3 py-2.5 first:pt-0 last:pb-0">
           <div
-            className={`stat-num text-[27px] leading-none ${s.ember ? "text-ember" : ""}`}
+            className={`stat-num w-[104px] shrink-0 text-[30px] leading-none ${s.ember ? "text-ember" : ""}`}
           >
             {s.num.toLocaleString("en-US")}
           </div>
-          <div className="mt-1.5 font-[family-name:var(--font-jbmono)] text-[9.5px] uppercase tracking-[0.14em] text-mute">
-            {s.label}
-          </div>
-          {s.sub && (
-            <div className="mt-0.5 font-[family-name:var(--font-jbmono)] text-[9px] text-faint">
-              {s.sub}
+          <div>
+            <div className="font-[family-name:var(--font-jbmono)] text-[9.5px] uppercase tracking-[0.14em] text-mute">
+              {s.label}
             </div>
-          )}
+            {s.sub && (
+              <div className="mt-0.5 font-[family-name:var(--font-jbmono)] text-[9px] text-faint">
+                {s.sub}
+              </div>
+            )}
+          </div>
         </div>
       ))}
     </div>
@@ -76,10 +78,10 @@ function formatDay(date: string): string {
 }
 
 function ContributionCalendar({ weeks }: { weeks: ContributionWeek[] }) {
-  const recent = weeks.slice(-26);
+  const recent = weeks.slice(-52);
   return (
-    <div>
-      <div className="grid h-[104px] grid-flow-col grid-rows-7 gap-[3px]">
+    <div className="flex h-full flex-col">
+      <div className="grid min-h-[110px] flex-1 grid-flow-col grid-rows-7 gap-[3px]">
         {recent.flatMap((week, wi) =>
           Array.from({ length: 7 }).map((_, di) => {
             const day = week.days.find((d) => d.weekday === di);
@@ -97,8 +99,8 @@ function ContributionCalendar({ weeks }: { weeks: ContributionWeek[] }) {
           }),
         )}
       </div>
-      <div className="mt-1.5 flex justify-between font-[family-name:var(--font-jbmono)] text-[9px] text-faint">
-        <span>26 weeks ago</span>
+      <div className="mt-2 flex justify-between font-[family-name:var(--font-jbmono)] text-[9.5px] text-faint">
+        <span>one year ago</span>
         <span>hover a square for detail</span>
         <span>today</span>
       </div>
@@ -109,11 +111,11 @@ function ContributionCalendar({ weeks }: { weeks: ContributionWeek[] }) {
 function CommitFeed({ commits }: { commits: RecentCommit[] }) {
   if (commits.length === 0) return null;
   return (
-    <div className="mt-3">
+    <div className="mt-4 border-t border-line pt-1">
       {commits.map((c, i) => (
         <div
           key={`${c.repo}-${i}`}
-          className="flex items-baseline gap-2 border-t border-line py-2 font-[family-name:var(--font-jbmono)] text-[11px] text-inksoft"
+          className="flex items-baseline gap-2 py-2 font-[family-name:var(--font-jbmono)] text-[11px] text-inksoft [&+&]:border-t [&+&]:border-line"
         >
           <span className="truncate">{c.message}</span>
           <a
@@ -150,8 +152,8 @@ export async function GitHubPanel() {
   }
 
   return (
-    <div className="site-card flex h-full flex-col p-5">
-      <div className="mb-3 flex items-center justify-between font-[family-name:var(--font-jbmono)] text-[10px] uppercase tracking-[0.16em] text-mute">
+    <div className="site-card p-5">
+      <div className="mb-4 flex items-center justify-between font-[family-name:var(--font-jbmono)] text-[10px] uppercase tracking-[0.16em] text-mute">
         <a
           href="https://github.com/Elliot-Sones"
           target="_blank"
@@ -162,8 +164,10 @@ export async function GitHubPanel() {
         </a>
         <span className="live-dot" aria-label="live" />
       </div>
-      <StreakStats activity={activity} />
-      <ContributionCalendar weeks={activity.weeks} />
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr] lg:gap-12">
+        <StreakStats activity={activity} />
+        <ContributionCalendar weeks={activity.weeks} />
+      </div>
       <CommitFeed commits={commits} />
     </div>
   );

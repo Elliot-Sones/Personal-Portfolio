@@ -9,7 +9,7 @@ const TOOLS: { key: "claude" | "codex" | "kimi"; label: string; color: string }[
 function DayBars({ days }: { days: { date: string; claude: number; codex: number; kimi: number }[] }) {
   const max = Math.max(1, ...days.map((d) => d.claude + d.codex + d.kimi));
   return (
-    <div className="flex h-full min-h-[90px] items-end gap-1.5">
+    <div className="flex h-full min-h-[120px] items-end gap-2">
       {days.map((d) => (
         <div
           key={d.date}
@@ -19,7 +19,7 @@ function DayBars({ days }: { days: { date: string; claude: number; codex: number
             d[key] > 0 ? (
               <div
                 key={key}
-                className={`rounded-[1.5px] ${color} transition-opacity group-hover:opacity-80`}
+                className={`rounded-[2px] ${color} transition-opacity group-hover:opacity-80`}
                 style={{ height: `${Math.max(2, (d[key] / max) * 100)}%` }}
               />
             ) : null,
@@ -39,11 +39,14 @@ function DayBars({ days }: { days: { date: string; claude: number; codex: number
 
 function ToolRow({ label, color, tool }: { label: string; color: string; tool: AiUsageTool }) {
   return (
-    <span>
-      <i className={`inline-block w-2 h-2 rounded-[2px] ${color} mr-1.5 align-[-1px]`} />
-      {label} · {formatTokens(tool.tokens)} · {tool.sessions} sessions ·{" "}
-      <b className="font-medium text-ink">~{formatCost(tool.estCost)}</b>
-    </span>
+    <div className="flex items-baseline gap-2">
+      <i className={`inline-block h-2 w-2 shrink-0 rounded-[2px] ${color} self-center`} />
+      <span className="w-[88px] shrink-0">{label}</span>
+      <span>
+        {formatTokens(tool.tokens)} · {tool.sessions} sessions
+      </span>
+      <b className="ml-auto font-medium text-ink">~{formatCost(tool.estCost)}</b>
+    </div>
   );
 }
 
@@ -81,36 +84,45 @@ export function AiUsagePanel() {
     : "—";
 
   return (
-    <div className="site-card p-5 h-full flex flex-col">
-      <div className="flex items-center justify-between font-[family-name:var(--font-jbmono)] text-[10px] uppercase tracking-[0.16em] text-mute mb-3">
+    <div className="site-card p-5">
+      <div className="mb-4 flex items-center justify-between font-[family-name:var(--font-jbmono)] text-[10px] uppercase tracking-[0.16em] text-mute">
         <span>AI pair-programming</span>
         <span className="live-dot" aria-label="live" />
       </div>
-      <div className="stat-num text-[36px] leading-none">{formatTokens(total)}</div>
-      <div className="mt-1.5 font-[family-name:var(--font-jbmono)] text-[10px] tracking-[0.04em] text-mute">
-        tokens in the last 14 days (incl. cached context) · ~{formatCost(totalCost)} at API rates
-      </div>
-      <div className="mt-3 mb-2 flex h-3.5 overflow-hidden rounded-[3px]">
-        {tools.map(({ key, color, tool }) =>
-          tool.tokens > 0 ? (
-            <div key={key} className={color} style={{ width: `${(tool.tokens / total) * 100}%` }} />
-          ) : null,
-        )}
-      </div>
-      <div className="flex flex-wrap gap-x-4 gap-y-1 font-[family-name:var(--font-jbmono)] text-[10.5px] text-inksoft">
-        {tools.map(({ key, label, color, tool }) => (
-          <ToolRow key={key} label={label} color={color} tool={tool} />
-        ))}
-      </div>
-      <div className="mt-4 flex-1">
-        <DayBars days={usage.days} />
-      </div>
-      <div className="mt-2 flex justify-between font-[family-name:var(--font-jbmono)] text-[9.5px] text-faint">
-        <span>14 days ago</span>
-        <span>
-          tokens / day, stacked · peak {peakLabel} · updated {updated}
-        </span>
-        <span>today</span>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[300px_1fr] lg:gap-12">
+        {/* left: the number and the breakdown */}
+        <div>
+          <div className="stat-num text-[42px] leading-none">{formatTokens(total)}</div>
+          <div className="mt-2 font-[family-name:var(--font-jbmono)] text-[10px] leading-[1.7] tracking-[0.04em] text-mute">
+            tokens in the last 14 days (incl. cached context)
+            <br />~{formatCost(totalCost)} at API rates
+          </div>
+          <div className="mb-3 mt-4 flex h-2.5 overflow-hidden rounded-[3px]">
+            {tools.map(({ key, color, tool }) =>
+              tool.tokens > 0 ? (
+                <div key={key} className={color} style={{ width: `${(tool.tokens / total) * 100}%` }} />
+              ) : null,
+            )}
+          </div>
+          <div className="flex flex-col gap-1.5 font-[family-name:var(--font-jbmono)] text-[10.5px] text-inksoft">
+            {tools.map(({ key, label, color, tool }) => (
+              <ToolRow key={key} label={label} color={color} tool={tool} />
+            ))}
+          </div>
+        </div>
+        {/* right: the day chart */}
+        <div className="flex flex-col">
+          <div className="flex-1">
+            <DayBars days={usage.days} />
+          </div>
+          <div className="mt-2 flex justify-between font-[family-name:var(--font-jbmono)] text-[9.5px] text-faint">
+            <span>14 days ago</span>
+            <span>
+              tokens / day, stacked · peak {peakLabel} · updated {updated}
+            </span>
+            <span>today</span>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -44,7 +44,7 @@ export default function HomePage() {
       {/* Live strip */}
       <section className="reveal" style={{ "--reveal-i": 2 } as React.CSSProperties}>
         <SectionHeader title="Live" />
-        <div className="mt-3.5 grid grid-cols-1 items-stretch gap-3.5 lg:grid-cols-2">
+        <div className="mt-3.5 flex flex-col gap-3.5">
           <AiUsagePanel />
           <GitHubPanel />
         </div>
