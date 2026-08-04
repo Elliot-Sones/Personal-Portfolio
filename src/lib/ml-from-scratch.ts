@@ -1,8 +1,3 @@
-export interface MfsImage {
-  src: string;
-  caption: string;
-}
-
 export interface MfsModel {
   slug: string;
   name: string;
@@ -11,7 +6,6 @@ export interface MfsModel {
   accuracy: string;
   gif: string;
   gifCaption: string;
-  images: MfsImage[];
   facts: { label: string; value: string }[];
   story: string[];
   demoUrl: string;
@@ -39,10 +33,6 @@ export const mfsModels: MfsModel[] = [
     accuracy: "97%+",
     gif: "/ml-from-scratch/mlp-demo.gif",
     gifCaption: "Drawing a digit and watching the network call it",
-    images: [
-      { src: "/ml-from-scratch/mlp-arch.png", caption: "The architecture: 784 → 256 → 128 → 10" },
-      { src: "/ml-from-scratch/mlp-data.png", caption: "MNIST: 28×28 grayscale digits" },
-    ],
     facts: [
       { label: "Goal", value: "Accurately predict hand-drawn digits in production" },
       { label: "Dataset", value: "MNIST 28×28 grayscale images (60k train / 10k test)" },
@@ -69,10 +59,6 @@ export const mfsModels: MfsModel[] = [
     accuracy: "97.88%",
     gif: "/ml-from-scratch/cnn-demo.gif",
     gifCaption: "Two digits in, one of a hundred classes out",
-    images: [
-      { src: "/ml-from-scratch/cnn-arch.jpeg", caption: "Convolutions, pooling, then dense layers" },
-      { src: "/ml-from-scratch/cnn-data.png", caption: "Paired MNIST: 28×56 images labeled 00-99" },
-    ],
     facts: [
       { label: "Goal", value: "Scale digit recognition to two-digit numbers (0-99)" },
       { label: "Dataset", value: "Paired-MNIST 28×56 images (concatenated digits, 00-99 labels)" },
@@ -102,10 +88,6 @@ export const mfsModels: MfsModel[] = [
     accuracy: "94.36%",
     gif: "/ml-from-scratch/rnn-demo.gif",
     gifCaption: "Stroke by stroke, the network guesses the animal",
-    images: [
-      { src: "/ml-from-scratch/rnn-arch.png", caption: "A bidirectional GRU reads the stroke sequence" },
-      { src: "/ml-from-scratch/rnn-data.png", caption: "Google Quick, Draw! stroke data" },
-    ],
     facts: [
       { label: "Goal", value: "Classify hand-drawn doodles into 10 animal classes" },
       { label: "Dataset", value: "Google Quick, Draw! stroke sequences (dx, dy, pen-lift)" },
@@ -135,11 +117,6 @@ export const mfsModels: MfsModel[] = [
     accuracy: "~92%",
     gif: "/ml-from-scratch/encoder-demo.gif",
     gifCaption: "Emotion analysis with the encoder",
-    images: [
-      { src: "/ml-from-scratch/encoder-demo.gif", caption: "Encoder: 6-class emotion analysis" },
-      { src: "/ml-from-scratch/decoder-demo.gif", caption: "Decoder: character-level Shakespeare" },
-      { src: "/ml-from-scratch/translation-demo.gif", caption: "Full Seq2Seq: English to French" },
-    ],
     facts: [
       { label: "Paper", value: '"Attention Is All You Need", re-implemented end to end' },
       { label: "Encoder", value: "6-class emotion classification + masked language modeling" },

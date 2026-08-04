@@ -14,8 +14,105 @@ function RLDemo() {
   );
 }
 
+function Fig({
+  src,
+  caption,
+  max,
+}: {
+  src: string;
+  caption?: string;
+  max?: number;
+}) {
+  return (
+    <figure className="my-5">
+      <div className="overflow-hidden rounded-[6px] border border-line bg-white p-2">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={src}
+          alt={caption ?? ""}
+          loading="lazy"
+          className="mx-auto max-h-[420px] w-auto object-contain"
+          style={max ? { maxWidth: max } : undefined}
+        />
+      </div>
+      {caption && (
+        <figcaption className="mt-2 font-[family-name:var(--font-jbmono)] text-[9.5px] text-mute">
+          {caption}
+        </figcaption>
+      )}
+    </figure>
+  );
+}
+
+function FigRow({ children, cols = 2 }: { children: React.ReactNode; cols?: number }) {
+  return (
+    <div
+      className={`my-5 grid grid-cols-1 items-start gap-4 [&_figure]:my-0 ${
+        cols === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"
+      }`}
+    >
+      {children}
+    </div>
+  );
+}
+
+function Video({ id, caption }: { id: string; caption?: string }) {
+  return (
+    <figure className="my-5">
+      <div className="overflow-hidden rounded-[6px] border border-line bg-ink">
+        <iframe
+          src={`https://www.youtube-nocookie.com/embed/${id}`}
+          title={caption ?? "Video"}
+          className="aspect-video w-full"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+      {caption && (
+        <figcaption className="mt-2 font-[family-name:var(--font-jbmono)] text-[9.5px] text-mute">
+          {caption}
+        </figcaption>
+      )}
+    </figure>
+  );
+}
+
+function MathLine({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="my-5 rounded-[6px] border border-line bg-raised px-4 py-3 text-center font-[family-name:var(--font-jbmono)] text-[13px] tracking-[0.02em] text-ink">
+      {children}
+    </div>
+  );
+}
+
 export const mdxComponents: MDXComponents = {
   RLDemo,
+  Fig,
+  FigRow,
+  Video,
+  MathLine,
+  img: (props) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img className="my-4 rounded-[4px]" loading="lazy" alt="" {...props} />
+  ),
+  table: (props) => (
+    <div className="my-4 overflow-x-auto">
+      <table className="w-full border-collapse" {...props} />
+    </div>
+  ),
+  th: (props) => (
+    <th
+      className="border-b border-ink px-3 py-2 text-left font-[family-name:var(--font-jbmono)] text-[9px] font-medium uppercase tracking-[0.16em] text-mute"
+      {...props}
+    />
+  ),
+  td: (props) => (
+    <td
+      className="border-b border-line px-3 py-2 align-top font-[family-name:var(--font-jbmono)] text-[11.5px] leading-[1.65] text-inksoft"
+      {...props}
+    />
+  ),
   h1: (props) => (
     <h1
       className="font-[family-name:var(--font-fraunces)] text-[24px] font-semibold tracking-[-0.02em] text-ink mt-8 mb-3"

@@ -1,0 +1,153 @@
+---
+title: "Transformers"
+---
+
+<FigRow>
+  <Fig src="/ml-from-scratch/encoder-demo.gif" caption="Emotion analysis (encoder)" />
+  <Fig src="/ml-from-scratch/decoder-demo.gif" caption="Shakespeare generator (decoder)" />
+</FigRow>
+
+<Fig src="/ml-from-scratch/translation-demo.gif" caption="Machine translation EN→FR (full Seq2Seq)" max={560} />
+
+A from-scratch implementation of the Transformer architecture from ["Attention Is All You Need"](https://arxiv.org/abs/1706.03762). Three progressively complex projects, encoder-only, decoder-only, and full encoder-decoder, each built from first principles.
+
+## What is a Transformer?
+
+Transformers are neural networks that use self-attention to take input data (like text), model relationships between elements, and generate meaningful outputs like translations or classifications.
+
+Before Transformers, sequence models relied on recurrent (RNN) or convolutional (CNN) architectures that processed data sequentially, one token at a time. This sequential nature made them hard to scale and caused them to struggle with long-range dependencies.
+
+<Fig src="/ml-from-scratch/transformer/rnn-sequential.png" caption="Recurrent network for language processing" max={560} />
+
+The 2017 paper "Attention Is All You Need" introduced the Transformer, which replaces recurrence entirely with attention mechanisms. This allows the model to relate every position to every other position in parallel, enabling much better scaling and long-term memory.
+
+<Fig src="/ml-from-scratch/transformer/architecture.png" caption="The Transformer architecture" max={480} />
+
+## Key concepts
+
+### Attention
+
+The core innovation: allowing the model to focus on different parts of the input when processing each element.
+
+<Fig src="/ml-from-scratch/transformer/attention.png" caption="Attention with Transformers" max={560} />
+
+**Self-attention**: every word in a sequence attends to all other words, learning relationships regardless of distance. For example, learning that "it" refers to "the animal" in:
+
+> "The animal didn't cross because it was too tired."
+
+**Multi-head attention**: multiple attention mechanisms running in parallel, each learning different relationship types (semantic, positional, grammatical).
+
+<Fig src="/ml-from-scratch/transformer/multi-head.png" caption="Multi-head attention" max={300} />
+
+**Scaled dot-product**: the mathematical core of each attention head.
+
+<MathLine>Attention(Q, K, V) = softmax(QKᵀ / √d_k) · V</MathLine>
+
+<Fig src="/ml-from-scratch/transformer/scaled-dot-product.png" caption="Scaled dot-product attention" max={260} />
+
+### Embedding + positional encoding
+
+Words are converted to vectors (embeddings) so the model can process them numerically. Since Transformers process all tokens in parallel (no recurrence), positional encodings are added to preserve word order information.
+
+## Model architecture
+
+<Fig src="/ml-from-scratch/transformer/seq2seq.png" caption="Machine translation with the Transformer architecture" max={460} />
+
+The Transformer has two halves: the **encoder** (left) and the **decoder** (right).
+
+### Encoder (words → context)
+
+Processes the input sequence into rich contextual representations.
+
+- **Self-attention**: each word attends to all other words in the input (bidirectional)
+- **Architecture**: Input → Embedding → Multi-Head Self-Attention → Feed Forward → Output
+- **Learns**: grammatical relationships, semantic meaning, long-range dependencies
+
+### Decoder (context → words)
+
+Generates output sequences based on encoder context and previous outputs.
+
+- **Masked self-attention**: can only attend to previous positions (causal masking)
+- **Cross-attention**: attends to encoder outputs for source context
+- **Architecture**: Input → Embedding → Masked Self-Attention → Cross-Attention → Feed Forward → Output
+
+### How they work together
+
+1. The **encoder** processes the source sentence (e.g. English)
+2. The **decoder** uses encoder context to generate the target sentence (e.g. French)
+3. **Cross-attention** lets the decoder focus on relevant parts of the source
+4. **Teacher forcing** during training helps the decoder learn correct patterns
+
+## The three projects
+
+### 1. Encoder-only: emotion classification & MLM
+
+| | |
+|---|---|
+| **Architecture** | Pre-LN Transformer encoder with multi-head self-attention |
+| **Tasks** | 6-class emotion classification (GoEmotions) + masked language modeling |
+| **Key files** | [encode.py](https://github.com/Elliot-Sones/Neural_Networks_Fundamentals/blob/main/4.Transformers/encoder_transformer/encode.py) (encoder architecture), [sentiment/train.py](https://github.com/Elliot-Sones/Neural_Networks_Fundamentals/blob/main/4.Transformers/encoder_transformer/sentiment/train.py) (emotion classifier), [mlm/train.py](https://github.com/Elliot-Sones/Neural_Networks_Fundamentals/blob/main/4.Transformers/encoder_transformer/mlm/train.py) (MLM training) |
+
+### 2. Decoder-only: Shakespeare language model
+
+| | |
+|---|---|
+| **Architecture** | GPT-style character-level Transformer with causal masking |
+| **Task** | Text generation trained on Tiny Shakespeare |
+| **Key files** | [training.py](https://github.com/Elliot-Sones/Neural_Networks_Fundamentals/blob/main/4.Transformers/decoder_transformer/training.py) (training with EMA + cosine LR), [sample.py](https://github.com/Elliot-Sones/Neural_Networks_Fundamentals/blob/main/4.Transformers/decoder_transformer/sample.py) (text generation) |
+
+### 3. Full Seq2Seq: English → French translation
+
+| | |
+|---|---|
+| **Architecture** | Full encoder-decoder Transformer with cross-attention |
+| **Task** | English → French translation (WMT14/WMT16/OPUS data) |
+| **Key files** | [mini_transformer.py](https://github.com/Elliot-Sones/Neural_Networks_Fundamentals/blob/main/4.Transformers/machine_translation/mini_transformer.py) (Seq2Seq model), [train_mini.py](https://github.com/Elliot-Sones/Neural_Networks_Fundamentals/blob/main/4.Transformers/machine_translation/train_mini.py) (training loop), [translate.py](https://github.com/Elliot-Sones/Neural_Networks_Fundamentals/blob/main/4.Transformers/machine_translation/translate.py) (inference) |
+
+## Run it yourself
+
+```bash
+pip install -r requirements.txt
+# or: pip install torch tokenizers gradio datasets tqdm
+
+# Encoder: masked language model
+python encoder_transformer/mlm/train.py
+
+# Decoder: Shakespeare language model
+python decoder_transformer/training.py
+
+# Machine translation: EN→FR
+python machine_translation/setup_data.py --dataset wmt14 --out_dir data/en_fr
+python machine_translation/train_mini.py --train_csv data/en_fr/train.csv --val_csv data/en_fr/test.csv
+
+# Launch the 3-tab Gradio demo
+python app.py
+```
+
+Model checkpoints (`.pt`) are not tracked in the repo. Train from scratch with the scripts above, or download from the [Hugging Face Space](https://huggingface.co/spaces/Eli181927/Transformer_Demo).
+
+## Files
+
+```
+4.Transformers/
+├── app.py                          # 3-tab Gradio demo (Emotion, Shakespeare, Translation)
+├── optimize_models.py              # Strip optimizer state from checkpoints
+├── requirements.txt                # Transformer-specific deps
+├── assets/                         # Architecture diagrams
+│
+├── encoder_transformer/            # Encoder-only
+│   ├── encode.py                   # Encoder architecture (shared by all encoder tasks)
+│   ├── mlm/                        # Masked language modeling
+│   └── sentiment/                  # Emotion classification
+│
+├── decoder_transformer/            # Decoder-only (GPT-style)
+│   ├── training.py                 # Train on Tiny Shakespeare
+│   └── sample.py                   # Generate text from prompt
+│
+└── machine_translation/            # Full Seq2Seq
+    ├── mini_transformer.py         # Encoder-decoder model
+    ├── train_mini.py               # Training loop
+    ├── setup_data.py               # Download & prepare EN-FR data
+    ├── translate.py                # Inference / translation
+    └── train_tokenizer.py          # Train WordPiece tokenizer
+```

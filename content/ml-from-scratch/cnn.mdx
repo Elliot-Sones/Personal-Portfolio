@@ -1,0 +1,102 @@
+---
+title: "Convolutional Neural Network"
+---
+
+<Fig src="/ml-from-scratch/cnn-data.png" caption="MNIST-100: 28×56 images of handwritten digits 0-99, made by concatenating MNIST pairs" />
+
+Scale the MLP approach to recognizing two-digit numbers using convolutional neural networks.
+
+## Why CNNs?
+
+CNNs are different from MLPs because they have **convolutional layers** designed to recognize spatial patterns in images.
+
+<Fig src="/ml-from-scratch/cnn-arch.jpeg" caption="Convolutional layers building feature maps" max={520} />
+
+**Kernels** (small 3×3 filters) slide across the image, building a feature map that shows where certain visual patterns occur.
+
+<Fig src="/ml-from-scratch/cnn/maxpool.jpg" caption="Max pooling keeps only the strongest signals" max={520} />
+
+**Pooling** layers (usually MaxPool) reduce spatial dimensions, keeping only the strongest signals. **Activation functions** (ReLU, GELU) determine which patterns actually matter. After spatial feature extraction, the data is flattened and passed into fully connected layers, just like an MLP.
+
+Through deeper layers, CNNs build increasingly complex representations: from simple edges to high-level features.
+
+## Process
+
+### The MLP baseline
+
+First I tested the MLP from the previous section:
+
+- ~99% train vs ~87% dev, which is clear overfitting
+- The MLP treats pixels independently and lacks spatial bias, so small shifts degraded performance
+
+<FigRow>
+  <Fig src="/ml-from-scratch/cnn/mlp-loss.png" caption="Training loss over epochs" />
+  <Fig src="/ml-from-scratch/cnn/mlp-accuracy.png" caption="Train vs dev accuracy: a widening gap" />
+</FigRow>
+
+<Fig src="/ml-from-scratch/cnn/mlp-gap.png" caption="Generalization gap (train minus dev)" max={460} />
+
+### The CNN implementation
+
+- **Data & normalization**: scale to [0,1], standardize with training-set mean/std
+- **Augmentation**: random horizontal shifts (±2 px), mild contrast/brightness jitter
+- **Optimization**: Adam (lr=1e-3), He init, L2 regularization (λ=1e-4), batch size 256, up to 20 epochs
+- **Early stopping**: patience=5, min_delta=1e-3 on dev accuracy
+- **From-scratch ops**: NumPy-only conv via im2col/col2im, max-pooling, dropout, vectorized softmax cross-entropy, full backward pass
+
+### Results
+
+**Test accuracy: 97.88%** (10,000 samples)
+
+Hardest classes: 29 (90.2%), 97 (93.4%), 39 (93.8%), 33 (94.1%), 70 (94.1%)
+
+<FigRow>
+  <Fig src="/ml-from-scratch/cnn/cnn-loss.png" caption="CNN training loss" />
+  <Fig src="/ml-from-scratch/cnn/cnn-accuracy.png" caption="Train vs dev accuracy" />
+</FigRow>
+
+<Fig src="/ml-from-scratch/cnn/cnn-gap.png" caption="Generalization gap (train minus dev)" max={460} />
+
+## Run it yourself
+
+Two training options:
+
+**Option A: from-scratch NumPy (GPU recommended)**
+
+```bash
+cd 2.CNN
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+python setup_data.py
+python training-100.py --epochs 20 --batch-size 256
+```
+
+**Option B: PyTorch (fast on CPU)**
+
+```bash
+cd 2.CNN
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+python setup_data.py
+python training_torch.py --epochs 20 --batch-size 256 --device cpu
+```
+
+Then evaluate and run the demo:
+
+```bash
+python test_model.py
+python app.py
+```
+
+## Files
+
+```
+2.CNN/
+├── training-100.py             # From-scratch NumPy CNN
+├── training_torch.py           # PyTorch CNN implementation
+├── app.py                      # Gradio demo app
+├── test_model.py               # Test set evaluation
+├── setup_data.py               # Download & prepare MNIST-100
+├── requirements.txt
+└── assets/                     # Training plots and diagrams
+```

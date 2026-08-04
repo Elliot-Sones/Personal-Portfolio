@@ -1,0 +1,67 @@
+---
+title: "Multi-Layer Perceptron"
+---
+
+<FigRow>
+  <Fig src="/ml-from-scratch/mlp-arch.png" caption="The multi-layer perceptron: 784 → 256 → 128 → 10" />
+  <Fig src="/ml-from-scratch/mlp-data.png" caption="MNIST: 28×28 grayscale digits, 60k train / 10k test" />
+</FigRow>
+
+Build an MLP from scratch (pure NumPy, no ML frameworks) to predict hand-drawn digits 0-9, and deploy it to production.
+
+<Video id="RzZ32FRI4nI" caption="Demo walkthrough video" />
+
+## Process
+
+### Iteration 1: a simple single-layer MLP
+
+- **Architecture**: 784 → 10 (single linear layer) with softmax, full-batch gradient descent
+- **Result**: 92.6% dev accuracy, 91-92% test accuracy
+- **Issues**: capacity too low, loss plateau at 0.28, confusions on similar shapes (4/9, 3/5, 7/1)
+
+<FigRow>
+  <Fig src="/ml-from-scratch/mlp/loss-plateau.png" caption="Loss plateau: train vs dev loss with a late-epoch plateau" />
+  <Fig src="/ml-from-scratch/mlp/loss-wobble.png" caption="Loss wobble: zoomed view of oscillating loss after the plateau" />
+</FigRow>
+
+<Fig src="/ml-from-scratch/mlp/confusions.png" caption="Common confusions: the classic mistakes (4→9, 3→5, 7→1)" max={460} />
+
+### Iteration 2: deeper architecture + better training
+
+- **Architecture**: 784 → 256 → 128 → 10 with ReLU activations
+- **Training**: mini-batch Adam (batch 128), He initialization, L2 regularization (5e-4), 15 epochs
+- **Result**: 99.8% train, 97.1% dev, **97.2% test accuracy**
+
+### Production deployment
+
+- Interactive app (`python app.py`) for drawing and classifying digits
+- Added diagnostics: shows the exact 28×28 tensor fed to the network, stroke density, center offset, area ratio
+- Found production input was too different from training data, so I adjusted the preprocessing
+- Passed heavy stress testing (see the demo video above)
+
+Everything, from data ingestion to UI, runs with pure NumPy. No high-level ML frameworks, yet the model delivers **97%+** accuracy and production-grade UX.
+
+## Run it yourself
+
+```bash
+cd 1.MLP
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+
+python setup_data.py            # download MNIST → archive/
+python training.py              # train → archive/trained_model.npz
+python test_model.py            # evaluate on test set
+python app.py                   # launch local demo
+```
+
+## Files
+
+```
+1.MLP/
+├── training.py                 # Full MLP training from scratch
+├── app.py                      # Gradio demo app
+├── test_model.py               # Test set evaluation
+├── setup_data.py               # Download & prepare MNIST
+├── requirements.txt
+└── assets/                     # Training plots and diagrams
+```

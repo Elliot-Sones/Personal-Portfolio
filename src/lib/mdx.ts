@@ -24,7 +24,7 @@ export interface ProjectFrontmatter {
   order: number;
 }
 
-type Kind = "learning" | "projects";
+type Kind = "learning" | "projects" | "ml-from-scratch";
 
 const CONTENT_DIR = path.join(process.cwd(), "content");
 

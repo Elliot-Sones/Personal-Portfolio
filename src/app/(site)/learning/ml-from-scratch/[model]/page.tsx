@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getMfsModel, mfsModels } from "@/lib/ml-from-scratch";
+import { getMdx } from "@/lib/mdx";
 
 export function generateStaticParams() {
   return mfsModels.map((m) => ({ model: m.slug }));
@@ -29,6 +30,7 @@ export default async function MfsModelPage({
   const m = getMfsModel(model);
   if (!m) notFound();
 
+  const post = await getMdx<{ title: string }>("ml-from-scratch", m.slug);
   const idx = mfsModels.findIndex((x) => x.slug === m.slug);
   const prev = mfsModels[idx - 1];
   const next = mfsModels[idx + 1];
@@ -77,27 +79,6 @@ export default async function MfsModelPage({
         ))}
       </div>
 
-      {/* images from the README */}
-      <div className={`grid grid-cols-1 gap-4 ${m.images.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
-        {m.images.map((img) => (
-          <figure
-            key={img.src}
-            className="overflow-hidden rounded-[6px] border border-line bg-raised"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={img.src}
-              alt={img.caption}
-              className="h-52 w-full bg-white object-contain p-2"
-              loading="lazy"
-            />
-            <figcaption className="border-t border-line px-3 py-2 font-[family-name:var(--font-jbmono)] text-[9.5px] text-mute">
-              {img.caption}
-            </figcaption>
-          </figure>
-        ))}
-      </div>
-
       {/* live demo */}
       <div>
         <div className="site-h">Try it live</div>
@@ -125,6 +106,14 @@ export default async function MfsModelPage({
           />
         </div>
       </div>
+
+      {/* full write-up, transferred from the repo READMEs */}
+      {post && (
+        <div>
+          <div className="site-h">How I built it</div>
+          <div className="mt-2 max-w-[680px]">{post.content}</div>
+        </div>
+      )}
 
       {/* code links */}
       <div className="flex flex-wrap gap-6 font-[family-name:var(--font-jbmono)] text-[10.5px]">
