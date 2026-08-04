@@ -8,26 +8,29 @@ import { workCards, learningNow } from "@/lib/site-data";
 export default function HomePage() {
   return (
     <div className="flex flex-col gap-12 pt-2 md:pt-4">
-      {/* Working on */}
-      <section className="reveal" style={{ "--reveal-i": 0 } as React.CSSProperties}>
-        <SectionHeader title="What I'm working on" />
-        <WorkCards items={workCards} />
-      </section>
-
       {/* Live strip */}
-      <section className="reveal" style={{ "--reveal-i": 1 } as React.CSSProperties}>
+      <section className="reveal" style={{ "--reveal-i": 0 } as React.CSSProperties}>
         <SectionHeader title="Live" />
-        <div className="mt-3.5 flex flex-col gap-3.5">
+        <div className="mt-3.5 grid grid-cols-1 items-stretch gap-3.5 lg:grid-cols-2">
           <AiUsagePanel />
           <GitHubPanel />
         </div>
       </section>
 
-      {/* Learning */}
-      <section className="reveal" style={{ "--reveal-i": 2 } as React.CSSProperties}>
-        <SectionHeader title="What I'm learning" />
-        <StatusList items={learningNow} />
-      </section>
+      {/* Working on | Learning */}
+      <div
+        className="reveal grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-8"
+        style={{ "--reveal-i": 1 } as React.CSSProperties}
+      >
+        <section>
+          <SectionHeader title="What I'm working on" />
+          <WorkCards items={workCards} />
+        </section>
+        <section>
+          <SectionHeader title="What I'm learning" />
+          <StatusList items={learningNow} />
+        </section>
+      </div>
     </div>
   );
 }
