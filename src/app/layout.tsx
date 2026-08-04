@@ -37,14 +37,14 @@ const jbMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://elliotsones.com"),
-  title: "Elliot Sones — ML Engineer",
+  title: "Elliot Sones · AI Engineer",
   description:
     "Computer Science student at TMU building intelligent agents and deep learning systems. Reinforcement learning, transformer architectures, applied AI.",
   icons: {
     icon: "/icon.png",
   },
   openGraph: {
-    title: "Elliot Sones — ML Engineer",
+    title: "Elliot Sones · AI Engineer",
     description:
       "Building intelligent agents — and the infra that lets them play.",
     images: ["/icon.png"],

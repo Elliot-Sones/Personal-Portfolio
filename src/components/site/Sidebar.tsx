@@ -14,10 +14,8 @@ function Wordmark() {
           Elliot Sones<span className="text-ember">.</span>
         </HoverMorph>
       </div>
-      <div className="mt-2 font-[family-name:var(--font-jbmono)] text-[9.5px] uppercase tracking-[0.14em] leading-[1.7] text-mute">
-        ML Engineer
-        <br />
-        RL · Transformers
+      <div className="mt-2 font-[family-name:var(--font-jbmono)] text-[9.5px] uppercase tracking-[0.14em] text-mute">
+        AI Engineer
       </div>
     </Link>
   );
