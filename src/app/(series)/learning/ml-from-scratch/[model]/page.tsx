@@ -38,13 +38,7 @@ export default async function MfsModelPage({
   return (
     <div className="reveal flex flex-col gap-9" style={{ "--reveal-i": 0 } as React.CSSProperties}>
       <div>
-        <Link
-          href="/learning/ml-from-scratch"
-          className="font-[family-name:var(--font-jbmono)] text-[10px] uppercase tracking-[0.18em] text-mute transition-colors hover:text-ember"
-        >
-          ← Machine Learning, from scratch
-        </Link>
-        <div className="mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-2">
+        <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
           <h1 className="page-hed text-[clamp(26px,3.4vw,38px)]">
             {m.name}
             <span className="text-ember">.</span>
