@@ -1,3 +1,5 @@
+import { parseTensors } from "@/lib/weights";
+
 // Runs the from-scratch MLP (784 → 256 → 128 → 10) directly in the browser.
 // Weights come from public/ml-from-scratch/mlp-weights.bin, exported from the
 // exact archive/trained_model.npz the Hugging Face space uses. Preprocessing
@@ -16,25 +18,8 @@ export interface MlpWeights {
   std: Float32Array; // (784)
 }
 
-interface ManifestEntry {
-  name: string;
-  shape: number[];
-}
-
 export function parseWeights(buf: ArrayBuffer): MlpWeights {
-  const view = new DataView(buf);
-  const manifestLen = view.getUint32(0, true);
-  const manifest: ManifestEntry[] = JSON.parse(
-    new TextDecoder().decode(new Uint8Array(buf, 4, manifestLen)),
-  );
-  let offset = 4 + manifestLen;
-  const tensors: Record<string, Float32Array> = {};
-  for (const entry of manifest) {
-    const count = entry.shape.reduce((a, b) => a * b, 1);
-    tensors[entry.name] = new Float32Array(buf.slice(offset, offset + count * 4));
-    offset += count * 4;
-  }
-  return tensors as unknown as MlpWeights;
+  return parseTensors(buf) as unknown as MlpWeights;
 }
 
 // gray: inverted grayscale (stroke = 255, background = 0), row-major size×size.

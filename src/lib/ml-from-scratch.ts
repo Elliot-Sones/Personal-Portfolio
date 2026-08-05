@@ -77,6 +77,7 @@ export const mfsModels: MfsModel[] = [
     demoUrl: "https://huggingface.co/spaces/Eli181927/0-99_Classification",
     embedUrl: "https://eli181927-0-99-classification.hf.space",
     demoNote: "Draw a two-digit number from 00 to 99",
+    nativeDemo: true,
     code: [
       { label: "Training code", href: `${REPO}/blob/main/2.CNN/training_torch.py` },
       { label: "Section README", href: `${REPO}/blob/main/2.CNN/README.md` },

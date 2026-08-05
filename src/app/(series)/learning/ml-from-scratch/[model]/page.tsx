@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import CnnDigitDemo from "@/components/CnnDigitDemo";
 import MlpDigitDemo from "@/components/MlpDigitDemo";
 import { getMfsModel, mfsModels } from "@/lib/ml-from-scratch";
 import { getMdx } from "@/lib/mdx";
@@ -96,7 +97,11 @@ export default async function MfsModelPage({
             )}
           </div>
           {m.nativeDemo ? (
-            <MlpDigitDemo />
+            m.slug === "cnn" ? (
+              <CnnDigitDemo />
+            ) : (
+              <MlpDigitDemo />
+            )
           ) : (
             <iframe
               src={m.embedUrl}
