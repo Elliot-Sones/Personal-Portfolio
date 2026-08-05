@@ -11,6 +11,8 @@ title: "Transformers"
 
 A from-scratch implementation of the Transformer architecture from ["Attention Is All You Need"](https://arxiv.org/abs/1706.03762). Three progressively complex projects, encoder-only, decoder-only, and full encoder-decoder, each built from first principles.
 
+In 2017 that paper fundamentally transformed natural language processing: it laid the foundation for the large language models that dominate today's AI landscape. The original Transformer was designed for machine translation, an encoder-decoder architecture powered entirely by attention. Modern LLMs have since evolved into decoder-only variants, but the original design remains the core of nearly every current model. This post breaks down the key components and how I implemented each one.
+
 ## What is a Transformer?
 
 Transformers are neural networks that use self-attention to take input data (like text), model relationships between elements, and generate meaningful outputs like translations or classifications.
@@ -19,7 +21,7 @@ Before Transformers, sequence models relied on recurrent (RNN) or convolutional 
 
 <Fig src="/ml-from-scratch/transformer/rnn-sequential.png" caption="Recurrent network for language processing" max={560} />
 
-The 2017 paper "Attention Is All You Need" introduced the Transformer, which replaces recurrence entirely with attention mechanisms. This allows the model to relate every position to every other position in parallel, enabling much better scaling and long-term memory.
+The 2017 paper "Attention Is All You Need" introduced the Transformer, which replaces recurrence entirely with attention mechanisms. This allows the model to relate every position to every other position in parallel: it can "remember" every earlier word in a constant number of operations, enabling much better scaling and long-term memory.
 
 <Fig src="/ml-from-scratch/transformer/architecture.png" caption="The Transformer architecture" max={480} />
 
@@ -27,15 +29,29 @@ The 2017 paper "Attention Is All You Need" introduced the Transformer, which rep
 
 ### Attention
 
-The core innovation: allowing the model to focus on different parts of the input when processing each element.
+The core innovation: allowing the model to focus on different parts of the input when processing each element. Everything else in the architecture is built around it, so it is worth fully understanding first. The resources I found most useful: [3Blue1Brown's visual explanation](https://www.youtube.com/watch?v=eMlx5fFNoYc) (most recommended) and [this intro to transformers and attention](https://medium.com/@kalra.rakshit/introduction-to-transformers-and-attention-mechanisms-c29d252ea2c5).
 
 <Fig src="/ml-from-scratch/transformer/attention.png" caption="Attention with Transformers" max={560} />
+
+Attention works by creating three vectors for every token:
+
+- **Query (Q)**: what this word is looking for
+- **Key (K)**: a tag that describes each word
+- **Value (V)**: the information each word carries
+
+All three are learned projections of the same input:
+
+<MathLine>Q = X·W_Q, K = X·W_K, V = X·W_V</MathLine>
+
+Each word compares its query against every other word's key to get relevance scores. The scores are scaled, padding is masked out, and a softmax turns them into focus weights. Each word's output is then the weighted average of all the values: information flows from the words that matter most.
 
 **Self-attention**: every word in a sequence attends to all other words, learning relationships regardless of distance. For example, learning that "it" refers to "the animal" in:
 
 > "The animal didn't cross because it was too tired."
 
-**Multi-head attention**: multiple attention mechanisms running in parallel, each learning different relationship types (semantic, positional, grammatical).
+**Multi-head attention**: multiple attention mechanisms running in parallel, each learning different relationship types. For "The cat sat on the mat", one head links "cat" to "sat" (subject-verb), another links "sat" to "on" (verb-preposition), another "on" to "mat" (preposition-object), another "the" to "cat" and "mat" (articles), and so on.
+
+<MathLine>MultiHead(Q, K, V) = Concat(head_1, …, head_h)·W_O</MathLine>
 
 <Fig src="/ml-from-scratch/transformer/multi-head.png" caption="Multi-head attention" max={300} />
 
@@ -47,7 +63,11 @@ The core innovation: allowing the model to focus on different parts of the input
 
 ### Embedding + positional encoding
 
-Words are converted to vectors (embeddings) so the model can process them numerically. Since Transformers process all tokens in parallel (no recurrence), positional encodings are added to preserve word order information.
+The model can only work with numbers, so text is first split into **tokens** (often whole words, sometimes pieces of words), and each token is embedded into a vector that captures its meaning.
+
+<Fig src="/ml-from-scratch/transformer/embedding.png" caption="Every token becomes a vector: the embeddings for a sequence" max={560} />
+
+Since Transformers process all tokens in parallel (no recurrence), **positional encodings** are added to the embeddings to preserve word order. At the other end of the model, an unembedding step turns output vectors back into words a human can read: that is the language modeling head, covered below.
 
 ## Model architecture
 
@@ -57,19 +77,51 @@ The Transformer has two halves: the **encoder** (left) and the **decoder** (righ
 
 ### Encoder (words → context)
 
-Processes the input sequence into rich contextual representations.
+<FigRow>
+  <Fig src="/ml-from-scratch/transformer/encoder.png" caption="The encoder half of the Transformer" />
+  <Fig src="/ml-from-scratch/transformer/encoder-zoom.png" caption="Inside one encoder layer" />
+</FigRow>
 
-- **Self-attention**: each word attends to all other words in the input (bidirectional)
-- **Architecture**: Input → Embedding → Multi-Head Self-Attention → Feed Forward → Output
-- **Learns**: grammatical relationships, semantic meaning, long-range dependencies
+The encoder converts a sequence of tokens into contextual vectors that capture meaning and long-range dependencies. Before any attention happens, the input runs through a pipeline:
+
+- **Tokenization**: convert text into token IDs, "The cat sat" → [101, 1996, 4937, 1045]
+- **Padding**: shorter sequences get [PAD] tokens so a batch shares one length → [101, 1996, 4937, 1045, 0, 0, 0]
+- **Attention masks**: 1 for real tokens, 0 for padding, so the model ignores the filler → [1, 1, 1, 1, 0, 0, 0]
+- **Positional embeddings**: learned position information added to each token
+
+The encoder itself is a stack of identical layers, each with two sub-layers: multi-head self-attention and a position-wise feed-forward network (a small per-token MLP that refines the representations). Self-attention here is bidirectional: each word attends to every other word in the input. Every sub-layer is wrapped in a residual connection plus layer normalization:
+
+<MathLine>x = x + SelfAttention(LN(x))</MathLine>
+
+<MathLine>x = x + FeedForward(LN(x))</MathLine>
+
+with one final LN at the top of the stack. Along the way it learns grammatical relationships, semantic meaning, and long-range dependencies.
 
 ### Decoder (context → words)
 
-Generates output sequences based on encoder context and previous outputs.
+<FigRow>
+  <Fig src="/ml-from-scratch/transformer/decoder.png" caption="The decoder half of the Transformer" />
+  <Fig src="/ml-from-scratch/transformer/decoder-zoom.png" caption="Inside one decoder layer" />
+</FigRow>
 
-- **Masked self-attention**: can only attend to previous positions (causal masking)
-- **Cross-attention**: attends to encoder outputs for source context
-- **Architecture**: Input → Embedding → Masked Self-Attention → Cross-Attention → Feed Forward → Output
+The decoder generates output sequences based on encoder context and previous outputs. Its layers have the same two sub-layers as the encoder, plus one more in between: **cross-attention** over the encoder's output, where the queries come from the decoder and the keys and values come from the encoder.
+
+Its self-attention is **masked**: position i can only attend to positions before i, and the output embeddings are offset by one position, so the prediction for any position depends only on the outputs already known. That causal masking is what makes autoregressive generation possible.
+
+### The language modeling head
+
+After the final block, each token is a vector that captures its meaning in context. To turn vectors back into words, the model multiplies them by a large vocabulary matrix, one row for every token it can predict, giving a score for each candidate. A softmax turns those scores into probabilities that sum to 1. If the model has just seen "The", it might predict:
+
+| Next word | Probability |
+|---|---|
+| king | 0.65 |
+| cat | 0.18 |
+| apple | 0.06 |
+| sat | 0.02 |
+
+<Fig src="/ml-from-scratch/transformer/prediction.png" caption="Next-token prediction: the model fills in the blank" max={620} />
+
+<Fig src="/ml-from-scratch/transformer/transformer-block.png" caption="The decoder-only pipeline end to end: tokenize, embed, transformer blocks, LM head" max={520} />
 
 ### How they work together
 
@@ -80,7 +132,9 @@ Generates output sequences based on encoder context and previous outputs.
 
 ## The three projects
 
-### 1. Encoder-only: emotion classification & MLM
+### Encoder-only: emotion classification & MLM
+
+**Masked language modeling** is the natural way to test an encoder: mask some of the tokens in a sentence and train the model to predict what is missing, which forces it to build relationships between the words that remain. On top of the same encoder I also trained an emotion classifier.
 
 | | |
 |---|---|
@@ -88,7 +142,9 @@ Generates output sequences based on encoder context and previous outputs.
 | **Tasks** | 6-class emotion classification (GoEmotions) + masked language modeling |
 | **Key files** | [encode.py](https://github.com/Elliot-Sones/Neural_Networks_Fundamentals/blob/main/4.Transformers/encoder_transformer/encode.py) (encoder architecture), [sentiment/train.py](https://github.com/Elliot-Sones/Neural_Networks_Fundamentals/blob/main/4.Transformers/encoder_transformer/sentiment/train.py) (emotion classifier), [mlm/train.py](https://github.com/Elliot-Sones/Neural_Networks_Fundamentals/blob/main/4.Transformers/encoder_transformer/mlm/train.py) (MLM training) |
 
-### 2. Decoder-only: Shakespeare language model
+### Decoder-only: Shakespeare language model
+
+Essentially a small GPT: a character-level Transformer with causal masking, trained on Tiny Shakespeare. Training uses EMA weights and a cosine learning-rate schedule, auto-detects Apple Silicon (MPS) with a CPU fallback, and saves periodic checkpoints that can be resumed, even after a Ctrl+C interrupt. Each checkpoint stores the hyperparameters and the character vocabulary, so sampling (for example from the prompt "ROMEO:") needs no training data.
 
 | | |
 |---|---|
@@ -96,7 +152,9 @@ Generates output sequences based on encoder context and previous outputs.
 | **Task** | Text generation trained on Tiny Shakespeare |
 | **Key files** | [training.py](https://github.com/Elliot-Sones/Neural_Networks_Fundamentals/blob/main/4.Transformers/decoder_transformer/training.py) (training with EMA + cosine LR), [sample.py](https://github.com/Elliot-Sones/Neural_Networks_Fundamentals/blob/main/4.Transformers/decoder_transformer/sample.py) (text generation) |
 
-### 3. Full Seq2Seq: English → French translation
+### Full Seq2Seq: English → French translation
+
+The finale wires both halves together. A Seq2Seq wrapper owns the encoder, the decoder, and a tied output head. Training uses teacher forcing: the decoder sees the target sentence shifted right and learns to predict each next token, with a cross-entropy loss that ignores padding and supports label smoothing. Text is tokenized with a WordPiece tokenizer trained for the task, and inference supports greedy and beam-search decoding, evaluated with BLEU.
 
 | | |
 |---|---|

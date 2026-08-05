@@ -64,7 +64,7 @@ export const mfsModels: MfsModel[] = [
       { label: "Dataset", value: "Paired-MNIST 28×56 images (concatenated digits, 00-99 labels)" },
       {
         label: "Architecture",
-        value: "Conv(3×3,16) → ReLU → MaxPool → Conv(3×3,32) → ReLU → MaxPool → FC(256) → FC(100)",
+        value: "Conv(3×3,16) → ReLU → MaxPool → Conv(3×3,32) → ReLU → MaxPool → FC(256) → Dropout(0.4) → FC(100)",
       },
       { label: "Result", value: "97.88% test accuracy (10,000 samples)" },
     ],
