@@ -137,6 +137,32 @@ export const mfsModels: MfsModel[] = [
   },
 ];
 
+export const mfsData = [
+  {
+    model: "MLP",
+    dataset: "MNIST (28×28, digits 0-9)",
+    source: { label: "CVDF mirror", href: "https://storage.googleapis.com/cvdf-datasets/mnist" },
+  },
+  {
+    model: "CNN",
+    dataset: "MNIST-100 (28×56, digits 0-99)",
+    source: { label: "Paired from MNIST", href: null },
+  },
+  {
+    model: "RNN",
+    dataset: "Quick, Draw! (10 animals)",
+    source: {
+      label: "Google Quick Draw",
+      href: "https://storage.googleapis.com/quickdraw_dataset/full/simplified/",
+    },
+  },
+  {
+    model: "Transformer",
+    dataset: "Tiny Shakespeare · GoEmotions · WMT14 EN-FR",
+    source: { label: "Various", href: null },
+  },
+];
+
 export function getMfsModel(slug: string): MfsModel | undefined {
   return mfsModels.find((m) => m.slug === slug);
 }
