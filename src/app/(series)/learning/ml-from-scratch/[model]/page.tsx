@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import MlpDigitDemo from "@/components/MlpDigitDemo";
 import { getMfsModel, mfsModels } from "@/lib/ml-from-scratch";
 import { getMdx } from "@/lib/mdx";
 
@@ -79,25 +80,32 @@ export default async function MfsModelPage({
         <div className="mt-3.5 overflow-hidden rounded-[6px] border border-line bg-raised">
           <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line px-4 py-2.5">
             <span className="font-[family-name:var(--font-jbmono)] text-[10px] uppercase tracking-[0.14em] text-mute">
-              {m.demoNote} · the actual model, running on Hugging Face
+              {m.demoNote} · the actual model, running{" "}
+              {m.nativeDemo ? "right here in your browser" : "on Hugging Face"}
             </span>
-            <a
-              href={m.demoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group font-[family-name:var(--font-jbmono)] text-[10px] text-ember"
-            >
-              <span className="u-draw">Open full screen</span>{" "}
-              <span className="arrow-nudge">↗</span>
-            </a>
+            {!m.nativeDemo && (
+              <a
+                href={m.demoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group font-[family-name:var(--font-jbmono)] text-[10px] text-ember"
+              >
+                <span className="u-draw">Open full screen</span>{" "}
+                <span className="arrow-nudge">↗</span>
+              </a>
+            )}
           </div>
-          <iframe
-            src={m.embedUrl}
-            title={`${m.name} live demo`}
-            className="block h-[640px] w-full bg-white"
-            loading="lazy"
-            allow="clipboard-write"
-          />
+          {m.nativeDemo ? (
+            <MlpDigitDemo />
+          ) : (
+            <iframe
+              src={m.embedUrl}
+              title={`${m.name} live demo`}
+              className="block h-[640px] w-full bg-white"
+              loading="lazy"
+              allow="clipboard-write"
+            />
+          )}
         </div>
       </div>
 

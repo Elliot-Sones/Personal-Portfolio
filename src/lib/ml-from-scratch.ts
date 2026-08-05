@@ -11,6 +11,7 @@ export interface MfsModel {
   demoUrl: string;
   embedUrl: string;
   demoNote: string;
+  nativeDemo?: boolean;
   code: { label: string; href: string }[];
 }
 
@@ -46,6 +47,7 @@ export const mfsModels: MfsModel[] = [
     demoUrl: "https://huggingface.co/spaces/Eli181927/elliot_digit_classifier/",
     embedUrl: "https://eli181927-elliot-digit-classifier.hf.space",
     demoNote: "Draw a digit from 0 to 9",
+    nativeDemo: true,
     code: [
       { label: "Training code", href: `${REPO}/blob/main/1.MLP/training.py` },
       { label: "Section README", href: `${REPO}/blob/main/1.MLP/README.md` },
