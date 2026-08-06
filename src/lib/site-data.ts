@@ -208,6 +208,7 @@ export interface ExperienceItem {
   end?: string; // "YYYY-MM", exclusive; omit = present
   detail: string;
   more?: string;
+  highlights?: string[]; // "what I did" bullets shown in the detail panel
   link?: string;
   short?: string; // compact label for narrow timeline bars
   current?: boolean;
@@ -226,7 +227,10 @@ export const experience: ExperienceItem[] = [
     link: "https://www.trajektsports.com/",
     detail:
       "Toronto sports-tech company behind the Trajekt Arc pitching robot, used by MLB teams to replicate real pitchers in batting practice.",
-    more: "The Trajekt Arc replicates any pitcher's delivery from tracking data — 120+ systems deployed, used daily by pros across the MLB and NPB.",
+    more: "The Trajekt Arc replicates any pitcher's delivery from tracking data: 120+ systems deployed, used daily by pros across the MLB and NPB.",
+    highlights: [
+      "Operations for the Arc program, keeping the robots that pro teams rely on running through the season.",
+    ],
   },
   {
     role: "Machine Learning Research Intern",
@@ -240,6 +244,9 @@ export const experience: ExperienceItem[] = [
     link: "https://ntangible.co/",
     detail:
       "Exploring real-world applications of AI/ML in sports psychology, combining technical development with performance analytics.",
+    highlights: [
+      "Research on applying ML to athlete mental-performance data, bridging model work and what coaches actually use.",
+    ],
   },
   {
     role: "BSc Computer Science",
@@ -251,7 +258,10 @@ export const experience: ExperienceItem[] = [
     link: "https://www.torontomu.ca/",
     detail:
       "Focused on reinforcement learning, transformer architectures, and applied AI.",
-    more: "Current GPA 3.7. Projected graduation 2029.",
+    highlights: [
+      "Building every major neural architecture from scratch alongside coursework: the Machine Learning, from scratch series on this site.",
+      "Current GPA 3.7 · projected graduation 2029.",
+    ],
   },
   {
     role: "Bachelor of Commerce",
@@ -261,7 +271,10 @@ export const experience: ExperienceItem[] = [
     end: "2025-09",
     logo: "/experience/athabasca_logo.png",
     link: "https://www.athabascau.ca/",
-    detail: "Business foundations before transferring into computer science. GPA 3.7.",
+    detail: "Business foundations before transferring into computer science.",
+    highlights: [
+      "Completed a year of business coursework with a 3.7 GPA, then transferred into computer science.",
+    ],
   },
   {
     role: "Professional Academy Soccer Player (U19)",
@@ -273,7 +286,11 @@ export const experience: ExperienceItem[] = [
     logo: "/experience/lank_logo.png",
     link: "https://www.playmakerstats.com/player/elliot-sones/1259756",
     detail:
-      "Trained and competed in a professional academy environment; developed discipline, resilience, and teamwork under pressure.",
+      "A season in Portugal's professional academy system with Lank Vilaverdense's U19 side.",
+    highlights: [
+      "Trained and competed in a professional academy environment; discipline, resilience, and teamwork under pressure.",
+      "Lived abroad and competed in a second language at 18.",
+    ],
   },
 ];
 

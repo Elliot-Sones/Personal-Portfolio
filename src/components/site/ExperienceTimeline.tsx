@@ -43,7 +43,7 @@ export function ExperienceTimeline({
   return (
     <div className="mt-6">
       {/* axis header */}
-      <div className="relative h-5 font-[family-name:var(--font-jbmono)] text-[9.5px] uppercase tracking-[0.14em] text-faint">
+      <div className="relative h-6 font-[family-name:var(--font-jbmono)] text-[10.5px] uppercase tracking-[0.14em] text-faint">
         {years.map((y) => (
           <span
             key={y.label}
@@ -58,7 +58,7 @@ export function ExperienceTimeline({
 
       {/* lanes */}
       <div className="relative overflow-x-auto">
-        <div className="relative min-w-[820px]">
+        <div className="relative min-w-[920px]">
           {/* year gridlines */}
           {years.map((y) => (
             <div
@@ -73,11 +73,11 @@ export function ExperienceTimeline({
             const narrow = w < 15;
             const labelRight = l + w < 60;
             return (
-              <div key={e.role} className="relative h-14">
+              <div key={e.role} className="relative h-[72px]">
                 <button
                   onClick={() => setSelected(e)}
                   style={{ left: `${l}%`, width: `${w}%` }}
-                  className={`group absolute top-1/2 flex h-9 min-w-[40px] -translate-y-1/2 cursor-pointer items-center gap-2 overflow-hidden rounded-full px-2.5 transition-colors ${
+                  className={`group absolute top-1/2 flex h-12 min-w-[48px] -translate-y-1/2 cursor-pointer items-center gap-2.5 overflow-hidden rounded-full px-3 transition-colors ${
                     e.current
                       ? "bg-ember text-paper hover:bg-[#a04826]"
                       : "border border-line bg-raised text-inksoft hover:border-ember"
@@ -89,20 +89,20 @@ export function ExperienceTimeline({
                     <img
                       src={e.logo}
                       alt=""
-                      className={`h-5 w-5 shrink-0 rounded-full border border-line object-contain p-[2px] ${
+                      className={`h-7 w-7 shrink-0 rounded-full border border-line object-contain p-[3px] ${
                         e.logoDark ? "bg-[#151515]" : "bg-raised"
                       }`}
                     />
                   )}
                   {!narrow && (
-                    <span className="truncate font-[family-name:var(--font-jbmono)] text-[10.5px] font-medium">
+                    <span className="truncate font-[family-name:var(--font-jbmono)] text-[12px] font-medium">
                       {e.short ?? e.role}
                     </span>
                   )}
                 </button>
                 {narrow && (
                   <span
-                    className={`absolute top-1/2 -translate-y-1/2 whitespace-nowrap font-[family-name:var(--font-jbmono)] text-[10px] text-inksoft ${
+                    className={`absolute top-1/2 -translate-y-1/2 whitespace-nowrap font-[family-name:var(--font-jbmono)] text-[11.5px] text-inksoft ${
                       labelRight ? "" : "text-right"
                     }`}
                     style={
@@ -120,7 +120,7 @@ export function ExperienceTimeline({
         </div>
       </div>
 
-      <div className="mt-1 font-[family-name:var(--font-jbmono)] text-[9.5px] text-faint">
+      <div className="mt-2 font-[family-name:var(--font-jbmono)] text-[10.5px] text-faint">
         click a bar for details
       </div>
 
@@ -132,7 +132,7 @@ export function ExperienceTimeline({
         >
           <div className="absolute inset-0 bg-ink/30 backdrop-blur-[2px]" />
           <div
-            className="relative w-full max-w-[520px] rounded-[8px] border border-line bg-raised p-6 shadow-2xl"
+            className="relative max-h-[85vh] w-full max-w-[620px] overflow-y-auto rounded-[8px] border border-line bg-raised p-6 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -177,6 +177,27 @@ export function ExperienceTimeline({
               <p className="mt-2 font-[family-name:var(--font-fraunces)] text-[15px] leading-[1.7] text-inksoft">
                 {selected.more}
               </p>
+            )}
+            {selected.highlights && selected.highlights.length > 0 && (
+              <div className="mt-5 border-t border-line pt-4">
+                <div className="font-[family-name:var(--font-jbmono)] text-[9px] uppercase tracking-[0.18em] text-mute">
+                  What I did
+                </div>
+                <ul className="mt-2.5 flex flex-col gap-2.5">
+                  {selected.highlights.map((h) => (
+                    <li
+                      key={h}
+                      className="flex gap-3 font-[family-name:var(--font-fraunces)] text-[14.5px] leading-[1.65] text-inksoft"
+                    >
+                      <span
+                        className="mt-[10px] h-[3px] w-[14px] shrink-0 rounded-full bg-ember"
+                        aria-hidden
+                      />
+                      <span>{h}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
             {selected.link && (
               <a
