@@ -2,8 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import CnnDigitDemo from "@/components/CnnDigitDemo";
 import MlpDigitDemo from "@/components/MlpDigitDemo";
+import { ReadAloud } from "@/components/site/ReadAloud";
 import { getMfsModel, mfsModels } from "@/lib/ml-from-scratch";
 import { getMdx } from "@/lib/mdx";
+import { mfsReadAloud } from "@/lib/read-aloud";
 
 export function generateStaticParams() {
   return mfsModels.map((m) => ({ model: m.slug }));
@@ -60,6 +62,9 @@ export default async function MfsModelPage({
           </p>
         ))}
       </div>
+
+      {/* listen to this post */}
+      {mfsReadAloud[m.slug] && <ReadAloud text={mfsReadAloud[m.slug]} />}
 
       {/* facts */}
       <div className="grid grid-cols-1 gap-x-8 gap-y-3 rounded-[6px] border border-line bg-card p-4 sm:grid-cols-2">
