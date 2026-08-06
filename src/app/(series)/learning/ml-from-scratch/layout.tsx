@@ -67,8 +67,8 @@ export default function SeriesLayout({
       </div>
 
       <main className="min-w-0 px-5 py-6 md:ml-[250px] md:px-10 md:py-8">
-        <div className="max-w-[860px]">{children}</div>
-        <footer className="mt-16 flex max-w-[860px] items-center justify-between border-t border-line pt-4 font-[family-name:var(--font-jbmono)] text-[9px] uppercase tracking-[0.16em] text-faint">
+        <div className="mx-auto max-w-[1080px]">{children}</div>
+        <footer className="mx-auto mt-16 flex max-w-[1080px] items-center justify-between border-t border-line pt-4 font-[family-name:var(--font-jbmono)] text-[9px] uppercase tracking-[0.16em] text-faint">
           <span>© 2026 Elliot Sones</span>
           <Link href="/learning" className="hover:text-ember transition-colors">
             learning blogs →
