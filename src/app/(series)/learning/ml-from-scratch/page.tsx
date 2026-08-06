@@ -1,3 +1,5 @@
+import fs from "node:fs";
+import path from "node:path";
 import Link from "next/link";
 import { mfsData, mfsIntro, mfsModels } from "@/lib/ml-from-scratch";
 
@@ -6,7 +8,22 @@ export const metadata = {
   description: mfsIntro.description,
 };
 
+// Page prose lives in content/ml-from-scratch/overview.md (plain text, easy to
+// edit): first paragraph is the italic tagline, the rest are intro paragraphs.
+function getOverviewCopy(): { tagline: string; paragraphs: string[] } {
+  const raw = fs.readFileSync(
+    path.join(process.cwd(), "content", "ml-from-scratch", "overview.md"),
+    "utf8",
+  );
+  const blocks = raw
+    .split(/\n\s*\n/)
+    .map((b) => b.replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+  return { tagline: blocks[0] ?? "", paragraphs: blocks.slice(1) };
+}
+
 export default function MlFromScratchPage() {
+  const copy = getOverviewCopy();
   return (
     <div className="reveal" style={{ "--reveal-i": 0 } as React.CSSProperties}>
       <h1 className="page-hed text-[clamp(30px,4vw,44px)]">
@@ -14,21 +31,15 @@ export default function MlFromScratchPage() {
         <span className="text-ember">.</span>
       </h1>
       <p className="mt-3 font-[family-name:var(--font-fraunces)] text-[16px] italic text-mute">
-        From neurons to transformers: building every major architecture from scratch.
+        {copy.tagline}
       </p>
 
       <div className="prose-serif mt-6">
-        <p>
-          Frameworks hide exactly the parts you should understand. So I built the
-          parts: every model on this page is implemented from first principles,
-          with no high-level ML wrappers, so you can see exactly how each
-          algorithm works.
-        </p>
-        <p className="mt-3">
-          Each part is a full write-up of what I built, how it works, and what
-          went wrong along the way, with the real trained model embedded on the
-          page so you can try it yourself.
-        </p>
+        {copy.paragraphs.map((p) => (
+          <p key={p.slice(0, 32)} className="[&+&]:mt-3">
+            {p}
+          </p>
+        ))}
       </div>
 
       <div className="mt-9">

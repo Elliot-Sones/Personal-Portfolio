@@ -39,8 +39,13 @@ export default async function MfsModelPage({
   const prev = mfsModels[idx - 1];
   const next = mfsModels[idx + 1];
 
+  const readAloudText = mfsReadAloud[m.slug];
+
   return (
-    <div className="reveal flex flex-col gap-9" style={{ "--reveal-i": 0 } as React.CSSProperties}>
+    <div
+      className={`reveal flex flex-col gap-9 ${readAloudText ? "pb-24" : ""}`}
+      style={{ "--reveal-i": 0 } as React.CSSProperties}
+    >
       <div>
         <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
           <h1 className="page-hed text-[clamp(26px,3.4vw,38px)]">
@@ -63,8 +68,6 @@ export default async function MfsModelPage({
         ))}
       </div>
 
-      {/* listen to this post */}
-      {mfsReadAloud[m.slug] && <ReadAloud text={mfsReadAloud[m.slug]} />}
 
       {/* facts */}
       <div className="grid grid-cols-1 gap-x-8 gap-y-3 rounded-[6px] border border-line bg-card p-4 sm:grid-cols-2">
@@ -141,6 +144,11 @@ export default async function MfsModelPage({
           </a>
         ))}
       </div>
+
+      {/* floating read-aloud player */}
+      {readAloudText && (
+        <ReadAloud text={readAloudText} insetLeftClass="md:left-[250px]" />
+      )}
 
       {/* prev / next */}
       <div className="flex items-baseline justify-between border-t border-line pt-4 font-[family-name:var(--font-jbmono)] text-[11px]">
