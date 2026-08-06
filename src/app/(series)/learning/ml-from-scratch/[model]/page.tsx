@@ -53,7 +53,7 @@ export default async function MfsModelPage({
       </div>
 
       {/* story */}
-      <div className="max-w-[620px]">
+      <div>
         {m.story.map((p) => (
           <p key={p.slice(0, 24)} className="prose-serif [&+&]:mt-3">
             {p}
@@ -118,7 +118,7 @@ export default async function MfsModelPage({
       {post && (
         <div>
           <div className="site-h">How I built it</div>
-          <div className="mt-2 max-w-[680px]">{post.content}</div>
+          <div className="mt-2">{post.content}</div>
         </div>
       )}
 

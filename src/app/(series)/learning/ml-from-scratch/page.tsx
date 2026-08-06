@@ -17,7 +17,7 @@ export default function MlFromScratchPage() {
         From neurons to transformers: building every major architecture from scratch.
       </p>
 
-      <div className="prose-serif mt-6 max-w-[720px]">
+      <div className="prose-serif mt-6">
         <p>
           Frameworks hide exactly the parts you should understand. So I built the
           parts: every model on this page is implemented from first principles,
