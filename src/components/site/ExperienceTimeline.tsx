@@ -43,7 +43,7 @@ export function ExperienceTimeline({
   return (
     <div className="mt-6">
       {/* axis header */}
-      <div className="relative h-6 font-[family-name:var(--font-jbmono)] text-[10.5px] uppercase tracking-[0.14em] text-faint">
+      <div className="relative h-7 font-[family-name:var(--font-jbmono)] text-[12px] uppercase tracking-[0.14em] text-faint">
         {years.map((y) => (
           <span
             key={y.label}
@@ -58,7 +58,7 @@ export function ExperienceTimeline({
 
       {/* lanes */}
       <div className="relative overflow-x-auto">
-        <div className="relative min-w-[920px]">
+        <div className="relative min-w-[1000px]">
           {/* year gridlines */}
           {years.map((y) => (
             <div
@@ -73,11 +73,11 @@ export function ExperienceTimeline({
             const narrow = w < 15;
             const labelRight = l + w < 60;
             return (
-              <div key={e.role} className="relative h-[72px]">
+              <div key={e.role} className="relative h-[96px]">
                 <button
                   onClick={() => setSelected(e)}
                   style={{ left: `${l}%`, width: `${w}%` }}
-                  className={`group absolute top-1/2 flex h-12 min-w-[48px] -translate-y-1/2 cursor-pointer items-center gap-2.5 overflow-hidden rounded-full px-3 transition-colors ${
+                  className={`group absolute top-1/2 flex h-16 min-w-[60px] -translate-y-1/2 cursor-pointer items-center gap-3 overflow-hidden rounded-full px-4 transition-colors ${
                     e.current
                       ? "bg-ember text-paper hover:bg-[#a04826]"
                       : "border border-line bg-raised text-inksoft hover:border-ember"
@@ -89,20 +89,20 @@ export function ExperienceTimeline({
                     <img
                       src={e.logo}
                       alt=""
-                      className={`h-7 w-7 shrink-0 rounded-full border border-line object-contain p-[3px] ${
+                      className={`h-9 w-9 shrink-0 rounded-full border border-line object-contain p-[4px] ${
                         e.logoDark ? "bg-[#151515]" : "bg-raised"
                       }`}
                     />
                   )}
                   {!narrow && (
-                    <span className="truncate font-[family-name:var(--font-jbmono)] text-[12px] font-medium">
+                    <span className="truncate font-[family-name:var(--font-jbmono)] text-[14px] font-medium">
                       {e.short ?? e.role}
                     </span>
                   )}
                 </button>
                 {narrow && (
                   <span
-                    className={`absolute top-1/2 -translate-y-1/2 whitespace-nowrap font-[family-name:var(--font-jbmono)] text-[11.5px] text-inksoft ${
+                    className={`absolute top-1/2 -translate-y-1/2 whitespace-nowrap font-[family-name:var(--font-jbmono)] text-[13px] text-inksoft ${
                       labelRight ? "" : "text-right"
                     }`}
                     style={
